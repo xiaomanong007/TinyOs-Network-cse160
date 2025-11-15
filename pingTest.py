@@ -12,6 +12,9 @@ def main():
 
     # Add a noise model to all of the motes.
     s.loadNoise("no_noise.txt");
+    # s.loadNoise("some_noise.txt");
+    # s.loadNoise("meyer-heavy.txt");
+
 
     # Turn on all of the sensors.
     s.bootAll();
@@ -22,11 +25,32 @@ def main():
 
     # After sending a ping, simulate a little to prevent collision.
     s.runTime(1);
-    s.ping(2, 3, "Hello, World");
+    s.ping(1, 2, "Hello, World 1");
     s.runTime(1);
 
-    s.ping(1, 10, "Hi!");
+    s.ping(1, 2, "Hello, World 2");
     s.runTime(1);
+
+    s.ping(1, 2, "Hello, World 3");
+    s.runTime(1);
+
+    s.ping(1, 2, "Hello, World 4");
+    s.runTime(1);
+
+    s.ping(1, 2, "Hello, World 5");
+    s.runTime(1);
+
+    s.ping(1, 2, "Hello, World 6");
+    s.runTime(1);
+
+    s.ping(1, 2, "Hello, World 7");
+    s.runTime(1);
+
+    s.ping(1, 2, "Hello, World 8");
+    s.runTime(1);
+
+    # s.ping(1, 10, "Hi!");
+    # s.runTime(1);
 
 if __name__ == '__main__':
     main()
