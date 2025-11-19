@@ -23,16 +23,17 @@ implementation {
         START_DELAY_LOWER = 500,
         START_DELAY_UPPER = 1000,
 
-        REDISCOVER_LOWER_BOUND = 8000,
-        REDISCOVER_UPPER_BOUND = 10000,
-
         NOTIFY_DELAY_LOWER = 2500,
         NOTIFY_DELAY_UPPER = 2800,
+
+        REDISCOVER_LOWER_BOUND = 28000,
+        REDISCOVER_UPPER_BOUND = 30000,
     };
 
     uint16_t local_seq = 1;
     uint16_t alpha = 150; // a = 0.15, mutiply 1000 to get a deciaml representation 
     uint16_t accept_quality = 500;
+    uint16_t x = 10000; // cost = x / link_quality
 
     void discover();
 
@@ -53,7 +54,7 @@ implementation {
 
         uint16_t num_neighbors = call NeighborTable.size();
         uint32_t neighbor_list[num_neighbors];
-        memcpy(neighbor_list, call NeighborTable.getKeys(), num_neighbors);
+        memcpy(neighbor_list, call NeighborTable.getKeys(), sizeof(uint32_t) * num_neighbors);
 
         for(; i < num_neighbors; i++) {
             if (call NeighborTable.contains(neighbor_list[i])) {
@@ -65,11 +66,13 @@ implementation {
 
                 if (info.link_quality < accept_quality || local_seq - info.last_seq > 5) {
                     call  NeighborTable.remove(neighbor_list[i]);
+                } else {
+                    call NeighborTable.insert(neighbor_list[i], info);
                 }
             }
         }
 
-        printNeighbors();
+        // printNeighbors();
     }
 
     command void NeighborDiscovery.onBoot() {
@@ -96,9 +99,15 @@ implementation {
         call SimpleSend.makePack(&send_pkt, TOS_NODE_ID, TOS_BCAST_ADDR, PROTOCOL_NEIGHBOR_DISCOVERY, BEST_EFFORT, (uint8_t*)&nd_pkt, PACKET_MAX_PAYLOAD_SIZE);
         call SimpleSend.send(send_pkt, TOS_BCAST_ADDR);
 
+        local_seq++;
+
         call notifyTimer.startOneShot(
             NOTIFY_DELAY_LOWER + (call Random.rand16() % (NOTIFY_DELAY_UPPER - NOTIFY_DELAY_LOWER))
         ); 
+
+        call discoverTimer.startOneShot(
+            REDISCOVER_LOWER_BOUND + (call Random.rand16() % (REDISCOVER_UPPER_BOUND - REDISCOVER_LOWER_BOUND))
+        );
     }
 
     void makeNDPkt(neigbhorDiscoveryPkt_t *Package, uint8_t src, uint8_t protocol, uint16_t seq, uint8_t* payload, uint8_t length) {
@@ -119,7 +128,7 @@ implementation {
     }
 
     uint16_t ewma(uint8_t sample, uint16_t old) {
-        return (alpha * sample) + (10 - alpha/100) * old / 10;
+        return (alpha * sample) + (1000 - alpha) * old / 1000;
     }
 
     void updateLink(uint8_t neighbor_id, uint16_t seq) {
@@ -168,20 +177,43 @@ implementation {
         return call NeighborTable.size();
     }
 
-    command void NeighborDiscovery.printNeighbors() {}
+    command void NeighborDiscovery.printNeighbors() {
+        printNeighbors();
+    }
 
-    command uint16_t NeighborDiscovery.getNeighborQuality(uint8_t id) {}
+    command uint16_t NeighborDiscovery.getNeighborQuality(uint8_t id) {
+        neighborInfo_t info;
+        if (call NeighborTable.contains(id)) {
+            info = call NeighborTable.get(id);
+            return info.link_quality;
+        } else {
+            return 0;
+        }
+        
+    }
+
+    command uint16_t NeighborDiscovery.getLinkCost(uint8_t id) {
+        uint16_t link_quality = call NeighborDiscovery.getNeighborQuality(id);
+        return x / link_quality;
+    }
+
 
     void printNeighbors() {
         uint32_t i;
         char buf[200];
         int pos = 0;
+        neighborInfo_t info;
+
+        uint16_t n = call NeighborTable.size();
+        uint32_t arr[n];
+        memcpy(arr, call NeighborTable.getKeys(), n * sizeof(uint32_t));
 
         pos += snprintf(buf + pos, sizeof(buf) - pos, "Neighbors of Node %d: [", TOS_NODE_ID);
 
-        for (i = 0; i < call NeighborTable.size(); i++) {
-            pos += snprintf(buf + pos, sizeof(buf) - pos, "%d", *(call NeighborTable.getKeys() + i));
-            if (i < call NeighborTable.size() - 1) {
+        for (i = 0; i < n; i++) {
+            info = call NeighborTable.get(arr[i]);
+            pos += snprintf(buf + pos, sizeof(buf) - pos, "(%d, %d)", arr[i],info.link_quality);
+            if (i < n - 1) {
                 pos += snprintf(buf + pos, sizeof(buf) - pos, ", ");
             }
         }

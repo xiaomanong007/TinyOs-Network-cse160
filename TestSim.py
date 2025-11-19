@@ -119,8 +119,11 @@ class TestSim:
     def ping(self, source, dest, msg):
         self.sendCMD(self.CMD_PING, source, "{0}{1}".format(chr(dest),msg));
 
-    def neighborDMP(self, destination):
-        self.sendCMD(self.CMD_NEIGHBOR_DUMP, destination, "neighbor command");
+    # def neighborDMP(self, destination):
+    #     self.sendCMD(self.CMD_NEIGHBOR_DUMP, destination, "neighbor command");
+
+    def neighborDMP(self, source):
+        self.sendCMD(self.CMD_NEIGHBOR_DUMP, source, "neighbor command");
 
     def routeDMP(self, destination):
         self.sendCMD(self.CMD_ROUTE_DUMP, destination, "routing command");

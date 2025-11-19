@@ -52,9 +52,9 @@ implementation{
    event void AMControl.stopDone(error_t err){}
 
    event message_t* Receive.receive(message_t* msg, void* payload, uint8_t len){
-      dbg(GENERAL_CHANNEL, "Packet Received\n");
+      // dbg(GENERAL_CHANNEL, "Packet Received\n");
       if(len==sizeof(pack)){
-         pack* myMsg=(pack*) payload;
+         // pack* myMsg=(pack*) payload;
          // dbg(GENERAL_CHANNEL, "Package Payload: %s\n", myMsg->payload);
          // logPack(myMsg);
 
@@ -73,7 +73,22 @@ implementation{
       // call Sender.send(sendPackage, destination);
    }
 
-   event void CommandHandler.printNeighbors(){}
+   event void CommandHandler.printNeighbors(uint16_t src, uint8_t *payload){
+      uint16_t n = call NeighborDiscovery.numNeighbors();
+      uint32_t arr[n];
+      uint16_t i;
+      memcpy(arr, call NeighborDiscovery.neighbors(), n * sizeof(uint32_t));
+
+      dbg(NEIGHBOR_CHANNEL, "NEIGHBOR EVENT \n");
+
+      for (i = 0; i < n; i++) {
+         printf("id = %d, quality = %d, cost = %d\n", arr[i],call NeighborDiscovery.getNeighborQuality(arr[i]), call NeighborDiscovery.getLinkCost(arr[i]));
+      }
+
+      // call NeighborDiscovery.printNeighbors();
+      // call NeighborDiscovery.getLinkCost(3);
+      // call NeighborDiscovery.getLinkCost(8);
+   }
 
    event void CommandHandler.printRouteTable(){}
 

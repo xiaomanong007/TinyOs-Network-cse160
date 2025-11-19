@@ -13,9 +13,9 @@ def main():
 
 
     # Add a noise model to all of the motes.
-    s.loadNoise("no_noise.txt");
+    # s.loadNoise("no_noise.txt");
     # s.loadNoise("some_noise.txt");
-    # s.loadNoise("meyer-heavy.txt");
+    s.loadNoise("meyer-heavy.txt");
 
 
     # Turn on all of the sensors.
@@ -23,16 +23,18 @@ def main():
 
     # Add the main channels. These channels are declared in includes/channels.h
     s.addChannel(s.COMMAND_CHANNEL);
-    # s.addChannel(s.GENERAL_CHANNEL);
+    s.addChannel(s.GENERAL_CHANNEL);
     s.addChannel(s.NEIGHBOR_CHANNEL);
     # s.addChannel(s.FLOODING_CHANNEL);
     # s.addChannel(s.ROUTING_CHANNEL);
     # s.addChannel(s.TRANSPORT_CHANNEL);
 
     # After sending a ping, simulate a little to prevent collision.
-    s.runTime(100);
-    s.ping(1, 7, "Hello, World 1");
+    s.runTime(300);
+    s.neighborDMP(2);
     s.runTime(1);
+    # s.ping(1, 7, "Hello, World 1");
+    # s.runTime(1);
 
     # s.ping(1, 10, "Hi!");
     # s.runTime(1);

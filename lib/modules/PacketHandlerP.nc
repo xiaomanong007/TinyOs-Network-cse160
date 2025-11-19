@@ -27,7 +27,6 @@ implementation{
 
         switch(incomingMsg->protocol){
             case PROTOCOL_NEIGHBOR_DISCOVERY:
-                logNDPkt((neigbhorDiscoveryPkt_t*)payload, GENERAL_CHANNEL);
                 signal PacketHandler.gotNDPkt(payload);
                 break;
             case PROTOCOL_FLOODING:

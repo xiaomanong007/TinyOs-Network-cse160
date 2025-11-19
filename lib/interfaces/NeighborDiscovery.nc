@@ -4,6 +4,8 @@ interface NeighborDiscovery {
     command uint16_t numNeighbors();
     command void printNeighbors();
     command uint16_t getNeighborQuality(uint8_t id);
+    command uint16_t getLinkCost(uint8_t id);
+
 
     // event void neighborChange();
 }
