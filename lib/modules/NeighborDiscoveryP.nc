@@ -1,4 +1,5 @@
 #include "../../includes/neighborDiscoveryPkt.h"
+#include "../../includes/neighborInfo.h"
 #include "../../includes/packet.h"
 #include "../../includes/channels.h"
 
@@ -9,6 +10,8 @@ module NeighborDiscoveryP {
 
     uses {
         interface Timer<TMilli> as discoverTimer;
+        interface Timer<TMilli> as notifyTimer;
+        interface Hashmap<neighborInfo_t> as NeighborTable;
         interface Random;
         interface SimpleSend;
         interface PacketHandler;
@@ -22,9 +25,14 @@ implementation {
 
         REDISCOVER_LOWER_BOUND = 8000,
         REDISCOVER_UPPER_BOUND = 10000,
+
+        NOTIFY_DELAY_LOWER = 2500,
+        NOTIFY_DELAY_UPPER = 2800,
     };
 
     uint16_t local_seq = 1;
+    uint16_t alpha = 150; // a = 0.15, mutiply 1000 to get a deciaml representation 
+    uint16_t accept_quality = 500;
 
     void discover();
 
@@ -32,7 +40,37 @@ implementation {
 
     void reply(neigbhorDiscoveryPkt_t* incomingMsg, uint8_t from);
 
-    void updateTable();
+    void updateLink(uint8_t neighbor_id, uint16_t seq);
+
+    uint16_t ewma(uint8_t sample, uint16_t old);
+
+    void printNeighbors();
+
+
+    task void updateTable() {
+        neighborInfo_t info;
+        uint16_t i = 0;
+
+        uint16_t num_neighbors = call NeighborTable.size();
+        uint32_t neighbor_list[num_neighbors];
+        memcpy(neighbor_list, call NeighborTable.getKeys(), num_neighbors);
+
+        for(; i < num_neighbors; i++) {
+            if (call NeighborTable.contains(neighbor_list[i])) {
+                info = call NeighborTable.get(neighbor_list[i]);
+
+                if (info.last_seq < local_seq - 1) {
+                    info.link_quality = ewma(0, info.link_quality);
+                }
+
+                if (info.link_quality < accept_quality || local_seq - info.last_seq > 5) {
+                    call  NeighborTable.remove(neighbor_list[i]);
+                }
+            }
+        }
+
+        printNeighbors();
+    }
 
     command void NeighborDiscovery.onBoot() {
         call discoverTimer.startOneShot(
@@ -44,10 +82,10 @@ implementation {
         discover();
     }
 
-    command uint32_t* NeighborDiscovery.neighbors() {}
-    command uint16_t NeighborDiscovery.numNeighbors() {}
-    command void NeighborDiscovery.printNeighbors() {}
-    command uint16_t NeighborDiscovery.getNeighborQuality(uint8_t id) {}
+    event void notifyTimer.fired() {
+        post updateTable();
+    }
+    
 
     void discover() {
         pack send_pkt;
@@ -57,6 +95,10 @@ implementation {
         makeNDPkt(&nd_pkt, TOS_NODE_ID, PROTOCOL_PING, local_seq, (uint8_t *)content, ND_PKT_MAX_PAYLOAD_SIZE);
         call SimpleSend.makePack(&send_pkt, TOS_NODE_ID, TOS_BCAST_ADDR, PROTOCOL_NEIGHBOR_DISCOVERY, BEST_EFFORT, (uint8_t*)&nd_pkt, PACKET_MAX_PAYLOAD_SIZE);
         call SimpleSend.send(send_pkt, TOS_BCAST_ADDR);
+
+        call notifyTimer.startOneShot(
+            NOTIFY_DELAY_LOWER + (call Random.rand16() % (NOTIFY_DELAY_UPPER - NOTIFY_DELAY_LOWER))
+        ); 
     }
 
     void makeNDPkt(neigbhorDiscoveryPkt_t *Package, uint8_t src, uint8_t protocol, uint16_t seq, uint8_t* payload, uint8_t length) {
@@ -76,9 +118,28 @@ implementation {
         call SimpleSend.send(send_pkt, from);
     }
 
-    void updateTable() {
-        printf("Node %d update table\n", TOS_NODE_ID);
+    uint16_t ewma(uint8_t sample, uint16_t old) {
+        return (alpha * sample) + (10 - alpha/100) * old / 10;
     }
+
+    void updateLink(uint8_t neighbor_id, uint16_t seq) {
+        neighborInfo_t info;
+
+        if (call NeighborTable.contains(neighbor_id)) {
+            info = call NeighborTable.get(neighbor_id);
+
+            if (info.last_seq >= seq) {
+                return;
+            }
+            info.link_quality = ewma(1, info.link_quality);
+        } else {
+            info.link_quality = 1000;
+        }
+
+        info.last_seq = seq;
+
+        call NeighborTable.insert(neighbor_id, info);
+    } 
     
     event void PacketHandler.gotNDPkt(uint8_t* incomingMsg){
         neigbhorDiscoveryPkt_t nd_pkt;
@@ -89,13 +150,45 @@ implementation {
                 reply(&nd_pkt, nd_pkt.src);
                 break;
             case PROTOCOL_PINGREPLY:
-                updateTable();
+                updateLink(nd_pkt.src, nd_pkt.seq);
                 break;
             default:
                 dbg(GENERAL_CHANNEL,"Unknown protocol %d from node %d, dropping packet.\n",
                 nd_pkt.protocol, nd_pkt.src);
                 break;
-        }  
+        }
+
+    }
+
+    command uint32_t* NeighborDiscovery.neighbors() {
+        return call NeighborTable.getKeys();
+    }
+
+    command uint16_t NeighborDiscovery.numNeighbors() {
+        return call NeighborTable.size();
+    }
+
+    command void NeighborDiscovery.printNeighbors() {}
+
+    command uint16_t NeighborDiscovery.getNeighborQuality(uint8_t id) {}
+
+    void printNeighbors() {
+        uint32_t i;
+        char buf[200];
+        int pos = 0;
+
+        pos += snprintf(buf + pos, sizeof(buf) - pos, "Neighbors of Node %d: [", TOS_NODE_ID);
+
+        for (i = 0; i < call NeighborTable.size(); i++) {
+            pos += snprintf(buf + pos, sizeof(buf) - pos, "%d", *(call NeighborTable.getKeys() + i));
+            if (i < call NeighborTable.size() - 1) {
+                pos += snprintf(buf + pos, sizeof(buf) - pos, ", ");
+            }
+        }
+
+        snprintf(buf + pos, sizeof(buf) - pos, "]");
+
+        dbg(NEIGHBOR_CHANNEL, "%s\n", buf);
     }
     
     event void PacketHandler.getReliableAckPkt(uint8_t _) {}

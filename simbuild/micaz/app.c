@@ -1258,7 +1258,7 @@ typedef struct sim_log_channel {
 } sim_log_channel_t;
 
 enum __nesc_unnamed4272 {
-  SIM_LOG_OUTPUT_COUNT = 194U
+  SIM_LOG_OUTPUT_COUNT = 201U
 };
 
 sim_log_output_t outputs[SIM_LOG_OUTPUT_COUNT];
@@ -2277,6 +2277,19 @@ enum __nesc_unnamed4286 {
 # 6 "includes/channels.h"
 char COMMAND_CHANNEL[8] = "command";
 char GENERAL_CHANNEL[8] = "general";
+
+
+char NEIGHBOR_CHANNEL[9] = "neighbor";
+
+
+
+
+
+
+
+
+
+char HASHMAP_CHANNEL[8] = "hashmap";
 # 12 "includes/packet.h"
 enum __nesc_unnamed4287 {
   PACKET_HEADER_LENGTH = 4, 
@@ -4147,6 +4160,13 @@ typedef struct neigbhorDiscoveryPkt {
 } neigbhorDiscoveryPkt_t;
 
 static inline void logNDPkt(neigbhorDiscoveryPkt_t *input, char channel[]);
+# 8 "lib/modules/../../includes/neighborInfo.h"
+#line 4
+typedef struct neighborInfo {
+  uint16_t last_seq;
+  uint16_t link_quality;
+} 
+neighborInfo_t;
 typedef uint16_t CpmModelC__ReadRssi__val_t;
 typedef sendInfo /*NodeC.SimpleSendC.SimpleSendP*/SimpleSendP__0__Pool__t;
 typedef sendInfo */*NodeC.SimpleSendC.SimpleSendP*/SimpleSendP__0__Queue__t;
@@ -4194,6 +4214,8 @@ typedef /*CommandHandlerC.PoolC.PoolP*/PoolP__1__pool_t /*CommandHandlerC.PoolC.
 typedef message_t */*CommandHandlerC.QueueC*/QueueC__0__queue_t;
 typedef /*CommandHandlerC.QueueC*/QueueC__0__queue_t /*CommandHandlerC.QueueC*/QueueC__0__Queue__t;
 typedef TMilli NeighborDiscoveryP__discoverTimer__precision_tag;
+typedef TMilli NeighborDiscoveryP__notifyTimer__precision_tag;
+typedef neighborInfo_t NeighborDiscoveryP__NeighborTable__t;
 typedef sendInfo /*NeighborDiscoveryC.SimpleSendC.SimpleSendP*/SimpleSendP__1__Pool__t;
 typedef sendInfo */*NeighborDiscoveryC.SimpleSendC.SimpleSendP*/SimpleSendP__1__Queue__t;
 typedef reSendInfo /*NeighborDiscoveryC.SimpleSendC.SimpleSendP*/SimpleSendP__1__ReSendQueue__t;
@@ -4207,6 +4229,8 @@ typedef sendInfo */*NeighborDiscoveryC.SimpleSendC.QueueC*/QueueC__2__queue_t;
 typedef /*NeighborDiscoveryC.SimpleSendC.QueueC*/QueueC__2__queue_t /*NeighborDiscoveryC.SimpleSendC.QueueC*/QueueC__2__Queue__t;
 typedef reSendInfo /*NeighborDiscoveryC.SimpleSendC.ReSendQueue*/ListC__1__t;
 typedef /*NeighborDiscoveryC.SimpleSendC.ReSendQueue*/ListC__1__t /*NeighborDiscoveryC.SimpleSendC.ReSendQueue*/ListC__1__List__t;
+typedef neighborInfo_t /*NeighborDiscoveryC.HashmapC*/HashmapC__0__t;
+typedef /*NeighborDiscoveryC.HashmapC*/HashmapC__0__t /*NeighborDiscoveryC.HashmapC*/HashmapC__0__Hashmap__t;
 # 62 "/opt/tinyos-main/tos/interfaces/Init.nc"
 static error_t PlatformC__Init__init(void );
 # 67 "/opt/tinyos-main/tos/interfaces/TaskBasic.nc"
@@ -4769,6 +4793,10 @@ static void NeighborDiscoveryP__PacketHandler__getReliablePkt(pack *pkt);
 static void NeighborDiscoveryP__discoverTimer__fired(void );
 # 2 "lib/interfaces/NeighborDiscovery.nc"
 static void NeighborDiscoveryP__NeighborDiscovery__onBoot(void );
+# 75 "/opt/tinyos-main/tos/interfaces/TaskBasic.nc"
+static void NeighborDiscoveryP__updateTable__runTask(void );
+# 83 "/opt/tinyos-main/tos/lib/timer/Timer.nc"
+static void NeighborDiscoveryP__notifyTimer__fired(void );
 # 4 "lib/interfaces/SimpleSend.nc"
 static error_t /*NeighborDiscoveryC.SimpleSendC.SimpleSendP*/SimpleSendP__1__SimpleSend__send(pack msg, uint16_t dest);
 static void /*NeighborDiscoveryC.SimpleSendC.SimpleSendP*/SimpleSendP__1__SimpleSend__makePack(pack *Package, uint8_t src, uint8_t dest, uint8_t protocol, uint8_t flag, uint8_t *payload, uint8_t length);
@@ -4864,6 +4892,22 @@ static void /*NeighborDiscoveryC.SimpleSendC.ReSendQueue*/ListC__1__List__pushba
 
 
 static /*NeighborDiscoveryC.SimpleSendC.ReSendQueue*/ListC__1__List__t /*NeighborDiscoveryC.SimpleSendC.ReSendQueue*/ListC__1__List__popfront(void );
+# 13 "dataStructures/interfaces/Hashmap.nc"
+static /*NeighborDiscoveryC.HashmapC*/HashmapC__0__Hashmap__t /*NeighborDiscoveryC.HashmapC*/HashmapC__0__Hashmap__get(uint32_t key);
+#line 12
+static void /*NeighborDiscoveryC.HashmapC*/HashmapC__0__Hashmap__remove(uint32_t key);
+#line 11
+static void /*NeighborDiscoveryC.HashmapC*/HashmapC__0__Hashmap__insert(uint32_t key, /*NeighborDiscoveryC.HashmapC*/HashmapC__0__Hashmap__t input);
+
+
+
+
+
+static uint32_t */*NeighborDiscoveryC.HashmapC*/HashmapC__0__Hashmap__getKeys(void );
+#line 14
+static bool /*NeighborDiscoveryC.HashmapC*/HashmapC__0__Hashmap__contains(uint32_t key);
+
+static uint16_t /*NeighborDiscoveryC.HashmapC*/HashmapC__0__Hashmap__size(void );
 # 45 "/opt/tinyos-main/tos/lib/tossim/PlatformC.nc"
 static inline error_t PlatformC__Init__init(void );
 # 62 "/opt/tinyos-main/tos/interfaces/Init.nc"
@@ -4893,7 +4937,7 @@ uint8_t arg_0x7ffffadb8020);
 
 enum SimSchedulerBasicP____nesc_unnamed4339 {
 
-  SimSchedulerBasicP__NUM_TASKS = 11U, 
+  SimSchedulerBasicP__NUM_TASKS = 12U, 
   SimSchedulerBasicP__NO_TASK = 255
 };
 
@@ -6028,7 +6072,7 @@ typedef int /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC__0____nesc_silly
 #line 53
 enum /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC__0____nesc_unnamed4348 {
 
-  VirtualizeTimerC__0__NUM_TIMERS = 7U, 
+  VirtualizeTimerC__0__NUM_TIMERS = 8U, 
   VirtualizeTimerC__0__END_OF_LIST = 255
 };
 
@@ -6439,16 +6483,48 @@ static void NeighborDiscoveryP__SimpleSend__makePack(pack *Package, uint8_t src,
 static uint16_t NeighborDiscoveryP__Random__rand16(void );
 # 73 "/opt/tinyos-main/tos/lib/timer/Timer.nc"
 static void NeighborDiscoveryP__discoverTimer__startOneShot(uint32_t dt);
-# 19 "lib/modules/NeighborDiscoveryP.nc"
+# 67 "/opt/tinyos-main/tos/interfaces/TaskBasic.nc"
+static error_t NeighborDiscoveryP__updateTable__postTask(void );
+# 73 "/opt/tinyos-main/tos/lib/timer/Timer.nc"
+static void NeighborDiscoveryP__notifyTimer__startOneShot(uint32_t dt);
+# 13 "dataStructures/interfaces/Hashmap.nc"
+static NeighborDiscoveryP__NeighborTable__t NeighborDiscoveryP__NeighborTable__get(uint32_t key);
+#line 12
+static void NeighborDiscoveryP__NeighborTable__remove(uint32_t key);
+#line 11
+static void NeighborDiscoveryP__NeighborTable__insert(uint32_t key, NeighborDiscoveryP__NeighborTable__t input);
+
+
+
+
+
+static uint32_t *NeighborDiscoveryP__NeighborTable__getKeys(void );
+#line 14
+static bool NeighborDiscoveryP__NeighborTable__contains(uint32_t key);
+
+static uint16_t NeighborDiscoveryP__NeighborTable__size(void );
+# 50 "lib/modules/NeighborDiscoveryP.nc"
 enum NeighborDiscoveryP____nesc_unnamed4354 {
+#line 50
+  NeighborDiscoveryP__updateTable = 10U
+};
+#line 50
+typedef int NeighborDiscoveryP____nesc_sillytask_updateTable[NeighborDiscoveryP__updateTable];
+#line 22
+enum NeighborDiscoveryP____nesc_unnamed4355 {
   NeighborDiscoveryP__START_DELAY_LOWER = 500, 
   NeighborDiscoveryP__START_DELAY_UPPER = 1000, 
 
   NeighborDiscoveryP__REDISCOVER_LOWER_BOUND = 8000, 
-  NeighborDiscoveryP__REDISCOVER_UPPER_BOUND = 10000
+  NeighborDiscoveryP__REDISCOVER_UPPER_BOUND = 10000, 
+
+  NeighborDiscoveryP__NOTIFY_DELAY_LOWER = 2500, 
+  NeighborDiscoveryP__NOTIFY_DELAY_UPPER = 2800
 };
 
 uint16_t NeighborDiscoveryP__local_seq[1000];
+uint16_t NeighborDiscoveryP__alpha[1000];
+uint16_t NeighborDiscoveryP__accept_quality[1000];
 
 static inline void NeighborDiscoveryP__discover(void );
 
@@ -6456,8 +6532,15 @@ static void NeighborDiscoveryP__makeNDPkt(neigbhorDiscoveryPkt_t *Package, uint8
 
 static inline void NeighborDiscoveryP__reply(neigbhorDiscoveryPkt_t *incomingMsg, uint8_t from);
 
-static inline void NeighborDiscoveryP__updateTable(void );
+static inline void NeighborDiscoveryP__updateLink(uint8_t neighbor_id, uint16_t seq);
 
+static uint16_t NeighborDiscoveryP__ewma(uint8_t sample, uint16_t old);
+
+static inline void NeighborDiscoveryP__printNeighbors(void );
+
+
+static inline void NeighborDiscoveryP__updateTable__runTask(void );
+#line 75
 static inline void NeighborDiscoveryP__NeighborDiscovery__onBoot(void );
 
 
@@ -6468,21 +6551,12 @@ static inline void NeighborDiscoveryP__discoverTimer__fired(void );
 
 
 
-
-
+static inline void NeighborDiscoveryP__notifyTimer__fired(void );
 
 
 
 static inline void NeighborDiscoveryP__discover(void );
-
-
-
-
-
-
-
-
-
+#line 103
 static void NeighborDiscoveryP__makeNDPkt(neigbhorDiscoveryPkt_t *Package, uint8_t src, uint8_t protocol, uint16_t seq, uint8_t *payload, uint8_t length);
 
 
@@ -6500,12 +6574,16 @@ static inline void NeighborDiscoveryP__reply(neigbhorDiscoveryPkt_t *incomingMsg
 
 
 
-static inline void NeighborDiscoveryP__updateTable(void );
+static uint16_t NeighborDiscoveryP__ewma(uint8_t sample, uint16_t old);
 
 
 
+static inline void NeighborDiscoveryP__updateLink(uint8_t neighbor_id, uint16_t seq);
+#line 143
 static inline void NeighborDiscoveryP__PacketHandler__gotNDPkt(uint8_t *incomingMsg);
-#line 101
+#line 174
+static inline void NeighborDiscoveryP__printNeighbors(void );
+#line 193
 static inline void NeighborDiscoveryP__PacketHandler__getReliableAckPkt(uint8_t _);
 static inline void NeighborDiscoveryP__PacketHandler__getReliablePkt(pack *_);
 static inline void NeighborDiscoveryP__PacketHandler__gotFloodPkt(uint8_t *_);
@@ -6584,9 +6662,9 @@ static bool /*NeighborDiscoveryC.SimpleSendC.SimpleSendP*/SimpleSendP__1__sendTi
 #line 73
 static void /*NeighborDiscoveryC.SimpleSendC.SimpleSendP*/SimpleSendP__1__sendTimer__startOneShot(uint32_t dt);
 # 108 "lib/modules/SimpleSendP.nc"
-enum /*NeighborDiscoveryC.SimpleSendC.SimpleSendP*/SimpleSendP__1____nesc_unnamed4355 {
+enum /*NeighborDiscoveryC.SimpleSendC.SimpleSendP*/SimpleSendP__1____nesc_unnamed4356 {
 #line 108
-  SimpleSendP__1__sendBufferTask = 10U
+  SimpleSendP__1__sendBufferTask = 11U
 };
 #line 108
 typedef int /*NeighborDiscoveryC.SimpleSendC.SimpleSendP*/SimpleSendP__1____nesc_sillytask_sendBufferTask[/*NeighborDiscoveryC.SimpleSendC.SimpleSendP*/SimpleSendP__1__sendBufferTask];
@@ -6786,6 +6864,52 @@ uint16_t /*NeighborDiscoveryC.SimpleSendC.ReSendQueue*/ListC__1__size[1000];
 static void /*NeighborDiscoveryC.SimpleSendC.ReSendQueue*/ListC__1__List__pushback(/*NeighborDiscoveryC.SimpleSendC.ReSendQueue*/ListC__1__t input);
 #line 54
 static inline /*NeighborDiscoveryC.SimpleSendC.ReSendQueue*/ListC__1__t /*NeighborDiscoveryC.SimpleSendC.ReSendQueue*/ListC__1__List__popfront(void );
+# 15 "dataStructures/modules/HashmapC.nc"
+uint16_t /*NeighborDiscoveryC.HashmapC*/HashmapC__0__HASH_MAX_SIZE[1000];
+
+
+uint16_t /*NeighborDiscoveryC.HashmapC*/HashmapC__0__EMPTY_KEY[1000];
+
+
+
+
+#line 20
+typedef struct /*NeighborDiscoveryC.HashmapC*/HashmapC__0__hashmapEntry {
+  uint32_t key;
+  /*NeighborDiscoveryC.HashmapC*/HashmapC__0__t value;
+} /*NeighborDiscoveryC.HashmapC*/HashmapC__0__hashmapEntry;
+
+/*NeighborDiscoveryC.HashmapC*/HashmapC__0__hashmapEntry /*NeighborDiscoveryC.HashmapC*/HashmapC__0__map[1000][30];
+uint32_t /*NeighborDiscoveryC.HashmapC*/HashmapC__0__keys[1000][30];
+uint16_t /*NeighborDiscoveryC.HashmapC*/HashmapC__0__numofVals[1000];
+
+
+static inline uint32_t /*NeighborDiscoveryC.HashmapC*/HashmapC__0__hash2(uint32_t k);
+
+
+static inline uint32_t /*NeighborDiscoveryC.HashmapC*/HashmapC__0__hash3(uint32_t k);
+
+
+
+static inline uint32_t /*NeighborDiscoveryC.HashmapC*/HashmapC__0__hash(uint32_t k, uint32_t i);
+
+
+
+static inline void /*NeighborDiscoveryC.HashmapC*/HashmapC__0__Hashmap__insert(uint32_t k, /*NeighborDiscoveryC.HashmapC*/HashmapC__0__t input);
+#line 76
+static inline void /*NeighborDiscoveryC.HashmapC*/HashmapC__0__removeFromKeyList(uint32_t k);
+#line 109
+static inline void /*NeighborDiscoveryC.HashmapC*/HashmapC__0__Hashmap__remove(uint32_t k);
+#line 130
+static /*NeighborDiscoveryC.HashmapC*/HashmapC__0__t /*NeighborDiscoveryC.HashmapC*/HashmapC__0__Hashmap__get(uint32_t k);
+#line 143
+static bool /*NeighborDiscoveryC.HashmapC*/HashmapC__0__Hashmap__contains(uint32_t k);
+#line 166
+static inline uint32_t */*NeighborDiscoveryC.HashmapC*/HashmapC__0__Hashmap__getKeys(void );
+
+
+
+static inline uint16_t /*NeighborDiscoveryC.HashmapC*/HashmapC__0__Hashmap__size(void );
 # 80 "/opt/tinyos-main/tos/lib/tossim/heap.c"
 static inline void init_heap(heap_t *heap)
 #line 80
@@ -7174,9 +7298,9 @@ static inline void /*NodeC.SimpleSendC.SimpleSendP*/SimpleSendP__0__PacketHandle
 {
 }
 
-# 104 "lib/modules/NeighborDiscoveryP.nc"
+# 196 "lib/modules/NeighborDiscoveryP.nc"
 static inline void NeighborDiscoveryP__PacketHandler__gotIpPkt(uint8_t *_)
-#line 104
+#line 196
 {
 }
 
@@ -7211,9 +7335,9 @@ static inline void /*NodeC.SimpleSendC.SimpleSendP*/SimpleSendP__0__PacketHandle
 {
 }
 
-# 103 "lib/modules/NeighborDiscoveryP.nc"
+# 195 "lib/modules/NeighborDiscoveryP.nc"
 static inline void NeighborDiscoveryP__PacketHandler__gotFloodPkt(uint8_t *_)
-#line 103
+#line 195
 {
 }
 
@@ -7248,11 +7372,126 @@ static inline void /*NodeC.SimpleSendC.SimpleSendP*/SimpleSendP__0__PacketHandle
 {
 }
 
-# 79 "lib/modules/NeighborDiscoveryP.nc"
-static inline void NeighborDiscoveryP__updateTable(void )
-#line 79
+# 33 "dataStructures/modules/HashmapC.nc"
+static inline uint32_t /*NeighborDiscoveryC.HashmapC*/HashmapC__0__hash3(uint32_t k)
+#line 33
 {
-  printf("Node %d update table\n", TOS_NODE_ID);
+  return 1 + k % 11;
+}
+
+#line 30
+static inline uint32_t /*NeighborDiscoveryC.HashmapC*/HashmapC__0__hash2(uint32_t k)
+#line 30
+{
+  return k % 13;
+}
+
+
+
+
+static inline uint32_t /*NeighborDiscoveryC.HashmapC*/HashmapC__0__hash(uint32_t k, uint32_t i)
+#line 37
+{
+  return (/*NeighborDiscoveryC.HashmapC*/HashmapC__0__hash2(k) + i * /*NeighborDiscoveryC.HashmapC*/HashmapC__0__hash3(k)) % /*NeighborDiscoveryC.HashmapC*/HashmapC__0__HASH_MAX_SIZE[sim_node()];
+}
+
+static inline void /*NeighborDiscoveryC.HashmapC*/HashmapC__0__Hashmap__insert(uint32_t k, /*NeighborDiscoveryC.HashmapC*/HashmapC__0__t input)
+#line 41
+{
+  uint32_t i = 0;
+#line 42
+  uint32_t j = 0;
+
+  if (k == /*NeighborDiscoveryC.HashmapC*/HashmapC__0__EMPTY_KEY[sim_node()]) {
+      sim_log_debug(195U, HASHMAP_CHANNEL, "[HASHMAP] You cannot insert a key of %d.", /*NeighborDiscoveryC.HashmapC*/HashmapC__0__EMPTY_KEY[sim_node()]);
+      return;
+    }
+
+  do {
+
+      j = /*NeighborDiscoveryC.HashmapC*/HashmapC__0__hash(k, i);
+
+
+      if (/*NeighborDiscoveryC.HashmapC*/HashmapC__0__map[sim_node()][j].key == /*NeighborDiscoveryC.HashmapC*/HashmapC__0__EMPTY_KEY[sim_node()] || /*NeighborDiscoveryC.HashmapC*/HashmapC__0__map[sim_node()][j].key == k) {
+
+
+          if (/*NeighborDiscoveryC.HashmapC*/HashmapC__0__map[sim_node()][j].key == /*NeighborDiscoveryC.HashmapC*/HashmapC__0__EMPTY_KEY[sim_node()]) {
+              /*NeighborDiscoveryC.HashmapC*/HashmapC__0__keys[sim_node()][/*NeighborDiscoveryC.HashmapC*/HashmapC__0__numofVals[sim_node()]] = k;
+              /*NeighborDiscoveryC.HashmapC*/HashmapC__0__numofVals[sim_node()]++;
+            }
+
+
+          /*NeighborDiscoveryC.HashmapC*/HashmapC__0__map[sim_node()][j].value = input;
+          /*NeighborDiscoveryC.HashmapC*/HashmapC__0__map[sim_node()][j].key = k;
+          return;
+        }
+      i++;
+    }
+  while (
+  i < /*NeighborDiscoveryC.HashmapC*/HashmapC__0__HASH_MAX_SIZE[sim_node()]);
+}
+
+# 11 "dataStructures/interfaces/Hashmap.nc"
+inline static void NeighborDiscoveryP__NeighborTable__insert(uint32_t key, NeighborDiscoveryP__NeighborTable__t input){
+#line 11
+  /*NeighborDiscoveryC.HashmapC*/HashmapC__0__Hashmap__insert(key, input);
+#line 11
+}
+#line 11
+
+
+inline static NeighborDiscoveryP__NeighborTable__t NeighborDiscoveryP__NeighborTable__get(uint32_t key){
+#line 13
+  struct neighborInfo __nesc_result;
+#line 13
+
+#line 13
+  __nesc_result = /*NeighborDiscoveryC.HashmapC*/HashmapC__0__Hashmap__get(key);
+#line 13
+
+#line 13
+  return __nesc_result;
+#line 13
+}
+#line 13
+
+inline static bool NeighborDiscoveryP__NeighborTable__contains(uint32_t key){
+#line 14
+  unsigned char __nesc_result;
+#line 14
+
+#line 14
+  __nesc_result = /*NeighborDiscoveryC.HashmapC*/HashmapC__0__Hashmap__contains(key);
+#line 14
+
+#line 14
+  return __nesc_result;
+#line 14
+}
+#line 14
+# 124 "lib/modules/NeighborDiscoveryP.nc"
+static inline void NeighborDiscoveryP__updateLink(uint8_t neighbor_id, uint16_t seq)
+#line 124
+{
+  neighborInfo_t info;
+
+  if (NeighborDiscoveryP__NeighborTable__contains(neighbor_id)) {
+      info = NeighborDiscoveryP__NeighborTable__get(neighbor_id);
+
+      if (info.last_seq >= seq) {
+          return;
+        }
+      info.link_quality = NeighborDiscoveryP__ewma(1, info.link_quality);
+    }
+  else 
+#line 134
+    {
+      info.link_quality = 1000;
+    }
+
+  info.last_seq = seq;
+
+  NeighborDiscoveryP__NeighborTable__insert(neighbor_id, info);
 }
 
 # 4 "lib/interfaces/SimpleSend.nc"
@@ -7277,14 +7516,14 @@ inline static void NeighborDiscoveryP__SimpleSend__makePack(pack *Package, uint8
 #line 5
 }
 #line 5
-# 69 "lib/modules/NeighborDiscoveryP.nc"
+# 110 "lib/modules/NeighborDiscoveryP.nc"
 static inline void NeighborDiscoveryP__reply(neigbhorDiscoveryPkt_t *incomingMsg, uint8_t from)
-#line 69
+#line 110
 {
   pack send_pkt;
   neigbhorDiscoveryPkt_t nd_pkt;
 
-#line 72
+#line 113
   memcpy(&nd_pkt, incomingMsg, sizeof(neigbhorDiscoveryPkt_t ));
 
   NeighborDiscoveryP__makeNDPkt(&nd_pkt, TOS_NODE_ID, PROTOCOL_PINGREPLY, nd_pkt.seq, nd_pkt.payload, ND_PKT_MAX_PAYLOAD_SIZE);
@@ -7292,16 +7531,13 @@ static inline void NeighborDiscoveryP__reply(neigbhorDiscoveryPkt_t *incomingMsg
   NeighborDiscoveryP__SimpleSend__send(send_pkt, from);
 }
 
-
-
-
-
+#line 143
 static inline void NeighborDiscoveryP__PacketHandler__gotNDPkt(uint8_t *incomingMsg)
-#line 83
+#line 143
 {
   neigbhorDiscoveryPkt_t nd_pkt;
 
-#line 85
+#line 145
   memcpy(&nd_pkt, (neigbhorDiscoveryPkt_t *)incomingMsg, sizeof(neigbhorDiscoveryPkt_t ));
 
   switch (nd_pkt.protocol) {
@@ -7309,7 +7545,7 @@ static inline void NeighborDiscoveryP__PacketHandler__gotNDPkt(uint8_t *incoming
         NeighborDiscoveryP__reply(&nd_pkt, nd_pkt.src);
       break;
       case PROTOCOL_PINGREPLY: 
-        NeighborDiscoveryP__updateTable();
+        NeighborDiscoveryP__updateLink(nd_pkt.src, nd_pkt.seq);
       break;
       default: 
         sim_log_debug(179U, GENERAL_CHANNEL, "Unknown protocol %d from node %d, dropping packet.\n", nd_pkt.protocol, nd_pkt.src);
@@ -7356,9 +7592,9 @@ static inline void /*NodeC.SimpleSendC.SimpleSendP*/SimpleSendP__0__PacketHandle
 {
 }
 
-# 102 "lib/modules/NeighborDiscoveryP.nc"
+# 194 "lib/modules/NeighborDiscoveryP.nc"
 static inline void NeighborDiscoveryP__PacketHandler__getReliablePkt(pack *_)
-#line 102
+#line 194
 {
 }
 
@@ -7396,9 +7632,9 @@ static inline void /*NodeC.SimpleSendC.SimpleSendP*/SimpleSendP__0__PacketHandle
     }
 }
 
-# 101 "lib/modules/NeighborDiscoveryP.nc"
+# 193 "lib/modules/NeighborDiscoveryP.nc"
 static inline void NeighborDiscoveryP__PacketHandler__getReliableAckPkt(uint8_t _)
-#line 101
+#line 193
 {
 }
 
@@ -7704,7 +7940,7 @@ static inline int SimSchedulerBasicP__sim_config_task_latency(void )
 static inline bool /*NeighborDiscoveryC.SimpleSendC.PoolC.PoolP*/PoolP__2__Pool__empty(void )
 #line 75
 {
-  sim_log_debug(183U, "PoolP", "%s size is %i\n", __FUNCTION__, (int )/*NeighborDiscoveryC.SimpleSendC.PoolC.PoolP*/PoolP__2__free[sim_node()]);
+  sim_log_debug(184U, "PoolP", "%s size is %i\n", __FUNCTION__, (int )/*NeighborDiscoveryC.SimpleSendC.PoolC.PoolP*/PoolP__2__free[sim_node()]);
   return /*NeighborDiscoveryC.SimpleSendC.PoolC.PoolP*/PoolP__2__free[sim_node()] == 0;
 }
 
@@ -7790,7 +8026,7 @@ static inline /*NeighborDiscoveryC.SimpleSendC.PoolC.PoolP*/PoolP__2__pool_t */*
       if (/*NeighborDiscoveryC.SimpleSendC.PoolC.PoolP*/PoolP__2__index[sim_node()] == 20) {
           /*NeighborDiscoveryC.SimpleSendC.PoolC.PoolP*/PoolP__2__index[sim_node()] = 0;
         }
-      sim_log_debug(185U, "PoolP", "%s size is %i\n", __FUNCTION__, (int )/*NeighborDiscoveryC.SimpleSendC.PoolC.PoolP*/PoolP__2__free[sim_node()]);
+      sim_log_debug(186U, "PoolP", "%s size is %i\n", __FUNCTION__, (int )/*NeighborDiscoveryC.SimpleSendC.PoolC.PoolP*/PoolP__2__free[sim_node()]);
       return rval;
     }
   return (void *)0;
@@ -7830,7 +8066,7 @@ static inline error_t /*NeighborDiscoveryC.SimpleSendC.QueueC*/QueueC__2__Queue_
 #line 101
 {
   if (/*NeighborDiscoveryC.SimpleSendC.QueueC*/QueueC__2__Queue__size() < /*NeighborDiscoveryC.SimpleSendC.QueueC*/QueueC__2__Queue__maxSize()) {
-      sim_log_debug(193U, "QueueC", "%s: size is %hhu\n", __FUNCTION__, /*NeighborDiscoveryC.SimpleSendC.QueueC*/QueueC__2__size[sim_node()]);
+      sim_log_debug(194U, "QueueC", "%s: size is %hhu\n", __FUNCTION__, /*NeighborDiscoveryC.SimpleSendC.QueueC*/QueueC__2__size[sim_node()]);
       /*NeighborDiscoveryC.SimpleSendC.QueueC*/QueueC__2__queue[sim_node()][/*NeighborDiscoveryC.SimpleSendC.QueueC*/QueueC__2__tail[sim_node()]] = newVal;
       /*NeighborDiscoveryC.SimpleSendC.QueueC*/QueueC__2__tail[sim_node()]++;
       if (/*NeighborDiscoveryC.SimpleSendC.QueueC*/QueueC__2__tail[sim_node()] == 20) {
@@ -8113,9 +8349,9 @@ inline static void NeighborDiscoveryP__discoverTimer__startOneShot(uint32_t dt){
 #line 73
 }
 #line 73
-# 37 "lib/modules/NeighborDiscoveryP.nc"
+# 75 "lib/modules/NeighborDiscoveryP.nc"
 static inline void NeighborDiscoveryP__NeighborDiscovery__onBoot(void )
-#line 37
+#line 75
 {
   NeighborDiscoveryP__discoverTimer__startOneShot(
   NeighborDiscoveryP__START_DELAY_LOWER + NeighborDiscoveryP__Random__rand16() % (NeighborDiscoveryP__START_DELAY_UPPER - NeighborDiscoveryP__START_DELAY_LOWER));
@@ -9097,6 +9333,178 @@ static inline void CommandHandlerP__processCommand__runTask(void )
     }
 }
 
+# 170 "dataStructures/modules/HashmapC.nc"
+static inline uint16_t /*NeighborDiscoveryC.HashmapC*/HashmapC__0__Hashmap__size(void )
+#line 170
+{
+  return /*NeighborDiscoveryC.HashmapC*/HashmapC__0__numofVals[sim_node()];
+}
+
+# 16 "dataStructures/interfaces/Hashmap.nc"
+inline static uint16_t NeighborDiscoveryP__NeighborTable__size(void ){
+#line 16
+  unsigned short __nesc_result;
+#line 16
+
+#line 16
+  __nesc_result = /*NeighborDiscoveryC.HashmapC*/HashmapC__0__Hashmap__size();
+#line 16
+
+#line 16
+  return __nesc_result;
+#line 16
+}
+#line 16
+# 166 "dataStructures/modules/HashmapC.nc"
+static inline uint32_t */*NeighborDiscoveryC.HashmapC*/HashmapC__0__Hashmap__getKeys(void )
+#line 166
+{
+  return /*NeighborDiscoveryC.HashmapC*/HashmapC__0__keys[sim_node()];
+}
+
+# 17 "dataStructures/interfaces/Hashmap.nc"
+inline static uint32_t *NeighborDiscoveryP__NeighborTable__getKeys(void ){
+#line 17
+  unsigned int *__nesc_result;
+#line 17
+
+#line 17
+  __nesc_result = /*NeighborDiscoveryC.HashmapC*/HashmapC__0__Hashmap__getKeys();
+#line 17
+
+#line 17
+  return __nesc_result;
+#line 17
+}
+#line 17
+# 174 "lib/modules/NeighborDiscoveryP.nc"
+static inline void NeighborDiscoveryP__printNeighbors(void )
+#line 174
+{
+  uint32_t i;
+  char buf[200];
+  int pos = 0;
+
+  pos += snprintf(buf + pos, sizeof buf - pos, "Neighbors of Node %d: [", TOS_NODE_ID);
+
+  for (i = 0; i < NeighborDiscoveryP__NeighborTable__size(); i++) {
+      pos += snprintf(buf + pos, sizeof buf - pos, "%d", *(NeighborDiscoveryP__NeighborTable__getKeys() + i));
+      if (i < NeighborDiscoveryP__NeighborTable__size() - 1) {
+          pos += snprintf(buf + pos, sizeof buf - pos, ", ");
+        }
+    }
+
+  snprintf(buf + pos, sizeof buf - pos, "]");
+
+  sim_log_debug(180U, NEIGHBOR_CHANNEL, "%s\n", buf);
+}
+
+# 76 "dataStructures/modules/HashmapC.nc"
+static inline void /*NeighborDiscoveryC.HashmapC*/HashmapC__0__removeFromKeyList(uint32_t k)
+#line 76
+{
+  int i;
+  int j;
+
+#line 79
+  sim_log_debug(196U, HASHMAP_CHANNEL, "Removing entry %d\n", k);
+  for (i = 0; i < /*NeighborDiscoveryC.HashmapC*/HashmapC__0__numofVals[sim_node()]; i++) {
+
+
+
+      if (/*NeighborDiscoveryC.HashmapC*/HashmapC__0__keys[sim_node()][i] == k) {
+          sim_log_debug(197U, HASHMAP_CHANNEL, "Key found at %d\n", i);
+
+
+          for (j = i; j < /*NeighborDiscoveryC.HashmapC*/HashmapC__0__HASH_MAX_SIZE[sim_node()]; j++) {
+
+              if (/*NeighborDiscoveryC.HashmapC*/HashmapC__0__keys[sim_node()][j] == /*NeighborDiscoveryC.HashmapC*/HashmapC__0__EMPTY_KEY[sim_node()]) {
+#line 90
+                break;
+                }
+#line 91
+              sim_log_debug(198U, HASHMAP_CHANNEL, "Moving %d to %d\n", j, j + 1);
+              sim_log_debug(199U, HASHMAP_CHANNEL, "Replacing %d with %d\n", /*NeighborDiscoveryC.HashmapC*/HashmapC__0__keys[sim_node()][j], /*NeighborDiscoveryC.HashmapC*/HashmapC__0__keys[sim_node()][j + 1]);
+              /*NeighborDiscoveryC.HashmapC*/HashmapC__0__keys[sim_node()][j] = /*NeighborDiscoveryC.HashmapC*/HashmapC__0__keys[sim_node()][j + 1];
+            }
+
+
+
+          /*NeighborDiscoveryC.HashmapC*/HashmapC__0__keys[sim_node()][/*NeighborDiscoveryC.HashmapC*/HashmapC__0__numofVals[sim_node()]] = /*NeighborDiscoveryC.HashmapC*/HashmapC__0__EMPTY_KEY[sim_node()];
+
+          /*NeighborDiscoveryC.HashmapC*/HashmapC__0__numofVals[sim_node()]--;
+          sim_log_debug(200U, "hashmap", "Done removing entry\n");
+          return;
+        }
+    }
+}
+
+
+
+static inline void /*NeighborDiscoveryC.HashmapC*/HashmapC__0__Hashmap__remove(uint32_t k)
+#line 109
+{
+  uint32_t i = 0;
+#line 110
+  uint32_t j = 0;
+  bool removed = 0;
+
+#line 112
+  do {
+      j = /*NeighborDiscoveryC.HashmapC*/HashmapC__0__hash(k, i);
+      if (/*NeighborDiscoveryC.HashmapC*/HashmapC__0__map[sim_node()][j].key == k) {
+          /*NeighborDiscoveryC.HashmapC*/HashmapC__0__map[sim_node()][j].key = 0;
+          removed = 1;
+          break;
+        }
+      i++;
+    }
+  while (
+#line 120
+  i < /*NeighborDiscoveryC.HashmapC*/HashmapC__0__HASH_MAX_SIZE[sim_node()]);
+  if (removed) 
+    {
+      /*NeighborDiscoveryC.HashmapC*/HashmapC__0__removeFromKeyList(k);
+    }
+}
+
+# 12 "dataStructures/interfaces/Hashmap.nc"
+inline static void NeighborDiscoveryP__NeighborTable__remove(uint32_t key){
+#line 12
+  /*NeighborDiscoveryC.HashmapC*/HashmapC__0__Hashmap__remove(key);
+#line 12
+}
+#line 12
+# 50 "lib/modules/NeighborDiscoveryP.nc"
+static inline void NeighborDiscoveryP__updateTable__runTask(void )
+#line 50
+{
+  neighborInfo_t info;
+  uint16_t i = 0;
+
+  uint16_t num_neighbors = NeighborDiscoveryP__NeighborTable__size();
+  uint32_t neighbor_list[num_neighbors];
+
+#line 56
+  memcpy(neighbor_list, NeighborDiscoveryP__NeighborTable__getKeys(), num_neighbors);
+
+  for (; i < num_neighbors; i++) {
+      if (NeighborDiscoveryP__NeighborTable__contains(neighbor_list[i])) {
+          info = NeighborDiscoveryP__NeighborTable__get(neighbor_list[i]);
+
+          if (info.last_seq < NeighborDiscoveryP__local_seq[sim_node()] - 1) {
+              info.link_quality = NeighborDiscoveryP__ewma(0, info.link_quality);
+            }
+
+          if (info.link_quality < NeighborDiscoveryP__accept_quality[sim_node()] || NeighborDiscoveryP__local_seq[sim_node()] - info.last_seq > 5) {
+              NeighborDiscoveryP__NeighborTable__remove(neighbor_list[i]);
+            }
+        }
+    }
+
+  NeighborDiscoveryP__printNeighbors();
+}
+
 # 53 "/opt/tinyos-main/tos/system/QueueC.nc"
 static inline bool /*NeighborDiscoveryC.SimpleSendC.QueueC*/QueueC__2__Queue__empty(void )
 #line 53
@@ -9135,7 +9543,7 @@ static inline error_t /*NeighborDiscoveryC.SimpleSendC.PoolC.PoolP*/PoolP__2__Po
         }
       /*NeighborDiscoveryC.SimpleSendC.PoolC.PoolP*/PoolP__2__queue[sim_node()][emptyIndex] = newVal;
       /*NeighborDiscoveryC.SimpleSendC.PoolC.PoolP*/PoolP__2__free[sim_node()]++;
-      sim_log_debug(186U, "PoolP", "%s size is %i\n", __FUNCTION__, (int )/*NeighborDiscoveryC.SimpleSendC.PoolC.PoolP*/PoolP__2__free[sim_node()]);
+      sim_log_debug(187U, "PoolP", "%s size is %i\n", __FUNCTION__, (int )/*NeighborDiscoveryC.SimpleSendC.PoolC.PoolP*/PoolP__2__free[sim_node()]);
       return SUCCESS;
     }
 }
@@ -9169,7 +9577,7 @@ static inline /*NeighborDiscoveryC.SimpleSendC.QueueC*/QueueC__2__queue_t /*Neig
   /*NeighborDiscoveryC.SimpleSendC.QueueC*/QueueC__2__queue_t t = /*NeighborDiscoveryC.SimpleSendC.QueueC*/QueueC__2__Queue__head();
 
 #line 91
-  sim_log_debug(192U, "QueueC", "%s: size is %hhu\n", __FUNCTION__, /*NeighborDiscoveryC.SimpleSendC.QueueC*/QueueC__2__size[sim_node()]);
+  sim_log_debug(193U, "QueueC", "%s: size is %hhu\n", __FUNCTION__, /*NeighborDiscoveryC.SimpleSendC.QueueC*/QueueC__2__size[sim_node()]);
   if (!/*NeighborDiscoveryC.SimpleSendC.QueueC*/QueueC__2__Queue__empty()) {
       /*NeighborDiscoveryC.SimpleSendC.QueueC*/QueueC__2__head[sim_node()]++;
       if (/*NeighborDiscoveryC.SimpleSendC.QueueC*/QueueC__2__head[sim_node()] == 20) {
@@ -9291,19 +9699,19 @@ static inline error_t /*NeighborDiscoveryC.SimpleSendC.SimpleSendP*/SimpleSendP_
 #line 167
         {
 
-          sim_log_debug(180U, GENERAL_CHANNEL, "The radio is busy, or something\n");
+          sim_log_debug(181U, GENERAL_CHANNEL, "The radio is busy, or something\n");
           return FAIL;
         }
     }
   else 
 #line 172
     {
-      sim_log_debug(181U, GENERAL_CHANNEL, "The radio is busy");
+      sim_log_debug(182U, GENERAL_CHANNEL, "The radio is busy");
       return EBUSY;
     }
 
 
-  sim_log_debug(182U, GENERAL_CHANNEL, "FAILED!?");
+  sim_log_debug(183U, GENERAL_CHANNEL, "FAILED!?");
   return FAIL;
 }
 
@@ -9419,6 +9827,12 @@ inline static void SimSchedulerBasicP__TaskBasic__runTask(uint8_t arg_0x7ffffadb
     case CommandHandlerP__processCommand:
 #line 75
       CommandHandlerP__processCommand__runTask();
+#line 75
+      break;
+#line 75
+    case NeighborDiscoveryP__updateTable:
+#line 75
+      NeighborDiscoveryP__updateTable__runTask();
 #line 75
       break;
 #line 75
@@ -10696,9 +11110,16 @@ static inline void /*NeighborDiscoveryC.SimpleSendC.SimpleSendP*/SimpleSendP__1_
   /*NeighborDiscoveryC.SimpleSendC.SimpleSendP*/SimpleSendP__1__checkReSend();
 }
 
-# 52 "lib/modules/NeighborDiscoveryP.nc"
+# 73 "/opt/tinyos-main/tos/lib/timer/Timer.nc"
+inline static void NeighborDiscoveryP__notifyTimer__startOneShot(uint32_t dt){
+#line 73
+  /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC__0__Timer__startOneShot(7U, dt);
+#line 73
+}
+#line 73
+# 89 "lib/modules/NeighborDiscoveryP.nc"
 static inline void NeighborDiscoveryP__discover(void )
-#line 52
+#line 89
 {
   pack send_pkt;
   neigbhorDiscoveryPkt_t nd_pkt;
@@ -10707,13 +11128,38 @@ static inline void NeighborDiscoveryP__discover(void )
   NeighborDiscoveryP__makeNDPkt(&nd_pkt, TOS_NODE_ID, PROTOCOL_PING, NeighborDiscoveryP__local_seq[sim_node()], (uint8_t *)content, ND_PKT_MAX_PAYLOAD_SIZE);
   NeighborDiscoveryP__SimpleSend__makePack(&send_pkt, TOS_NODE_ID, 0xFFFF, PROTOCOL_NEIGHBOR_DISCOVERY, BEST_EFFORT, (uint8_t *)&nd_pkt, PACKET_MAX_PAYLOAD_SIZE);
   NeighborDiscoveryP__SimpleSend__send(send_pkt, 0xFFFF);
+
+  NeighborDiscoveryP__notifyTimer__startOneShot(
+  NeighborDiscoveryP__NOTIFY_DELAY_LOWER + NeighborDiscoveryP__Random__rand16() % (NeighborDiscoveryP__NOTIFY_DELAY_UPPER - NeighborDiscoveryP__NOTIFY_DELAY_LOWER));
 }
 
-#line 43
+#line 81
 static inline void NeighborDiscoveryP__discoverTimer__fired(void )
-#line 43
+#line 81
 {
   NeighborDiscoveryP__discover();
+}
+
+# 67 "/opt/tinyos-main/tos/interfaces/TaskBasic.nc"
+inline static error_t NeighborDiscoveryP__updateTable__postTask(void ){
+#line 67
+  unsigned char __nesc_result;
+#line 67
+
+#line 67
+  __nesc_result = SimSchedulerBasicP__TaskBasic__postTask(NeighborDiscoveryP__updateTable);
+#line 67
+
+#line 67
+  return __nesc_result;
+#line 67
+}
+#line 67
+# 85 "lib/modules/NeighborDiscoveryP.nc"
+static inline void NeighborDiscoveryP__notifyTimer__fired(void )
+#line 85
+{
+  NeighborDiscoveryP__updateTable__postTask();
 }
 
 # 204 "/opt/tinyos-main/tos/lib/timer/VirtualizeTimerC.nc"
@@ -10765,6 +11211,12 @@ inline static void /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC__0__Timer
     case 6U:
 #line 83
       NeighborDiscoveryP__discoverTimer__fired();
+#line 83
+      break;
+#line 83
+    case 7U:
+#line 83
+      NeighborDiscoveryP__notifyTimer__fired();
 #line 83
       break;
 #line 83
@@ -12990,9 +13442,9 @@ static void SimSchedulerBasicP__sim_scheduler_submit_event(void )
     }
 }
 
-# 62 "lib/modules/NeighborDiscoveryP.nc"
+# 103 "lib/modules/NeighborDiscoveryP.nc"
 static void NeighborDiscoveryP__makeNDPkt(neigbhorDiscoveryPkt_t *Package, uint8_t src, uint8_t protocol, uint16_t seq, uint8_t *payload, uint8_t length)
-#line 62
+#line 103
 {
   Package->src = src;
   Package->protocol = protocol;
@@ -13249,18 +13701,18 @@ static void /*NeighborDiscoveryC.SimpleSendC.QueueC*/QueueC__2__printQueue(void 
   int j;
 
 #line 76
-  sim_log_debug(187U, "QueueC", "head <-");
+  sim_log_debug(188U, "QueueC", "head <-");
   for (i = /*NeighborDiscoveryC.SimpleSendC.QueueC*/QueueC__2__head[sim_node()]; i < /*NeighborDiscoveryC.SimpleSendC.QueueC*/QueueC__2__head[sim_node()] + /*NeighborDiscoveryC.SimpleSendC.QueueC*/QueueC__2__size[sim_node()]; i++) {
-      sim_log_debug_clear(188U, "QueueC", "[");
+      sim_log_debug_clear(189U, "QueueC", "[");
       for (j = 0; j < sizeof(/*NeighborDiscoveryC.SimpleSendC.QueueC*/QueueC__2__queue_t ); j++) {
           uint8_t v = ((uint8_t *)&/*NeighborDiscoveryC.SimpleSendC.QueueC*/QueueC__2__queue[sim_node()][i % 20])[j];
 
 #line 81
-          sim_log_debug_clear(189U, "QueueC", "%0.2hhx", v);
+          sim_log_debug_clear(190U, "QueueC", "%0.2hhx", v);
         }
-      sim_log_debug_clear(190U, "QueueC", "] ");
+      sim_log_debug_clear(191U, "QueueC", "] ");
     }
-  sim_log_debug_clear(191U, "QueueC", "<- tail\n");
+  sim_log_debug_clear(192U, "QueueC", "<- tail\n");
 }
 
 # 49 "lib/modules/SimpleSendP.nc"
@@ -13273,6 +13725,65 @@ static void /*NeighborDiscoveryC.SimpleSendC.SimpleSendP*/SimpleSendP__1__postSe
 
       /*NeighborDiscoveryC.SimpleSendC.SimpleSendP*/SimpleSendP__1__sendTimer__startOneShot(/*NeighborDiscoveryC.SimpleSendC.SimpleSendP*/SimpleSendP__1__Random__rand16() % 300);
     }
+}
+
+# 143 "dataStructures/modules/HashmapC.nc"
+static bool /*NeighborDiscoveryC.HashmapC*/HashmapC__0__Hashmap__contains(uint32_t k)
+#line 143
+{
+  uint32_t i = 0;
+#line 144
+  uint32_t j = 0;
+
+
+
+
+
+
+  do {
+      j = /*NeighborDiscoveryC.HashmapC*/HashmapC__0__hash(k, i);
+      if (/*NeighborDiscoveryC.HashmapC*/HashmapC__0__map[sim_node()][j].key == k) {
+        return TRUE;
+        }
+#line 155
+      i++;
+    }
+  while (
+#line 156
+  i < /*NeighborDiscoveryC.HashmapC*/HashmapC__0__HASH_MAX_SIZE[sim_node()]);
+  return FALSE;
+}
+
+#line 130
+static /*NeighborDiscoveryC.HashmapC*/HashmapC__0__t /*NeighborDiscoveryC.HashmapC*/HashmapC__0__Hashmap__get(uint32_t k)
+#line 130
+{
+  uint32_t i = 0;
+#line 131
+  uint32_t j = 0;
+
+#line 132
+  do {
+      j = /*NeighborDiscoveryC.HashmapC*/HashmapC__0__hash(k, i);
+      if (/*NeighborDiscoveryC.HashmapC*/HashmapC__0__map[sim_node()][j].key == k) {
+        return /*NeighborDiscoveryC.HashmapC*/HashmapC__0__map[sim_node()][j].value;
+        }
+#line 136
+      i++;
+    }
+  while (
+#line 137
+  i < /*NeighborDiscoveryC.HashmapC*/HashmapC__0__HASH_MAX_SIZE[sim_node()]);
+
+
+  return /*NeighborDiscoveryC.HashmapC*/HashmapC__0__map[sim_node()][0].value;
+}
+
+# 120 "lib/modules/NeighborDiscoveryP.nc"
+static uint16_t NeighborDiscoveryP__ewma(uint8_t sample, uint16_t old)
+#line 120
+{
+  return NeighborDiscoveryP__alpha[sim_node()] * sample + (10 - NeighborDiscoveryP__alpha[sim_node()] / 100) * old / 10;
 }
 
 # 110 "/opt/tinyos-main/tos/lib/tossim/sim_packet.c"
@@ -14683,6 +15194,18 @@ static int __nesc_nido_resolve(int __nesc_mote,
     *size = sizeof(NeighborDiscoveryP__local_seq[__nesc_mote]);
     return 0;
   }
+  if (!strcmp(varname, "NeighborDiscoveryP__alpha"))
+  {
+    *addr = (uintptr_t)&NeighborDiscoveryP__alpha[__nesc_mote];
+    *size = sizeof(NeighborDiscoveryP__alpha[__nesc_mote]);
+    return 0;
+  }
+  if (!strcmp(varname, "NeighborDiscoveryP__accept_quality"))
+  {
+    *addr = (uintptr_t)&NeighborDiscoveryP__accept_quality[__nesc_mote];
+    *size = sizeof(NeighborDiscoveryP__accept_quality[__nesc_mote]);
+    return 0;
+  }
 
   /* Module SimpleSendP__1 */
   if (!strcmp(varname, "/*NeighborDiscoveryC.SimpleSendC.SimpleSendP*/SimpleSendP__1__busy"))
@@ -14781,6 +15304,38 @@ static int __nesc_nido_resolve(int __nesc_mote,
   {
     *addr = (uintptr_t)&/*NeighborDiscoveryC.SimpleSendC.ReSendQueue*/ListC__1__size[__nesc_mote];
     *size = sizeof(/*NeighborDiscoveryC.SimpleSendC.ReSendQueue*/ListC__1__size[__nesc_mote]);
+    return 0;
+  }
+
+  /* Module HashmapC__0 */
+  if (!strcmp(varname, "/*NeighborDiscoveryC.HashmapC*/HashmapC__0__HASH_MAX_SIZE"))
+  {
+    *addr = (uintptr_t)&/*NeighborDiscoveryC.HashmapC*/HashmapC__0__HASH_MAX_SIZE[__nesc_mote];
+    *size = sizeof(/*NeighborDiscoveryC.HashmapC*/HashmapC__0__HASH_MAX_SIZE[__nesc_mote]);
+    return 0;
+  }
+  if (!strcmp(varname, "/*NeighborDiscoveryC.HashmapC*/HashmapC__0__EMPTY_KEY"))
+  {
+    *addr = (uintptr_t)&/*NeighborDiscoveryC.HashmapC*/HashmapC__0__EMPTY_KEY[__nesc_mote];
+    *size = sizeof(/*NeighborDiscoveryC.HashmapC*/HashmapC__0__EMPTY_KEY[__nesc_mote]);
+    return 0;
+  }
+  if (!strcmp(varname, "/*NeighborDiscoveryC.HashmapC*/HashmapC__0__map"))
+  {
+    *addr = (uintptr_t)&/*NeighborDiscoveryC.HashmapC*/HashmapC__0__map[__nesc_mote];
+    *size = sizeof(/*NeighborDiscoveryC.HashmapC*/HashmapC__0__map[__nesc_mote]);
+    return 0;
+  }
+  if (!strcmp(varname, "/*NeighborDiscoveryC.HashmapC*/HashmapC__0__keys"))
+  {
+    *addr = (uintptr_t)&/*NeighborDiscoveryC.HashmapC*/HashmapC__0__keys[__nesc_mote];
+    *size = sizeof(/*NeighborDiscoveryC.HashmapC*/HashmapC__0__keys[__nesc_mote]);
+    return 0;
+  }
+  if (!strcmp(varname, "/*NeighborDiscoveryC.HashmapC*/HashmapC__0__numofVals"))
+  {
+    *addr = (uintptr_t)&/*NeighborDiscoveryC.HashmapC*/HashmapC__0__numofVals[__nesc_mote];
+    *size = sizeof(/*NeighborDiscoveryC.HashmapC*/HashmapC__0__numofVals[__nesc_mote]);
     return 0;
   }
 
@@ -14913,6 +15468,8 @@ static void __nesc_nido_initialise(int __nesc_mote)
 
   /* Module NeighborDiscoveryP */
   NeighborDiscoveryP__local_seq[__nesc_mote] = 1;
+  NeighborDiscoveryP__alpha[__nesc_mote] = 150;
+  NeighborDiscoveryP__accept_quality[__nesc_mote] = 500;
 
   /* Module SimpleSendP__1 */
   /*NeighborDiscoveryC.SimpleSendC.SimpleSendP*/SimpleSendP__1__busy[__nesc_mote] = FALSE;
@@ -14938,5 +15495,12 @@ static void __nesc_nido_initialise(int __nesc_mote)
   /*NeighborDiscoveryC.SimpleSendC.ReSendQueue*/ListC__1__MAX_SIZE[__nesc_mote] = 20;
   memset((void *)&/*NeighborDiscoveryC.SimpleSendC.ReSendQueue*/ListC__1__container[__nesc_mote], 0, sizeof /*NeighborDiscoveryC.SimpleSendC.ReSendQueue*/ListC__1__container[__nesc_mote]);
   /*NeighborDiscoveryC.SimpleSendC.ReSendQueue*/ListC__1__size[__nesc_mote] = 0;
+
+  /* Module HashmapC__0 */
+  /*NeighborDiscoveryC.HashmapC*/HashmapC__0__HASH_MAX_SIZE[__nesc_mote] = 30;
+  /*NeighborDiscoveryC.HashmapC*/HashmapC__0__EMPTY_KEY[__nesc_mote] = 0;
+  memset((void *)&/*NeighborDiscoveryC.HashmapC*/HashmapC__0__map[__nesc_mote], 0, sizeof /*NeighborDiscoveryC.HashmapC*/HashmapC__0__map[__nesc_mote]);
+  memset((void *)&/*NeighborDiscoveryC.HashmapC*/HashmapC__0__keys[__nesc_mote], 0, sizeof /*NeighborDiscoveryC.HashmapC*/HashmapC__0__keys[__nesc_mote]);
+  memset((void *)&/*NeighborDiscoveryC.HashmapC*/HashmapC__0__numofVals[__nesc_mote], 0, sizeof /*NeighborDiscoveryC.HashmapC*/HashmapC__0__numofVals[__nesc_mote]);
 
 }
