@@ -23,17 +23,27 @@ implementation {
         START_DELAY_LOWER = 500,
         START_DELAY_UPPER = 1000,
 
-        NOTIFY_DELAY_LOWER = 2500,
-        NOTIFY_DELAY_UPPER = 2800,
+        // more aggresive version
+        // NOTIFY_DELAY_LOWER = 2500,
+        // NOTIFY_DELAY_UPPER = 2800,
+
+        // less aggresive version
+        NOTIFY_DELAY_LOWER = 28000/2,
+        NOTIFY_DELAY_UPPER = 30000/2,
 
         REDISCOVER_LOWER_BOUND = 28000,
         REDISCOVER_UPPER_BOUND = 30000,
     };
 
     uint16_t local_seq = 1;
-    uint16_t alpha = 150; // a = 0.15, mutiply 1000 to get a deciaml representation 
-    uint16_t accept_quality = 500;
-    uint16_t x = 10000; // cost = x / link_quality
+    uint16_t alpha = 125; // a = 0.15, mutiply 1000 to get a deciaml representation 
+    uint16_t good_quality = 700; // (link quality > good_quality) is good connection
+    uint16_t poor_quality = 600; // (good_quality > link quality > poor_quality) is moderate connection (will be signaled)
+                    // (link quality < poor_quality) is poor connection (will be dropped and signaled)
+
+    uint16_t accepted_consecutive_lost = 3; // more than accepted_consecutive_lost and bellow poor_quality will result a neighbor drop
+    
+    uint16_t x = 10000; // path cost = x / link_quality
 
     void discover();
 
@@ -64,10 +74,22 @@ implementation {
                     info.link_quality = ewma(0, info.link_quality);
                 }
 
-                if (info.link_quality < accept_quality || local_seq - info.last_seq > 5) {
-                    call  NeighborTable.remove(neighbor_list[i]);
-                } else {
-                    call NeighborTable.insert(neighbor_list[i], info);
+                call NeighborTable.insert(neighbor_list[i], info);
+
+                if (info.link_quality < good_quality) {
+                    if (info.link_quality > poor_quality) {
+                        signal NeighborDiscovery.neighborQualityDegraded();
+                        printf("DEGRADED: Node %d, id = %d, quality = %d, last seq = %d\n", TOS_NODE_ID, neighbor_list[i], info.link_quality, info.last_seq);
+                    } else {
+                        if (local_seq - info.last_seq < accepted_consecutive_lost + 1) {
+                            signal NeighborDiscovery.neighborQualityDegraded();
+                            printf("CAUSION: Node %d, id = %d, quality = %d, last seq = %d\n", TOS_NODE_ID, neighbor_list[i], info.link_quality, info.last_seq);
+                        } else {
+                            call NeighborTable.remove(neighbor_list[i]);
+                            signal NeighborDiscovery.neighborDrop();
+                            printf("DROP: Node %d, id = %d, quality = %d, last seq = %d\n", TOS_NODE_ID, neighbor_list[i], info.link_quality, info.last_seq);
+                        }
+                    }
                 }
             }
         }
@@ -218,7 +240,7 @@ implementation {
             }
         }
 
-        snprintf(buf + pos, sizeof(buf) - pos, "]");
+        snprintf(buf + pos, sizeof(buf) - pos, "], (seq = %d)", local_seq);
 
         dbg(NEIGHBOR_CHANNEL, "%s\n", buf);
     }

@@ -104,10 +104,15 @@ implementation{
 
    event void CommandHandler.setAppClient(){}
 
-
+   // PacketHandler events
    event void PacketHandler.getReliableAckPkt(uint8_t _) {}
    event void PacketHandler.getReliablePkt(pack* _) {}
    event void PacketHandler.gotNDPkt(uint8_t* _){}
    event void PacketHandler.gotFloodPkt(uint8_t* _){}
    event void PacketHandler.gotIpPkt(uint8_t* _){}
+
+   // NeighborDiscovery events
+   event void NeighborDiscovery.neighborDrop() {}
+
+   event void NeighborDiscovery.neighborQualityDegraded() {}
 }
