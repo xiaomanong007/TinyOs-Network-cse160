@@ -8,9 +8,10 @@ enum {
 	ND_PKT_MAX_PAYLOAD_SIZE = PACKET_MAX_PAYLOAD_SIZE - ND_PKT_HEADER_LENGTH,
 
     // tag
-    NEIGHBOR_DROP = 1,
-    LNIK_QUALITY_CHANGE = 2,
-    INACTIVE = 3,
+    INIT = 1,
+    NEIGHBOR_DROP = 2,
+    LNIK_QUALITY_CHANGE = 3,
+    INACTIVE = 4,
 };
 
 typedef struct neigbhorDiscoveryPkt{

@@ -35,10 +35,7 @@ implementation {
     void send(floodingPkt_t* fld_pkt, uint8_t flooding_src, uint8_t from);
 
     command void Flooding.flood(uint8_t dest, uint8_t protocol, uint8_t TTL, uint8_t* payload, uint8_t length) {
-        pack pkt;
         floodingPkt_t fld_pkt;
-        uint8_t i = 0;
-        floodingInfo_t info;
         makeFldPkt(&fld_pkt, TOS_NODE_ID, dest, protocol, TTL, local_seq, payload, length);
         initEntry(TOS_NODE_ID, local_seq);
 
@@ -93,9 +90,9 @@ implementation {
             if (seq_table[flooding_src - 1] == fld_pkt->seq) {
                 if (flooding_table[flooding_src - 1].neighbors[i] != 0) {
                     if (flooding_table[flooding_src - 1].neighbors[i] != from) {
+                        dbg(FLOODING_CHANNEL, "node %d -> node %d: seq = %d, fld_src = %d\n",TOS_NODE_ID, flooding_table[flooding_src - 1].neighbors[i], fld_pkt->seq, fld_pkt->src);
                         call SimpleSend.makePack(&pkt, TOS_NODE_ID, flooding_table[flooding_src - 1].neighbors[i], PROTOCOL_FLOODING, BEST_EFFORT, (uint8_t *)fld_pkt, PACKET_MAX_PAYLOAD_SIZE);
                         call SimpleSend.send(pkt, flooding_table[flooding_src - 1].neighbors[i]);
-                        printf("node %d -> node %d\n", TOS_NODE_ID, flooding_table[flooding_src - 1].neighbors[i]);
                     }
                     flooding_table[flooding_src - 1].neighbors[i] = 0;
                 }

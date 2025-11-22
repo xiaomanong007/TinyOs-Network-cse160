@@ -28,17 +28,17 @@ implementation {
         // NOTIFY_DELAY_UPPER = 2800,
 
         // less aggresive version
-        NOTIFY_DELAY_LOWER = 25000,
-        NOTIFY_DELAY_UPPER = 26000,
+        NOTIFY_DELAY_LOWER = 20000,
+        NOTIFY_DELAY_UPPER = 21000,
 
-        REDISCOVER_LOWER_BOUND = 45000,
-        REDISCOVER_UPPER_BOUND = 46000,
+        REDISCOVER_LOWER_BOUND = 39000,
+        REDISCOVER_UPPER_BOUND = 40000,
     };
 
     uint16_t local_seq = 1;
-    uint16_t alpha = 30; // a = 0.15, mutiply 1000 to get a deciaml representation 
-    uint16_t good_quality = 700; // (link quality > good_quality) is good connection
-    uint16_t poor_quality = 500; // (good_quality > link quality > poor_quality) is moderate connection (will be signaled)
+    uint16_t alpha = 40; // a = 0.15, mutiply 1000 to get a deciaml representation 
+    uint16_t good_quality = 715; // (link quality > good_quality) is good connection
+    uint16_t poor_quality = 400; // (good_quality > link quality > poor_quality) is moderate connection (will be signaled)
                     // (link quality < poor_quality) is poor connection (will be dropped and signaled)
 
     uint16_t accepted_consecutive_lost = 2; // more than accepted_consecutive_lost and bellow poor_quality will result a neighbor drop
@@ -76,23 +76,30 @@ implementation {
                     info.link_quality = ewma(0, info.link_quality);
                 }
 
-                call NeighborTable.insert(neighbor_list[i], info);
-
                 if (old_quality > good_quality && info.link_quality < good_quality) {
                     if (info.link_quality > poor_quality) {
                         dbg(NEIGHBOR_CHANNEL,"DEGRADED: Node %d, id = %d, quality = %d, last seq = %d\n", TOS_NODE_ID, neighbor_list[i], info.link_quality, info.last_seq);
+                        info.degraded = TRUE;
+                        call NeighborTable.insert(neighbor_list[i], info);
                         signal NeighborDiscovery.neighborChange(neighbor_list[i], LNIK_QUALITY_CHANGE);
+                        continue;
                     } else {
                         if (local_seq - info.last_seq < accepted_consecutive_lost + 1) {
                             dbg(NEIGHBOR_CHANNEL,"CAUSION: Node %d, id = %d quality = %d, last seq = %d\n", TOS_NODE_ID, neighbor_list[i], info.link_quality, info.last_seq);
+                            info.degraded = TRUE;
+                            call NeighborTable.insert(neighbor_list[i], info);
                             signal NeighborDiscovery.neighborChange(neighbor_list[i], LNIK_QUALITY_CHANGE);
+                            continue;
                         } else {
-                            dbg(NEIGHBOR_CHANNEL,"DROP: Node %d, id = %d quality = %d, last seq = %d\n", TOS_NODE_ID, neighbor_list[i], info.link_quality, info.last_seq);
+                            dbg(NEIGHBOR_CHANNEL,"INACTIVE: Node %d, id = %d quality = %d, last seq = %d\n", TOS_NODE_ID, neighbor_list[i], info.link_quality, info.last_seq);
                             // call NeighborTable.remove(neighbor_list[i]);
                             signal NeighborDiscovery.neighborChange(neighbor_list[i], INACTIVE);
+                            continue;
                         }
                     }
                 }
+
+                call NeighborTable.insert(neighbor_list[i], info);
             }
         }
     }
@@ -168,15 +175,20 @@ implementation {
             }
             info.link_quality = ewma(1, old_quality);
             info.last_seq = seq;
-            call NeighborTable.insert(neighbor_id, info);
 
-            if (old_quality < (good_quality+50) && info.link_quality > (good_quality+50) && old_reply_seq == seq - 1) {
+            if (old_quality < (good_quality+50) && info.link_quality > (good_quality+50) && old_reply_seq == seq - 1 && info.degraded) {
                 dbg(NEIGHBOR_CHANNEL,"IMPROVE: Node %d, id = %d, old quality = %d, new quality = %d, last seq = %d\n", TOS_NODE_ID, neighbor_id, old_quality, info.link_quality, info.last_seq);
+                info.degraded = FALSE;
+                call NeighborTable.insert(neighbor_id, info);
                 signal NeighborDiscovery.neighborChange(neighbor_id, LNIK_QUALITY_CHANGE);
+                return;
             }
+
+            call NeighborTable.insert(neighbor_id, info);
         } else {
             info.link_quality = 1000;
             info.last_seq = seq;
+            info.degraded = FALSE;
             call NeighborTable.insert(neighbor_id, info);
         }
 

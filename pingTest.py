@@ -30,14 +30,14 @@ def main():
     # s.addChannel(s.TRANSPORT_CHANNEL);
 
     # After sending a ping, simulate a little to prevent collision.
-    s.runTime(200);
-    s.neighborDMP(1);
-    s.runTime(1);
-    s.ping(1, 7, "Hello, World 1");
-    s.runTime(1);
+    s.runTime(400);
+    # s.neighborDMP(1);
+    # s.runTime(1);
+    # s.ping(1, 7, "Hello, World 1");
+    # s.runTime(1);
 
-    s.ping(10, 1, "Hi!");
-    s.runTime(3);
+    # s.ping(10, 1, "Hi!");
+    # s.runTime(3);
 
 if __name__ == '__main__':
     main()

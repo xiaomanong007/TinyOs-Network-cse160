@@ -31,7 +31,6 @@ implementation{
                 signal PacketHandler.gotNDPkt(payload);
                 break;
             case PROTOCOL_FLOODING:
-                logFLDPkt((floodingPkt_t *)payload, FLOODING_CHANNEL);
                 signal PacketHandler.gotFloodPkt(payload, incomingMsg->src);
                 break;
             case PROTOCOL_IP:

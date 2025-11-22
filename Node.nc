@@ -30,6 +30,8 @@ module Node{
    uses interface NeighborDiscovery;
 
    uses interface Flooding;
+
+   uses interface LinkStateRouting;
 }
 
 implementation{
@@ -47,6 +49,7 @@ implementation{
          dbg(GENERAL_CHANNEL, "Radio On\n");
 
          call NeighborDiscovery.onBoot();
+         call LinkStateRouting.onBoot();
       }else{
          //Retry until successful
          call AMControl.start();
@@ -106,7 +109,5 @@ implementation{
    event void NeighborDiscovery.neighborChange(uint8_t id, uint8_t tag) {}
 
    // Flooding events
-   event void Flooding.gotLSA(uint8_t* _) {
-      printf("GET LSA\n");
-   }
+   event void Flooding.gotLSA(uint8_t* _) {}
 }

@@ -39,4 +39,7 @@ implementation {
 
     components FloodingC;
     Node.Flooding -> FloodingC;
+
+    components LinkStateRoutingC;
+    Node.LinkStateRouting -> LinkStateRoutingC;
 }
