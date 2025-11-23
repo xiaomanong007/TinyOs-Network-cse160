@@ -6736,25 +6736,24 @@ static uint32_t *NeighborDiscoveryP__NeighborTable__getKeys(void );
 static bool NeighborDiscoveryP__NeighborTable__contains(uint32_t key);
 
 static uint16_t NeighborDiscoveryP__NeighborTable__size(void );
-# 47 "lib/modules/NeighborDiscoveryP.nc"
+# 46 "lib/modules/NeighborDiscoveryP.nc"
 enum NeighborDiscoveryP____nesc_unnamed4357 {
-#line 47
+#line 46
   NeighborDiscoveryP__discover = 10U
 };
-#line 47
+#line 46
 typedef int NeighborDiscoveryP____nesc_sillytask_discover[NeighborDiscoveryP__discover];
-#line 60
+#line 59
 enum NeighborDiscoveryP____nesc_unnamed4358 {
-#line 60
+#line 59
   NeighborDiscoveryP__updateTable = 11U
 };
-#line 60
+#line 59
 typedef int NeighborDiscoveryP____nesc_sillytask_updateTable[NeighborDiscoveryP__updateTable];
 #line 22
 enum NeighborDiscoveryP____nesc_unnamed4359 {
-  NeighborDiscoveryP__START_DELAY_LOWER = 500, 
-  NeighborDiscoveryP__START_DELAY_UPPER = 1000, 
-
+  NeighborDiscoveryP__START_DELAY_LOWER = 8000, 
+  NeighborDiscoveryP__START_DELAY_UPPER = 10000, 
 
 
 
@@ -6790,7 +6789,7 @@ static void NeighborDiscoveryP__printNeighbors(void );
 
 
 static inline void NeighborDiscoveryP__updateTable__runTask(void );
-#line 107
+#line 106
 static inline void NeighborDiscoveryP__NeighborDiscovery__onBoot(void );
 
 
@@ -6808,7 +6807,7 @@ static inline void NeighborDiscoveryP__notifyTimer__fired(void );
 
 
 static inline void NeighborDiscoveryP__discover__runTask(void );
-#line 143
+#line 142
 static void NeighborDiscoveryP__makeNDPkt(neigbhorDiscoveryPkt_t *Package, uint8_t src, uint8_t protocol, uint16_t seq, uint8_t *payload, uint8_t length);
 
 
@@ -6831,9 +6830,9 @@ static inline uint16_t NeighborDiscoveryP__ewma(uint8_t sample, uint16_t old);
 
 
 static inline void NeighborDiscoveryP__updateLink(uint8_t neighbor_id, uint16_t seq);
-#line 199
+#line 198
 static inline void NeighborDiscoveryP__PacketHandler__gotNDPkt(uint8_t *incomingMsg);
-#line 218
+#line 217
 static inline uint32_t *NeighborDiscoveryP__NeighborDiscovery__neighbors(void );
 
 
@@ -6864,7 +6863,7 @@ static inline uint16_t NeighborDiscoveryP__NeighborDiscovery__getLinkCost(uint8_
 
 
 static void NeighborDiscoveryP__printNeighbors(void );
-#line 272
+#line 271
 static inline void NeighborDiscoveryP__PacketHandler__getReliableAckPkt(uint8_t _);
 static inline void NeighborDiscoveryP__PacketHandler__getReliablePkt(pack *_);
 static inline void NeighborDiscoveryP__PacketHandler__gotFloodPkt(uint8_t *incomingMsg, uint8_t from);
@@ -7561,6 +7560,8 @@ static inline void LinkStateRoutingP__Flooding__gotLSA(uint8_t *_);
 
 static inline void LinkStateRoutingP__NeighborDiscovery__neighborChange(uint8_t id, uint8_t tag);
 
+
+
 static inline void LinkStateRoutingP__PacketHandler__getReliableAckPkt(uint8_t _);
 static inline void LinkStateRoutingP__PacketHandler__getReliablePkt(pack *_);
 static inline void LinkStateRoutingP__PacketHandler__gotNDPkt(uint8_t *_);
@@ -7954,9 +7955,9 @@ static inline void /*NodeC.SimpleSendC.SimpleSendP*/SimpleSendP__0__PacketHandle
 {
 }
 
-# 275 "lib/modules/NeighborDiscoveryP.nc"
+# 274 "lib/modules/NeighborDiscoveryP.nc"
 static inline void NeighborDiscoveryP__PacketHandler__gotIpPkt(uint8_t *_)
-#line 275
+#line 274
 {
 }
 
@@ -7978,9 +7979,9 @@ static inline void /*FloodingC.SimpleSendC.SimpleSendP*/SimpleSendP__2__PacketHa
 {
 }
 
-# 73 "lib/modules/LinkStateRoutingP.nc"
+# 75 "lib/modules/LinkStateRoutingP.nc"
 static inline void LinkStateRoutingP__PacketHandler__gotIpPkt(uint8_t *_)
-#line 73
+#line 75
 {
 }
 
@@ -8015,9 +8016,9 @@ static inline void /*NodeC.SimpleSendC.SimpleSendP*/SimpleSendP__0__PacketHandle
 {
 }
 
-# 274 "lib/modules/NeighborDiscoveryP.nc"
+# 273 "lib/modules/NeighborDiscoveryP.nc"
 static inline void NeighborDiscoveryP__PacketHandler__gotFloodPkt(uint8_t *incomingMsg, uint8_t from)
-#line 274
+#line 273
 {
 }
 
@@ -8098,9 +8099,9 @@ static inline void /*FloodingC.SimpleSendC.SimpleSendP*/SimpleSendP__2__PacketHa
 {
 }
 
-# 72 "lib/modules/LinkStateRoutingP.nc"
+# 74 "lib/modules/LinkStateRoutingP.nc"
 static inline void LinkStateRoutingP__PacketHandler__gotFloodPkt(uint8_t *incomingMsg, uint8_t from)
-#line 72
+#line 74
 {
 }
 
@@ -8171,9 +8172,9 @@ inline static void NeighborDiscoveryP__NeighborDiscovery__neighborChange(uint8_t
 #line 9
 }
 #line 9
-# 160 "lib/modules/NeighborDiscoveryP.nc"
+# 159 "lib/modules/NeighborDiscoveryP.nc"
 static inline uint16_t NeighborDiscoveryP__ewma(uint8_t sample, uint16_t old)
-#line 160
+#line 159
 {
   return NeighborDiscoveryP__alpha[sim_node()] * sample + (1000 - NeighborDiscoveryP__alpha[sim_node()]) * old / 1000;
 }
@@ -8208,9 +8209,9 @@ inline static bool NeighborDiscoveryP__NeighborTable__contains(uint32_t key){
 #line 14
 }
 #line 14
-# 164 "lib/modules/NeighborDiscoveryP.nc"
+# 163 "lib/modules/NeighborDiscoveryP.nc"
 static inline void NeighborDiscoveryP__updateLink(uint8_t neighbor_id, uint16_t seq)
-#line 164
+#line 163
 {
   neighborInfo_t info;
   uint16_t old_quality;
@@ -8238,7 +8239,7 @@ static inline void NeighborDiscoveryP__updateLink(uint8_t neighbor_id, uint16_t 
       NeighborDiscoveryP__NeighborTable__insert(neighbor_id, info);
     }
   else 
-#line 189
+#line 188
     {
       info.link_quality = 1000;
       info.last_seq = seq;
@@ -8269,14 +8270,14 @@ inline static void NeighborDiscoveryP__SimpleSend__makePack(pack *Package, uint8
 #line 5
 }
 #line 5
-# 150 "lib/modules/NeighborDiscoveryP.nc"
+# 149 "lib/modules/NeighborDiscoveryP.nc"
 static inline void NeighborDiscoveryP__reply(neigbhorDiscoveryPkt_t *incomingMsg, uint8_t from)
-#line 150
+#line 149
 {
   pack send_pkt;
   neigbhorDiscoveryPkt_t nd_pkt;
 
-#line 153
+#line 152
   memcpy(&nd_pkt, incomingMsg, sizeof(neigbhorDiscoveryPkt_t ));
 
   NeighborDiscoveryP__makeNDPkt(&nd_pkt, TOS_NODE_ID, PROTOCOL_PINGREPLY, nd_pkt.seq, nd_pkt.payload, ND_PKT_MAX_PAYLOAD_SIZE);
@@ -8284,13 +8285,13 @@ static inline void NeighborDiscoveryP__reply(neigbhorDiscoveryPkt_t *incomingMsg
   NeighborDiscoveryP__SimpleSend__send(send_pkt, from);
 }
 
-#line 199
+#line 198
 static inline void NeighborDiscoveryP__PacketHandler__gotNDPkt(uint8_t *incomingMsg)
-#line 199
+#line 198
 {
   neigbhorDiscoveryPkt_t nd_pkt;
 
-#line 201
+#line 200
   memcpy(&nd_pkt, (neigbhorDiscoveryPkt_t *)incomingMsg, sizeof(neigbhorDiscoveryPkt_t ));
 
   switch (nd_pkt.protocol) {
@@ -8325,9 +8326,9 @@ static inline void /*FloodingC.SimpleSendC.SimpleSendP*/SimpleSendP__2__PacketHa
 {
 }
 
-# 71 "lib/modules/LinkStateRoutingP.nc"
+# 73 "lib/modules/LinkStateRoutingP.nc"
 static inline void LinkStateRoutingP__PacketHandler__gotNDPkt(uint8_t *_)
-#line 71
+#line 73
 {
 }
 
@@ -8362,9 +8363,9 @@ static inline void /*NodeC.SimpleSendC.SimpleSendP*/SimpleSendP__0__PacketHandle
 {
 }
 
-# 273 "lib/modules/NeighborDiscoveryP.nc"
+# 272 "lib/modules/NeighborDiscoveryP.nc"
 static inline void NeighborDiscoveryP__PacketHandler__getReliablePkt(pack *_)
-#line 273
+#line 272
 {
 }
 
@@ -8386,9 +8387,9 @@ static inline void /*FloodingC.SimpleSendC.SimpleSendP*/SimpleSendP__2__PacketHa
 {
 }
 
-# 70 "lib/modules/LinkStateRoutingP.nc"
+# 72 "lib/modules/LinkStateRoutingP.nc"
 static inline void LinkStateRoutingP__PacketHandler__getReliablePkt(pack *_)
-#line 70
+#line 72
 {
 }
 
@@ -8426,9 +8427,9 @@ static inline void /*NodeC.SimpleSendC.SimpleSendP*/SimpleSendP__0__PacketHandle
     }
 }
 
-# 272 "lib/modules/NeighborDiscoveryP.nc"
+# 271 "lib/modules/NeighborDiscoveryP.nc"
 static inline void NeighborDiscoveryP__PacketHandler__getReliableAckPkt(uint8_t _)
-#line 272
+#line 271
 {
 }
 
@@ -8456,9 +8457,9 @@ static inline void /*FloodingC.SimpleSendC.SimpleSendP*/SimpleSendP__2__PacketHa
     }
 }
 
-# 69 "lib/modules/LinkStateRoutingP.nc"
+# 71 "lib/modules/LinkStateRoutingP.nc"
 static inline void LinkStateRoutingP__PacketHandler__getReliableAckPkt(uint8_t _)
-#line 69
+#line 71
 {
 }
 
@@ -9041,9 +9042,9 @@ inline static uint16_t NeighborDiscoveryP__NeighborTable__size(void ){
 #line 16
 }
 #line 16
-# 222 "lib/modules/NeighborDiscoveryP.nc"
+# 221 "lib/modules/NeighborDiscoveryP.nc"
 static inline uint16_t NeighborDiscoveryP__NeighborDiscovery__numNeighbors(void )
-#line 222
+#line 221
 {
   return NeighborDiscoveryP__NeighborTable__size();
 }
@@ -9085,9 +9086,9 @@ inline static uint32_t *NeighborDiscoveryP__NeighborTable__getKeys(void ){
 #line 17
 }
 #line 17
-# 218 "lib/modules/NeighborDiscoveryP.nc"
+# 217 "lib/modules/NeighborDiscoveryP.nc"
 static inline uint32_t *NeighborDiscoveryP__NeighborDiscovery__neighbors(void )
-#line 218
+#line 217
 {
   return NeighborDiscoveryP__NeighborTable__getKeys();
 }
@@ -9485,9 +9486,9 @@ inline static uint16_t NeighborDiscoveryP__Random__rand16(void ){
 #line 52
 }
 #line 52
-# 107 "lib/modules/NeighborDiscoveryP.nc"
+# 106 "lib/modules/NeighborDiscoveryP.nc"
 static inline void NeighborDiscoveryP__NeighborDiscovery__onBoot(void )
-#line 107
+#line 106
 {
   NeighborDiscoveryP__discoverTimer__startOneShot(
   NeighborDiscoveryP__START_DELAY_LOWER + NeighborDiscoveryP__Random__rand16() % (NeighborDiscoveryP__START_DELAY_UPPER - NeighborDiscoveryP__START_DELAY_LOWER));
@@ -10332,9 +10333,9 @@ inline static void CommandHandlerP__CommandHandler__printLinkState(void ){
 #line 6
 }
 #line 6
-# 226 "lib/modules/NeighborDiscoveryP.nc"
+# 225 "lib/modules/NeighborDiscoveryP.nc"
 static inline void NeighborDiscoveryP__NeighborDiscovery__printNeighbors(void )
-#line 226
+#line 225
 {
   NeighborDiscoveryP__printNeighbors();
 }
@@ -10551,9 +10552,9 @@ inline static void NeighborDiscoveryP__notifyTimer__startOneShot(uint32_t dt){
 #line 73
 }
 #line 73
-# 123 "lib/modules/NeighborDiscoveryP.nc"
+# 122 "lib/modules/NeighborDiscoveryP.nc"
 static inline void NeighborDiscoveryP__discover__runTask(void )
-#line 123
+#line 122
 {
   pack send_pkt;
   neigbhorDiscoveryPkt_t nd_pkt;
@@ -10573,9 +10574,9 @@ static inline void NeighborDiscoveryP__discover__runTask(void )
   NeighborDiscoveryP__REDISCOVER_LOWER_BOUND + NeighborDiscoveryP__Random__rand16() % (NeighborDiscoveryP__REDISCOVER_UPPER_BOUND - NeighborDiscoveryP__REDISCOVER_LOWER_BOUND));
 }
 
-#line 60
+#line 59
 static inline void NeighborDiscoveryP__updateTable__runTask(void )
-#line 60
+#line 59
 {
   neighborInfo_t info;
   uint16_t i = 0;
@@ -10584,7 +10585,7 @@ static inline void NeighborDiscoveryP__updateTable__runTask(void )
   uint16_t num_neighbors = NeighborDiscoveryP__NeighborTable__size();
   uint32_t neighbor_list[num_neighbors];
 
-#line 67
+#line 66
   memcpy(neighbor_list, NeighborDiscoveryP__NeighborTable__getKeys(), sizeof(uint32_t ) * num_neighbors);
 
   for (; i < num_neighbors; i++) {
@@ -10606,7 +10607,7 @@ static inline void NeighborDiscoveryP__updateTable__runTask(void )
                   continue;
                 }
               else 
-#line 86
+#line 85
                 {
                   if (NeighborDiscoveryP__local_seq[sim_node()] - info.last_seq < NeighborDiscoveryP__accepted_consecutive_lost[sim_node()] + 1) {
                       sim_log_debug(180U, NEIGHBOR_CHANNEL, "CAUSION: Node %d, id = %d quality = %d, last seq = %d\n", TOS_NODE_ID, neighbor_list[i], info.link_quality, info.last_seq);
@@ -10616,7 +10617,7 @@ static inline void NeighborDiscoveryP__updateTable__runTask(void )
                       continue;
                     }
                   else 
-#line 93
+#line 92
                     {
                       sim_log_debug(181U, NEIGHBOR_CHANNEL, "INACTIVE: Node %d, id = %d quality = %d, last seq = %d\n", TOS_NODE_ID, neighbor_list[i], info.link_quality, info.last_seq);
 
@@ -12532,16 +12533,16 @@ inline static error_t NeighborDiscoveryP__updateTable__postTask(void ){
 #line 67
 }
 #line 67
-# 113 "lib/modules/NeighborDiscoveryP.nc"
+# 112 "lib/modules/NeighborDiscoveryP.nc"
 static inline void NeighborDiscoveryP__discoverTimer__fired(void )
-#line 113
+#line 112
 {
   NeighborDiscoveryP__updateTable__postTask();
   NeighborDiscoveryP__discover__postTask();
 }
 
 static inline void NeighborDiscoveryP__notifyTimer__fired(void )
-#line 118
+#line 117
 {
 }
 
@@ -12651,19 +12652,19 @@ static inline void /*FloodingC.SimpleSendC.SimpleSendP*/SimpleSendP__2__ReSendTi
   /*FloodingC.SimpleSendC.SimpleSendP*/SimpleSendP__2__checkReSend();
 }
 
-# 230 "lib/modules/NeighborDiscoveryP.nc"
+# 229 "lib/modules/NeighborDiscoveryP.nc"
 static inline uint16_t NeighborDiscoveryP__NeighborDiscovery__getNeighborQuality(uint8_t id)
-#line 230
+#line 229
 {
   neighborInfo_t info;
 
-#line 232
+#line 231
   if (NeighborDiscoveryP__NeighborTable__contains(id)) {
       info = NeighborDiscoveryP__NeighborTable__get(id);
       return info.link_quality;
     }
   else 
-#line 235
+#line 234
     {
       return 0;
     }
@@ -12671,11 +12672,11 @@ static inline uint16_t NeighborDiscoveryP__NeighborDiscovery__getNeighborQuality
 
 
 static inline uint16_t NeighborDiscoveryP__NeighborDiscovery__getLinkCost(uint8_t id)
-#line 241
+#line 240
 {
   uint16_t link_quality = NeighborDiscoveryP__NeighborDiscovery__getNeighborQuality(id);
 
-#line 243
+#line 242
   return NeighborDiscoveryP__x[sim_node()] / link_quality;
 }
 
@@ -15089,9 +15090,9 @@ static void SimSchedulerBasicP__sim_scheduler_submit_event(void )
     }
 }
 
-# 143 "lib/modules/NeighborDiscoveryP.nc"
+# 142 "lib/modules/NeighborDiscoveryP.nc"
 static void NeighborDiscoveryP__makeNDPkt(neigbhorDiscoveryPkt_t *Package, uint8_t src, uint8_t protocol, uint16_t seq, uint8_t *payload, uint8_t length)
-#line 143
+#line 142
 {
   Package->src = src;
   Package->protocol = protocol;
@@ -16051,9 +16052,9 @@ static error_t /*CommandHandlerC.PoolC.PoolP*/PoolP__1__Pool__put(/*CommandHandl
     }
 }
 
-# 247 "lib/modules/NeighborDiscoveryP.nc"
+# 246 "lib/modules/NeighborDiscoveryP.nc"
 static void NeighborDiscoveryP__printNeighbors(void )
-#line 247
+#line 246
 {
   uint32_t i;
   char buf[200];
@@ -16063,7 +16064,7 @@ static void NeighborDiscoveryP__printNeighbors(void )
   uint16_t n = NeighborDiscoveryP__NeighborTable__size();
   uint32_t arr[n];
 
-#line 255
+#line 254
   memcpy(arr, NeighborDiscoveryP__NeighborTable__getKeys(), n * sizeof(uint32_t ));
 
   pos += snprintf(buf + pos, sizeof buf - pos, "Neighbors of Node %d: [", TOS_NODE_ID);

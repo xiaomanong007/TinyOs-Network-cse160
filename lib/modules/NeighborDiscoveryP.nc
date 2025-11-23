@@ -20,9 +20,8 @@ module NeighborDiscoveryP {
 
 implementation {
     enum {
-        START_DELAY_LOWER = 500,
-        START_DELAY_UPPER = 1000,
-
+        START_DELAY_LOWER = 8000,
+        START_DELAY_UPPER = 10000,
         // more aggresive version
         // NOTIFY_DELAY_LOWER = 2500,
         // NOTIFY_DELAY_UPPER = 2800,

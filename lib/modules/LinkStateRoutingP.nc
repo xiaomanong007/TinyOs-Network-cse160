@@ -64,7 +64,9 @@ implementation {
 
     event void Flooding.gotLSA(uint8_t* _) {}
 
-    event void NeighborDiscovery.neighborChange(uint8_t id, uint8_t tag) {}
+    event void NeighborDiscovery.neighborChange(uint8_t id, uint8_t tag) {
+
+    }
 
     event void PacketHandler.getReliableAckPkt(uint8_t _) {}
     event void PacketHandler.getReliablePkt(pack* _) {}

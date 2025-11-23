@@ -7631,11 +7631,11 @@
       <component-ref qname="CommandHandlerP"/>
       <type-int cname="int" size="I:4" alignment="I:4"></type-int>
     </enum>
-    <enum loc="60:lib/modules/NeighborDiscoveryP.nc" ref="0x7ffffa351020" defined="" scoped="" size="I:4" alignment="I:4">
+    <enum loc="59:lib/modules/NeighborDiscoveryP.nc" ref="0x7ffffa351020" defined="" scoped="" size="I:4" alignment="I:4">
       <component-ref qname="NeighborDiscoveryP"/>
       <type-int cname="int" size="I:4" alignment="I:4"></type-int>
     </enum>
-    <enum loc="47:lib/modules/NeighborDiscoveryP.nc" ref="0x7ffffa34f210" defined="" scoped="" size="I:4" alignment="I:4">
+    <enum loc="46:lib/modules/NeighborDiscoveryP.nc" ref="0x7ffffa34f210" defined="" scoped="" size="I:4" alignment="I:4">
       <component-ref qname="NeighborDiscoveryP"/>
       <type-int cname="int" size="I:4" alignment="I:4"></type-int>
     </enum>
@@ -8638,37 +8638,37 @@
         <typename><typedef-ref name="uint16_t" ref="0x7ffffb67fd20"/></typename>
       </type-int>
     </variable>
-    <variable name="poor_quality" ref="0x7ffffa3b7750" loc="40:lib/modules/NeighborDiscoveryP.nc">
+    <variable name="poor_quality" ref="0x7ffffa3b7750" loc="39:lib/modules/NeighborDiscoveryP.nc">
       <component-ref qname="NeighborDiscoveryP"/>
       <type-int cname="unsigned short" unsigned="" size="I:2" alignment="I:2">
         <typename><typedef-ref name="uint16_t" ref="0x7ffffb67fd20"/></typename>
       </type-int>
     </variable>
-    <variable name="good_quality" ref="0x7ffffa3b7250" loc="39:lib/modules/NeighborDiscoveryP.nc">
+    <variable name="good_quality" ref="0x7ffffa3b7250" loc="38:lib/modules/NeighborDiscoveryP.nc">
       <component-ref qname="NeighborDiscoveryP"/>
       <type-int cname="unsigned short" unsigned="" size="I:2" alignment="I:2">
         <typename><typedef-ref name="uint16_t" ref="0x7ffffb67fd20"/></typename>
       </type-int>
     </variable>
-    <variable name="accepted_consecutive_lost" ref="0x7ffffa3b7cf0" loc="43:lib/modules/NeighborDiscoveryP.nc">
+    <variable name="accepted_consecutive_lost" ref="0x7ffffa3b7cf0" loc="42:lib/modules/NeighborDiscoveryP.nc">
       <component-ref qname="NeighborDiscoveryP"/>
       <type-int cname="unsigned short" unsigned="" size="I:2" alignment="I:2">
         <typename><typedef-ref name="uint16_t" ref="0x7ffffb67fd20"/></typename>
       </type-int>
     </variable>
-    <variable name="local_seq" ref="0x7ffffa3b8830" loc="37:lib/modules/NeighborDiscoveryP.nc">
+    <variable name="local_seq" ref="0x7ffffa3b8830" loc="36:lib/modules/NeighborDiscoveryP.nc">
       <component-ref qname="NeighborDiscoveryP"/>
       <type-int cname="unsigned short" unsigned="" size="I:2" alignment="I:2">
         <typename><typedef-ref name="uint16_t" ref="0x7ffffb67fd20"/></typename>
       </type-int>
     </variable>
-    <variable name="x" ref="0x7ffffa3b61e0" loc="45:lib/modules/NeighborDiscoveryP.nc">
+    <variable name="x" ref="0x7ffffa3b61e0" loc="44:lib/modules/NeighborDiscoveryP.nc">
       <component-ref qname="NeighborDiscoveryP"/>
       <type-int cname="unsigned short" unsigned="" size="I:2" alignment="I:2">
         <typename><typedef-ref name="uint16_t" ref="0x7ffffb67fd20"/></typename>
       </type-int>
     </variable>
-    <variable name="alpha" ref="0x7ffffa3b8cf0" loc="38:lib/modules/NeighborDiscoveryP.nc">
+    <variable name="alpha" ref="0x7ffffa3b8cf0" loc="37:lib/modules/NeighborDiscoveryP.nc">
       <component-ref qname="NeighborDiscoveryP"/>
       <type-int cname="unsigned short" unsigned="" size="I:2" alignment="I:2">
         <typename><typedef-ref name="uint16_t" ref="0x7ffffb67fd20"/></typename>
@@ -11833,35 +11833,35 @@
       <component-ref qname="CommandHandlerP"/>
       <type-int cname="int" size="I:4" alignment="I:4"></type-int>
     </constant>
-    <constant cst="I:39000" name="REDISCOVER_LOWER_BOUND" ref="0x7ffffa3b80b0" loc="34:lib/modules/NeighborDiscoveryP.nc">
+    <constant cst="I:39000" name="REDISCOVER_LOWER_BOUND" ref="0x7ffffa3b80b0" loc="33:lib/modules/NeighborDiscoveryP.nc">
       <component-ref qname="NeighborDiscoveryP"/>
       <type-int cname="int" size="I:4" alignment="I:4"></type-int>
     </constant>
-    <constant cst="I:20000" name="NOTIFY_DELAY_LOWER" ref="0x7ffffa3b98f0" loc="31:lib/modules/NeighborDiscoveryP.nc">
+    <constant cst="I:20000" name="NOTIFY_DELAY_LOWER" ref="0x7ffffa3b98f0" loc="30:lib/modules/NeighborDiscoveryP.nc">
       <component-ref qname="NeighborDiscoveryP"/>
       <type-int cname="int" size="I:4" alignment="I:4"></type-int>
     </constant>
-    <constant cst="I:10" name="discover" ref="0x7ffffa34f020" loc="47:lib/modules/NeighborDiscoveryP.nc">
+    <constant cst="I:10" name="discover" ref="0x7ffffa34f020" loc="46:lib/modules/NeighborDiscoveryP.nc">
       <component-ref qname="NeighborDiscoveryP"/>
       <type-int cname="int" size="I:4" alignment="I:4"></type-int>
     </constant>
-    <constant cst="I:21000" name="NOTIFY_DELAY_UPPER" ref="0x7ffffa3b9c90" loc="32:lib/modules/NeighborDiscoveryP.nc">
+    <constant cst="I:21000" name="NOTIFY_DELAY_UPPER" ref="0x7ffffa3b9c90" loc="31:lib/modules/NeighborDiscoveryP.nc">
       <component-ref qname="NeighborDiscoveryP"/>
       <type-int cname="int" size="I:4" alignment="I:4"></type-int>
     </constant>
-    <constant cst="I:40000" name="REDISCOVER_UPPER_BOUND" ref="0x7ffffa3b8470" loc="35:lib/modules/NeighborDiscoveryP.nc">
+    <constant cst="I:40000" name="REDISCOVER_UPPER_BOUND" ref="0x7ffffa3b8470" loc="34:lib/modules/NeighborDiscoveryP.nc">
       <component-ref qname="NeighborDiscoveryP"/>
       <type-int cname="int" size="I:4" alignment="I:4"></type-int>
     </constant>
-    <constant cst="I:11" name="updateTable" ref="0x7ffffa3d3d90" loc="60:lib/modules/NeighborDiscoveryP.nc">
+    <constant cst="I:11" name="updateTable" ref="0x7ffffa3d3d90" loc="59:lib/modules/NeighborDiscoveryP.nc">
       <component-ref qname="NeighborDiscoveryP"/>
       <type-int cname="int" size="I:4" alignment="I:4"></type-int>
     </constant>
-    <constant cst="I:500" name="START_DELAY_LOWER" ref="0x7ffffa3b9140" loc="23:lib/modules/NeighborDiscoveryP.nc">
+    <constant cst="I:8000" name="START_DELAY_LOWER" ref="0x7ffffa3b9140" loc="23:lib/modules/NeighborDiscoveryP.nc">
       <component-ref qname="NeighborDiscoveryP"/>
       <type-int cname="int" size="I:4" alignment="I:4"></type-int>
     </constant>
-    <constant cst="I:1000" name="START_DELAY_UPPER" ref="0x7ffffa3b94d0" loc="24:lib/modules/NeighborDiscoveryP.nc">
+    <constant cst="I:10000" name="START_DELAY_UPPER" ref="0x7ffffa3b94d0" loc="24:lib/modules/NeighborDiscoveryP.nc">
       <component-ref qname="NeighborDiscoveryP"/>
       <type-int cname="int" size="I:4" alignment="I:4"></type-int>
     </constant>
@@ -13562,13 +13562,13 @@
         <type-int cname="int" size="I:4" alignment="I:4"></type-int>
       </type-array>
     </typedef>
-    <typedef name="__nesc_sillytask_updateTable" ref="0x7ffffa3513d0" loc="60:lib/modules/NeighborDiscoveryP.nc">
+    <typedef name="__nesc_sillytask_updateTable" ref="0x7ffffa3513d0" loc="59:lib/modules/NeighborDiscoveryP.nc">
       <component-ref qname="NeighborDiscoveryP"/>
       <type-array elements="I:11" size="I:44" alignment="I:4">
         <type-int cname="int" size="I:4" alignment="I:4"></type-int>
       </type-array>
     </typedef>
-    <typedef name="__nesc_sillytask_discover" ref="0x7ffffa34f5c0" loc="47:lib/modules/NeighborDiscoveryP.nc">
+    <typedef name="__nesc_sillytask_discover" ref="0x7ffffa34f5c0" loc="46:lib/modules/NeighborDiscoveryP.nc">
       <component-ref qname="NeighborDiscoveryP"/>
       <type-array elements="I:10" size="I:40" alignment="I:4">
         <type-int cname="int" size="I:4" alignment="I:4"></type-int>
