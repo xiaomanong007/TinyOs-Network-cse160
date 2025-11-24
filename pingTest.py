@@ -13,8 +13,8 @@ def main():
 
 
     # Add a noise model to all of the motes.
-    s.loadNoise("no_noise.txt");
-    # s.loadNoise("some_noise.txt");
+    # s.loadNoise("no_noise.txt");
+    s.loadNoise("some_noise.txt");
     # s.loadNoise("meyer-heavy.txt");
 
 

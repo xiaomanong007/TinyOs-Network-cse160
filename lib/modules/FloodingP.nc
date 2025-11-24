@@ -56,7 +56,7 @@ implementation {
 
         switch(fld_pkt.protocol){
             case PROTOCOL_LINKSTATE:
-                signal Flooding.gotLSA(fld_pkt.payload, from);
+                signal Flooding.gotLSA(fld_pkt.payload, fld_pkt.src);
                 break;
             case PROTOCOL_PING:
                 break;

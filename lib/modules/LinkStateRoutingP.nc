@@ -31,6 +31,7 @@ implementation {
     };
 
     uint8_t local_seq = 1;
+    bool init = FALSE;
 
     uint8_t n = 0;
 
@@ -56,6 +57,7 @@ implementation {
                 makeLSAPack(&lsa_pkt, local_seq, counter, INIT, (uint8_t*)&info, max_entries * sizeof(tuple_t));
                 call Flooding.flood(GLOBAL_SHARE, PROTOCOL_LINKSTATE, 30, (uint8_t *)&lsa_pkt, sizeof(linkStateAdPkt_t));
                 counter = 0;
+                n++;
             }
             info[counter].id = neighbors[i];
             info[counter].cost = call NeighborDiscovery.getLinkCost(neighbors[i]);
@@ -65,7 +67,10 @@ implementation {
         if (counter != 0) {
             makeLSAPack(&lsa_pkt, local_seq, counter, INIT, (uint8_t*)&info, counter * sizeof(tuple_t));
             call Flooding.flood(GLOBAL_SHARE, PROTOCOL_LINKSTATE, 30, (uint8_t *)&lsa_pkt, sizeof(linkStateAdPkt_t));
+            n++;
         }
+
+        init = TRUE;
     }
 
     command void LinkStateRouting.onBoot() {
@@ -93,13 +98,18 @@ implementation {
         memcpy(&lsa_pkt, incomingMsg, sizeof(linkStateAdPkt_t));
         memcpy(&entry, lsa_pkt.payload, 3 * sizeof(tuple_t));
         n++;
-        if (n == 22){
-            printf("Node %d get %d lsa's\n", TOS_NODE_ID, n);
-        }
+        printf("Node %d get %d lsa's, tag = %d\n", TOS_NODE_ID, n, lsa_pkt.tag);
     }
 
     event void NeighborDiscovery.neighborChange(uint8_t id, uint8_t tag) {
-
+        if (init) {
+            linkStateAdPkt_t lsa_pkt;
+            tuple_t info;
+            info.id = id;
+            info.cost = call NeighborDiscovery.getLinkCost(id);
+            makeLSAPack(&lsa_pkt, local_seq, 1, tag, (uint8_t*)&info, sizeof(tuple_t));
+            call Flooding.flood(GLOBAL_SHARE, PROTOCOL_LINKSTATE, 30, (uint8_t *)&lsa_pkt, sizeof(linkStateAdPkt_t));
+        }
     }
 
     event void PacketHandler.getReliableAckPkt(uint8_t _) {}
