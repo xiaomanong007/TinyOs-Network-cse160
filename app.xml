@@ -920,6 +920,37 @@
       </instance>
       <configuration/>
     </component>
+    <component qname="LinkStateRoutingC.GraphC" loc="1(LinkStateRoutingC.GraphC):dataStructures/modules/GraphC.nc">
+      <instance number="0">
+        <component-ref qname="GraphC"/>
+        <arguments>
+          <value cst="I:25">
+            <type-int cname="int" size="I:4" alignment="I:4"></type-int>
+          </value>
+        </arguments>
+      </instance>
+      <configuration/>
+    </component>
+    <component qname="LinkStateRoutingC.GraphC.GraphP" loc="1(LinkStateRoutingC.GraphC.GraphP):dataStructures/modules/GraphP.nc">
+      <instance number="0">
+        <component-ref qname="GraphP"/>
+        <arguments>
+          <value cst="U:">
+            <type-int cname="int" size="I:4" alignment="I:4"></type-int>
+          </value>
+        </arguments>
+      </instance>
+      <module/>
+    </component>
+    <component qname="GraphP" loc="1:dataStructures/modules/GraphP.nc" abstract="">
+      <parameters>
+        <constant name="n" ref="0x7ffffa240850" loc="1:dataStructures/modules/GraphP.nc">
+          <component-ref qname="GraphP"/>
+          <type-int cname="int" size="I:4" alignment="I:4"></type-int>
+        </constant>
+      </parameters>
+      <module/>
+    </component>
     <component qname="Atm128AlarmAsyncC" loc="23:/opt/tinyos-main/tos/chips/atm128/timer/Atm128AlarmAsyncC.nc" abstract="">
       <documentation loc="11:/opt/tinyos-main/tos/chips/atm128/timer/Atm128AlarmAsyncC.nc">
         <short>&#10; Build a 32-bit alarm and counter from the atmega128's 8-bit timer 0&#10; in asynchronous mode.</short>
@@ -932,6 +963,15 @@
         </typedef>
         <constant name="divider" ref="0x7ffffa7a8330" loc="23:/opt/tinyos-main/tos/chips/atm128/timer/Atm128AlarmAsyncC.nc">
           <component-ref qname="Atm128AlarmAsyncC"/>
+          <type-int cname="int" size="I:4" alignment="I:4"></type-int>
+        </constant>
+      </parameters>
+      <configuration/>
+    </component>
+    <component qname="GraphC" loc="1:dataStructures/modules/GraphC.nc" abstract="">
+      <parameters>
+        <constant name="n" ref="0x7ffffa2448e0" loc="1:dataStructures/modules/GraphC.nc">
+          <component-ref qname="GraphC"/>
           <type-int cname="int" size="I:4" alignment="I:4"></type-int>
         </constant>
       </parameters>
@@ -3069,6 +3109,168 @@
           </function-parameters>
         </type-function>
         <parameters>
+        </parameters>
+      </function>
+    </interfacedef>
+    <interfacedef qname="Graph" loc="1:dataStructures/interfaces/Graph.nc">
+      <function command="" provided="0" name="removeEdge" ref="0x7ffffa295c90" loc="4:dataStructures/interfaces/Graph.nc">
+        <interfacedef-ref qname="Graph"/>
+        <type-function size="I:1" alignment="I:1">
+          <type-void size="I:1" alignment="I:1"></type-void>
+          <function-parameters>
+            <type-int cname="unsigned short" unsigned="" size="I:2" alignment="I:2">
+              <typename><typedef-ref name="uint16_t" ref="0x7ffffb67fd20"/></typename>
+            </type-int>
+            <type-int cname="unsigned short" unsigned="" size="I:2" alignment="I:2">
+              <typename><typedef-ref name="uint16_t" ref="0x7ffffb67fd20"/></typename>
+            </type-int>
+          </function-parameters>
+        </type-function>
+        <parameters>
+          <variable name="i" ref="0x7ffffa2956d0" loc="4:dataStructures/interfaces/Graph.nc">
+            <type-int cname="unsigned short" unsigned="" size="I:2" alignment="I:2">
+              <typename><typedef-ref name="uint16_t" ref="0x7ffffb67fd20"/></typename>
+            </type-int>
+          </variable>
+          <variable name="j" ref="0x7ffffa295a00" loc="4:dataStructures/interfaces/Graph.nc">
+            <type-int cname="unsigned short" unsigned="" size="I:2" alignment="I:2">
+              <typename><typedef-ref name="uint16_t" ref="0x7ffffb67fd20"/></typename>
+            </type-int>
+          </variable>
+        </parameters>
+      </function>
+      <function command="" provided="0" name="isEmpty" ref="0x7ffffa2929d0" loc="7:dataStructures/interfaces/Graph.nc">
+        <interfacedef-ref qname="Graph"/>
+        <type-function size="I:1" alignment="I:1">
+          <type-int cname="unsigned char" unsigned="" size="I:1" alignment="I:1">
+            <typename><typedef-ref name="bool" ref="0x7ffffb124020"/></typename>
+          </type-int>
+          <function-parameters>
+          </function-parameters>
+        </type-function>
+        <parameters>
+        </parameters>
+      </function>
+      <function command="" provided="0" name="remove" ref="0x7ffffa295020" loc="3:dataStructures/interfaces/Graph.nc">
+        <interfacedef-ref qname="Graph"/>
+        <type-function size="I:1" alignment="I:1">
+          <type-void size="I:1" alignment="I:1"></type-void>
+          <function-parameters>
+            <type-int cname="unsigned short" unsigned="" size="I:2" alignment="I:2">
+              <typename><typedef-ref name="uint16_t" ref="0x7ffffb67fd20"/></typename>
+            </type-int>
+          </function-parameters>
+        </type-function>
+        <parameters>
+          <variable name="i" ref="0x7ffffa296c90" loc="3:dataStructures/interfaces/Graph.nc">
+            <type-int cname="unsigned short" unsigned="" size="I:2" alignment="I:2">
+              <typename><typedef-ref name="uint16_t" ref="0x7ffffb67fd20"/></typename>
+            </type-int>
+          </variable>
+        </parameters>
+      </function>
+      <function command="" provided="0" name="num_nodes" ref="0x7ffffa291120" loc="8:dataStructures/interfaces/Graph.nc">
+        <interfacedef-ref qname="Graph"/>
+        <type-function size="I:1" alignment="I:1">
+          <type-int cname="unsigned short" unsigned="" size="I:2" alignment="I:2">
+            <typename><typedef-ref name="uint16_t" ref="0x7ffffb67fd20"/></typename>
+          </type-int>
+          <function-parameters>
+          </function-parameters>
+        </type-function>
+        <parameters>
+        </parameters>
+      </function>
+      <function command="" provided="0" name="insert" ref="0x7ffffa296610" loc="2:dataStructures/interfaces/Graph.nc">
+        <interfacedef-ref qname="Graph"/>
+        <type-function size="I:1" alignment="I:1">
+          <type-void size="I:1" alignment="I:1"></type-void>
+          <function-parameters>
+            <type-int cname="unsigned short" unsigned="" size="I:2" alignment="I:2">
+              <typename><typedef-ref name="uint16_t" ref="0x7ffffb67fd20"/></typename>
+            </type-int>
+            <type-int cname="unsigned short" unsigned="" size="I:2" alignment="I:2">
+              <typename><typedef-ref name="uint16_t" ref="0x7ffffb67fd20"/></typename>
+            </type-int>
+            <type-int cname="unsigned short" unsigned="" size="I:2" alignment="I:2">
+              <typename><typedef-ref name="uint16_t" ref="0x7ffffb67fd20"/></typename>
+            </type-int>
+          </function-parameters>
+        </type-function>
+        <parameters>
+          <variable name="i" ref="0x7ffffa299c20" loc="2:dataStructures/interfaces/Graph.nc">
+            <type-int cname="unsigned short" unsigned="" size="I:2" alignment="I:2">
+              <typename><typedef-ref name="uint16_t" ref="0x7ffffb67fd20"/></typename>
+            </type-int>
+          </variable>
+          <variable name="j" ref="0x7ffffa296020" loc="2:dataStructures/interfaces/Graph.nc">
+            <type-int cname="unsigned short" unsigned="" size="I:2" alignment="I:2">
+              <typename><typedef-ref name="uint16_t" ref="0x7ffffb67fd20"/></typename>
+            </type-int>
+          </variable>
+          <variable name="cost" ref="0x7ffffa296370" loc="2:dataStructures/interfaces/Graph.nc">
+            <type-int cname="unsigned short" unsigned="" size="I:2" alignment="I:2">
+              <typename><typedef-ref name="uint16_t" ref="0x7ffffb67fd20"/></typename>
+            </type-int>
+          </variable>
+        </parameters>
+      </function>
+      <function command="" provided="0" name="printGraph" ref="0x7ffffa291800" loc="9:dataStructures/interfaces/Graph.nc">
+        <interfacedef-ref qname="Graph"/>
+        <type-function size="I:1" alignment="I:1">
+          <type-void size="I:1" alignment="I:1"></type-void>
+          <function-parameters>
+          </function-parameters>
+        </type-function>
+        <parameters>
+        </parameters>
+      </function>
+      <function command="" provided="0" name="cost" ref="0x7ffffa294940" loc="5:dataStructures/interfaces/Graph.nc">
+        <interfacedef-ref qname="Graph"/>
+        <type-function size="I:1" alignment="I:1">
+          <type-int cname="unsigned short" unsigned="" size="I:2" alignment="I:2">
+            <typename><typedef-ref name="uint16_t" ref="0x7ffffb67fd20"/></typename>
+          </type-int>
+          <function-parameters>
+            <type-int cname="unsigned short" unsigned="" size="I:2" alignment="I:2">
+              <typename><typedef-ref name="uint16_t" ref="0x7ffffb67fd20"/></typename>
+            </type-int>
+            <type-int cname="unsigned short" unsigned="" size="I:2" alignment="I:2">
+              <typename><typedef-ref name="uint16_t" ref="0x7ffffb67fd20"/></typename>
+            </type-int>
+          </function-parameters>
+        </type-function>
+        <parameters>
+          <variable name="i" ref="0x7ffffa294380" loc="5:dataStructures/interfaces/Graph.nc">
+            <type-int cname="unsigned short" unsigned="" size="I:2" alignment="I:2">
+              <typename><typedef-ref name="uint16_t" ref="0x7ffffb67fd20"/></typename>
+            </type-int>
+          </variable>
+          <variable name="j" ref="0x7ffffa2946b0" loc="5:dataStructures/interfaces/Graph.nc">
+            <type-int cname="unsigned short" unsigned="" size="I:2" alignment="I:2">
+              <typename><typedef-ref name="uint16_t" ref="0x7ffffb67fd20"/></typename>
+            </type-int>
+          </variable>
+        </parameters>
+      </function>
+      <function command="" provided="0" name="contains" ref="0x7ffffa2922e0" loc="6:dataStructures/interfaces/Graph.nc">
+        <interfacedef-ref qname="Graph"/>
+        <type-function size="I:1" alignment="I:1">
+          <type-int cname="unsigned char" unsigned="" size="I:1" alignment="I:1">
+            <typename><typedef-ref name="bool" ref="0x7ffffb124020"/></typename>
+          </type-int>
+          <function-parameters>
+            <type-int cname="unsigned short" unsigned="" size="I:2" alignment="I:2">
+              <typename><typedef-ref name="uint16_t" ref="0x7ffffb67fd20"/></typename>
+            </type-int>
+          </function-parameters>
+        </type-function>
+        <parameters>
+          <variable name="i" ref="0x7ffffa292060" loc="6:dataStructures/interfaces/Graph.nc">
+            <type-int cname="unsigned short" unsigned="" size="I:2" alignment="I:2">
+              <typename><typedef-ref name="uint16_t" ref="0x7ffffb67fd20"/></typename>
+            </type-int>
+          </variable>
         </parameters>
       </function>
     </interfacedef>
@@ -7666,7 +7868,7 @@
       <component-ref qname="FloodingP"/>
       <type-int cname="int" size="I:4" alignment="I:4"></type-int>
     </enum>
-    <enum loc="21:lib/modules/LinkStateRoutingP.nc" ref="0x7ffffa299660" defined="" scoped="" size="I:4" alignment="I:4">
+    <enum loc="22:lib/modules/LinkStateRoutingP.nc" ref="0x7ffffa298e20" defined="" scoped="" size="I:4" alignment="I:4">
       <component-ref qname="LinkStateRoutingP"/>
       <type-int cname="int" size="I:4" alignment="I:4"></type-int>
     </enum>
@@ -8738,23 +8940,41 @@
         </type-int>
       </type-array>
     </variable>
-    <variable name="init" ref="0x7ffffa297170" loc="34:lib/modules/LinkStateRoutingP.nc">
+    <variable name="init" ref="0x7ffffa290c50" loc="31:lib/modules/LinkStateRoutingP.nc">
       <component-ref qname="LinkStateRoutingP"/>
       <type-int cname="unsigned char" unsigned="" size="I:1" alignment="I:1">
         <typename><typedef-ref name="bool" ref="0x7ffffb124020"/></typename>
       </type-int>
     </variable>
-    <variable name="local_seq" ref="0x7ffffa298cb0" loc="33:lib/modules/LinkStateRoutingP.nc">
+    <variable name="local_seq" ref="0x7ffffa2907d0" loc="30:lib/modules/LinkStateRoutingP.nc">
       <component-ref qname="LinkStateRoutingP"/>
       <type-int cname="unsigned char" unsigned="" size="I:1" alignment="I:1">
         <typename><typedef-ref name="uint8_t" ref="0x7ffffb67f920"/></typename>
       </type-int>
     </variable>
-    <variable name="n" ref="0x7ffffa2975f0" loc="36:lib/modules/LinkStateRoutingP.nc">
-      <component-ref qname="LinkStateRoutingP"/>
-      <type-int cname="unsigned char" unsigned="" size="I:1" alignment="I:1">
-        <typename><typedef-ref name="uint8_t" ref="0x7ffffb67f920"/></typename>
+    <variable name="adjacency_matrix" ref="0x7ffffa23cb90" loc="9:dataStructures/modules/GraphP.nc">
+      <component-ref qname="GraphP"/>
+      <type-array elements="U:" size="U:" alignment="I:2">
+        <type-array elements="U:" size="U:" alignment="I:2">
+          <type-int cname="unsigned short" unsigned="" size="I:2" alignment="I:2">
+            <typename><typedef-ref name="uint16_t" ref="0x7ffffb67fd20"/></typename>
+          </type-int>
+        </type-array>
+      </type-array>
+    </variable>
+    <variable name="total_nodes" ref="0x7ffffa23c1e0" loc="7:dataStructures/modules/GraphP.nc">
+      <component-ref qname="GraphP"/>
+      <type-int cname="unsigned short" unsigned="" size="I:2" alignment="I:2">
+        <typename><typedef-ref name="uint16_t" ref="0x7ffffb67fd20"/></typename>
       </type-int>
+    </variable>
+    <variable name="node_arr" ref="0x7ffffa23b270" loc="11:dataStructures/modules/GraphP.nc">
+      <component-ref qname="GraphP"/>
+      <type-array elements="U:" size="U:" alignment="I:1">
+        <type-int cname="unsigned char" unsigned="" size="I:1" alignment="I:1">
+          <typename><typedef-ref name="bool" ref="0x7ffffb124020"/></typename>
+        </type-int>
+      </type-array>
     </variable>
   </variables>
   <constants>
@@ -11898,19 +12118,19 @@
       <component-ref qname="FloodingP"/>
       <type-int cname="int" size="I:4" alignment="I:4"></type-int>
     </constant>
-    <constant cst="I:90000" name="CONSTRUCT_R_TABLE_UPPER" ref="0x7ffffa298900" loc="30:lib/modules/LinkStateRoutingP.nc">
+    <constant cst="I:900000" name="CONSTRUCT_R_TABLE_UPPER" ref="0x7ffffa290420" loc="27:lib/modules/LinkStateRoutingP.nc">
       <component-ref qname="LinkStateRoutingP"/>
       <type-int cname="int" size="I:4" alignment="I:4"></type-int>
     </constant>
-    <constant cst="I:885000" name="START_DELAY_LOWER" ref="0x7ffffa299b80" loc="25:lib/modules/LinkStateRoutingP.nc">
+    <constant cst="I:590000" name="START_DELAY_LOWER" ref="0x7ffffa2973b0" loc="23:lib/modules/LinkStateRoutingP.nc">
       <component-ref qname="LinkStateRoutingP"/>
       <type-int cname="int" size="I:4" alignment="I:4"></type-int>
     </constant>
-    <constant cst="I:85000" name="CONSTRUCT_R_TABLE_LOWER" ref="0x7ffffa298530" loc="29:lib/modules/LinkStateRoutingP.nc">
+    <constant cst="I:885000" name="CONSTRUCT_R_TABLE_LOWER" ref="0x7ffffa297e70" loc="26:lib/modules/LinkStateRoutingP.nc">
       <component-ref qname="LinkStateRoutingP"/>
       <type-int cname="int" size="I:4" alignment="I:4"></type-int>
     </constant>
-    <constant cst="I:900000" name="START_DELAY_UPPER" ref="0x7ffffa298140" loc="26:lib/modules/LinkStateRoutingP.nc">
+    <constant cst="I:600000" name="START_DELAY_UPPER" ref="0x7ffffa2978f0" loc="24:lib/modules/LinkStateRoutingP.nc">
       <component-ref qname="LinkStateRoutingP"/>
       <type-int cname="int" size="I:4" alignment="I:4"></type-int>
     </constant>

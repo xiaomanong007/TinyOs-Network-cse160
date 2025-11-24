@@ -23,4 +23,7 @@ implementation {
 
     components new TimerMilliC() as DijstraTimer;
     LinkStateRoutingP.DijstraTimer -> DijstraTimer;
+
+    components new GraphC(25);
+    LinkStateRoutingP.Graph -> GraphC;
 }

@@ -14,33 +14,25 @@ module LinkStateRoutingP {
         interface Random;
         interface Timer<TMilli> as ShareTimer;
         interface Timer<TMilli> as DijstraTimer;
+        interface Graph;
     }
 }
 
 implementation {
     enum {
-        // Each cylce should take approximately 60 to complete all sharings, 100 second to construct a table
+        START_DELAY_LOWER = 295000 * 2,
+        START_DELAY_UPPER = 300000 * 2,
 
-        // Start Timer = 180 - 185 second
-        START_DELAY_LOWER = 295000 * 3,
-        START_DELAY_UPPER = 300000 * 3,
-
-        // Construct Routing Table = 85 - 90 second
-        CONSTRUCT_R_TABLE_LOWER = 85000,
-        CONSTRUCT_R_TABLE_UPPER = 90000,
+        CONSTRUCT_R_TABLE_LOWER = 295000 * 3,
+        CONSTRUCT_R_TABLE_UPPER = 300000 * 3,
     };
 
     uint8_t local_seq = 1;
     bool init = FALSE;
 
-    uint8_t n = 0;
-
-    void makeLSAPack(linkStateAdPkt_t *Package, uint8_t seq, uint8_t num_entries, uint8_t tag, uint8_t* payload, uint8_t length) {
-        Package->seq = seq;
-        Package->num_entries = num_entries;
-        Package->tag = tag;
-        memcpy(Package->payload, payload, length);
-    }
+    void updateGraph(tuple_t* info, uint8_t src, uint8_t num_entries, uint8_t tag);
+    
+    void makeLSAPack(linkStateAdPkt_t *Package, uint8_t seq, uint8_t num_entries, uint8_t tag, uint8_t* payload, uint8_t length);
 
     void initShare() {
         uint16_t i = 0;
@@ -57,17 +49,17 @@ implementation {
                 makeLSAPack(&lsa_pkt, local_seq, counter, INIT, (uint8_t*)&info, max_entries * sizeof(tuple_t));
                 call Flooding.flood(GLOBAL_SHARE, PROTOCOL_LINKSTATE, 30, (uint8_t *)&lsa_pkt, sizeof(linkStateAdPkt_t));
                 counter = 0;
-                n++;
             }
+
             info[counter].id = neighbors[i];
             info[counter].cost = call NeighborDiscovery.getLinkCost(neighbors[i]);
+            call Graph.insert(TOS_NODE_ID, info[counter].id, info[counter].cost);
             counter++;
         }
 
         if (counter != 0) {
             makeLSAPack(&lsa_pkt, local_seq, counter, INIT, (uint8_t*)&info, counter * sizeof(tuple_t));
             call Flooding.flood(GLOBAL_SHARE, PROTOCOL_LINKSTATE, 30, (uint8_t *)&lsa_pkt, sizeof(linkStateAdPkt_t));
-            n++;
         }
 
         init = TRUE;
@@ -77,19 +69,27 @@ implementation {
         call ShareTimer.startOneShot(
             START_DELAY_LOWER + (call Random.rand32() % (START_DELAY_UPPER - START_DELAY_LOWER))
         );
+
+        call DijstraTimer.startOneShot(
+            CONSTRUCT_R_TABLE_LOWER + (call Random.rand32() % (CONSTRUCT_R_TABLE_UPPER - CONSTRUCT_R_TABLE_LOWER))
+        );
     }
+
+    event void ShareTimer.fired() {
+        initShare();
+    }
+    
+    event void DijstraTimer.fired() {
+        call Graph.printGraph();
+    }
+
 
     command uint8_t LinkStateRouting.nextHop(uint8_t dest) {}
 
     command uint16_t LinkStateRouting.pathCost(uint8_t dest) {}
 
     command void LinkStateRouting.printRoutingTable() {}
-
-    event void ShareTimer.fired() {
-        initShare();
-    }
     
-    event void DijstraTimer.fired() {}
 
     event void Flooding.gotLSA(uint8_t* incomingMsg, uint8_t from) {
         uint8_t i = 0;
@@ -97,8 +97,22 @@ implementation {
         tuple_t entry[3];
         memcpy(&lsa_pkt, incomingMsg, sizeof(linkStateAdPkt_t));
         memcpy(&entry, lsa_pkt.payload, 3 * sizeof(tuple_t));
-        n++;
-        printf("Node %d get %d lsa's, tag = %d\n", TOS_NODE_ID, n, lsa_pkt.tag);
+
+        switch(lsa_pkt.tag) {
+            case INIT:
+                for (; i < lsa_pkt.num_entries; i++) {
+                    call Graph.insert(from, entry[i].id, entry[i].cost);
+                }
+                break;
+            case LNIK_QUALITY_CHANGE:
+                call Graph.insert(from, entry[i].id, entry[i].cost);
+                break;
+            case INACTIVE:
+                call Graph.removeEdge(from, entry[i].id);
+                break;
+            default:
+                return;
+        }
     }
 
     event void NeighborDiscovery.neighborChange(uint8_t id, uint8_t tag) {
@@ -110,6 +124,15 @@ implementation {
             makeLSAPack(&lsa_pkt, local_seq, 1, tag, (uint8_t*)&info, sizeof(tuple_t));
             call Flooding.flood(GLOBAL_SHARE, PROTOCOL_LINKSTATE, 30, (uint8_t *)&lsa_pkt, sizeof(linkStateAdPkt_t));
         }
+    }
+
+    void updateGraph(tuple_t* info, uint8_t src, uint8_t num_entries, uint8_t tag) {}
+
+    void makeLSAPack(linkStateAdPkt_t *Package, uint8_t seq, uint8_t num_entries, uint8_t tag, uint8_t* payload, uint8_t length) {
+        Package->seq = seq;
+        Package->num_entries = num_entries;
+        Package->tag = tag;
+        memcpy(Package->payload, payload, length);
     }
 
     event void PacketHandler.getReliableAckPkt(uint8_t _) {}
