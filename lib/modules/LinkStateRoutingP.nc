@@ -29,6 +29,8 @@ implementation {
 
         CONSTRUCT_R_TABLE_LOWER = 295000 * 3,
         CONSTRUCT_R_TABLE_UPPER = 300000 * 3,
+
+        DIJSTRA = 30000,
     };
 
     uint8_t local_seq = 1;
@@ -41,7 +43,7 @@ implementation {
     void printRoutingTable();
 
     void determineRunDijstra(); //  if there is a change in the Graph, first chech if a DijstraTimer is running; 
-                                //  if not, wait 4s to runing Dijstra; otherwise, stop the current one and wait 4s to runing Dijstra
+                                //  if not, wait 10s to runing Dijstra; otherwise, stop the current one and wait 30s to runing Dijstra
     
     void makeLSAPack(linkStateAdPkt_t *Package, uint8_t seq, uint8_t num_entries, uint8_t tag, uint8_t* payload, uint8_t length);
 
@@ -107,7 +109,7 @@ implementation {
                 call DijstraTimer.stop();
             }
             call DijstraTimer.startOneShot(
-                4000 + (call Random.rand16() % (5000 - 4000))
+                DIJSTRA
             );
         }
 
@@ -255,9 +257,8 @@ implementation {
                 call RoutingTable.insert(i+1, routeInfo);
             }
         }
-
         k++;
-        printf("Node %d: run dj = %d\n", TOS_NODE_ID, k);
+        printf("Node %d run dj %d times\n", TOS_NODE_ID, k);
         // printRoutingTable();
         hasTabel = TRUE;
     }

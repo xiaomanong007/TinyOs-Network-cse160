@@ -7951,7 +7951,7 @@
       <component-ref qname="FloodingP"/>
       <type-int cname="int" size="I:4" alignment="I:4"></type-int>
     </enum>
-    <enum loc="39:lib/modules/LinkStateRoutingP.nc" ref="0x7ffffa21b5b0" defined="" scoped="" size="I:4" alignment="I:4">
+    <enum loc="41:lib/modules/LinkStateRoutingP.nc" ref="0x7ffffa21b420" defined="" scoped="" size="I:4" alignment="I:4">
       <component-ref qname="LinkStateRoutingP"/>
       <type-int cname="int" size="I:4" alignment="I:4"></type-int>
     </enum>
@@ -9033,25 +9033,25 @@
         </type-int>
       </type-array>
     </variable>
-    <variable name="hasTabel" ref="0x7ffffa284e20" loc="36:lib/modules/LinkStateRoutingP.nc">
+    <variable name="hasTabel" ref="0x7ffffa283170" loc="38:lib/modules/LinkStateRoutingP.nc">
       <component-ref qname="LinkStateRoutingP"/>
       <type-int cname="unsigned char" unsigned="" size="I:1" alignment="I:1">
         <typename><typedef-ref name="bool" ref="0x7ffffb124020"/></typename>
       </type-int>
     </variable>
-    <variable name="init" ref="0x7ffffa284970" loc="35:lib/modules/LinkStateRoutingP.nc">
+    <variable name="init" ref="0x7ffffa284ca0" loc="37:lib/modules/LinkStateRoutingP.nc">
       <component-ref qname="LinkStateRoutingP"/>
       <type-int cname="unsigned char" unsigned="" size="I:1" alignment="I:1">
         <typename><typedef-ref name="bool" ref="0x7ffffb124020"/></typename>
       </type-int>
     </variable>
-    <variable name="local_seq" ref="0x7ffffa2844f0" loc="34:lib/modules/LinkStateRoutingP.nc">
+    <variable name="local_seq" ref="0x7ffffa284820" loc="36:lib/modules/LinkStateRoutingP.nc">
       <component-ref qname="LinkStateRoutingP"/>
       <type-int cname="unsigned char" unsigned="" size="I:1" alignment="I:1">
         <typename><typedef-ref name="uint8_t" ref="0x7ffffb67f920"/></typename>
       </type-int>
     </variable>
-    <variable name="k" ref="0x7ffffa2832e0" loc="37:lib/modules/LinkStateRoutingP.nc">
+    <variable name="k" ref="0x7ffffa283600" loc="39:lib/modules/LinkStateRoutingP.nc">
       <component-ref qname="LinkStateRoutingP"/>
       <type-int cname="unsigned short" unsigned="" size="I:2" alignment="I:2">
         <typename><typedef-ref name="uint16_t" ref="0x7ffffb67fd20"/></typename>
@@ -12226,11 +12226,15 @@
       <component-ref qname="FloodingP"/>
       <type-int cname="int" size="I:4" alignment="I:4"></type-int>
     </constant>
+    <constant cst="I:30000" name="DIJSTRA" ref="0x7ffffa284470" loc="33:lib/modules/LinkStateRoutingP.nc">
+      <component-ref qname="LinkStateRoutingP"/>
+      <type-int cname="int" size="I:4" alignment="I:4"></type-int>
+    </constant>
     <constant cst="I:900000" name="CONSTRUCT_R_TABLE_UPPER" ref="0x7ffffa284140" loc="31:lib/modules/LinkStateRoutingP.nc">
       <component-ref qname="LinkStateRoutingP"/>
       <type-int cname="int" size="I:4" alignment="I:4"></type-int>
     </constant>
-    <constant cst="I:14" name="DijstraTask" ref="0x7ffffa21b3c0" loc="39:lib/modules/LinkStateRoutingP.nc">
+    <constant cst="I:14" name="DijstraTask" ref="0x7ffffa21b230" loc="41:lib/modules/LinkStateRoutingP.nc">
       <component-ref qname="LinkStateRoutingP"/>
       <type-int cname="int" size="I:4" alignment="I:4"></type-int>
     </constant>
@@ -13946,7 +13950,7 @@
         <typename><typedef-ref name="hashmapEntry" scoped="" ref="0x7ffffa330cc0"/></typename>
       </type-tag>
     </typedef>
-    <typedef name="__nesc_sillytask_DijstraTask" ref="0x7ffffa21b960" loc="39:lib/modules/LinkStateRoutingP.nc">
+    <typedef name="__nesc_sillytask_DijstraTask" ref="0x7ffffa21b7d0" loc="41:lib/modules/LinkStateRoutingP.nc">
       <component-ref qname="LinkStateRoutingP"/>
       <type-array elements="I:14" size="I:56" alignment="I:4">
         <type-int cname="int" size="I:4" alignment="I:4"></type-int>

@@ -7594,9 +7594,7 @@ static uint16_t LinkStateRoutingP__Graph__cost(uint16_t i, uint16_t j);
 
 
 static uint16_t LinkStateRoutingP__Graph__num_nodes(void );
-# 52 "/opt/tinyos-main/tos/interfaces/Random.nc"
-static uint16_t LinkStateRoutingP__Random__rand16(void );
-#line 46
+# 46 "/opt/tinyos-main/tos/interfaces/Random.nc"
 static uint32_t LinkStateRoutingP__Random__rand32(void );
 # 11 "dataStructures/interfaces/Hashmap.nc"
 static void LinkStateRoutingP__RoutingTable__insert(uint32_t key, LinkStateRoutingP__RoutingTable__t input);
@@ -7623,12 +7621,12 @@ static void LinkStateRoutingP__DijstraTimer__startOneShot(uint32_t dt);
 static void LinkStateRoutingP__DijstraTimer__stop(void );
 #line 73
 static void LinkStateRoutingP__ShareTimer__startOneShot(uint32_t dt);
-# 39 "lib/modules/LinkStateRoutingP.nc"
+# 41 "lib/modules/LinkStateRoutingP.nc"
 enum LinkStateRoutingP____nesc_unnamed4364 {
-#line 39
+#line 41
   LinkStateRoutingP__DijstraTask = 14U
 };
-#line 39
+#line 41
 typedef int LinkStateRoutingP____nesc_sillytask_DijstraTask[LinkStateRoutingP__DijstraTask];
 #line 26
 enum LinkStateRoutingP____nesc_unnamed4365 {
@@ -7636,7 +7634,9 @@ enum LinkStateRoutingP____nesc_unnamed4365 {
   LinkStateRoutingP__START_DELAY_UPPER = 300000 * 2, 
 
   LinkStateRoutingP__CONSTRUCT_R_TABLE_LOWER = 295000 * 3, 
-  LinkStateRoutingP__CONSTRUCT_R_TABLE_UPPER = 300000 * 3
+  LinkStateRoutingP__CONSTRUCT_R_TABLE_UPPER = 300000 * 3, 
+
+  LinkStateRoutingP__DIJSTRA = 30000
 };
 
 uint8_t LinkStateRoutingP__local_seq[1000];
@@ -7654,7 +7654,7 @@ static void LinkStateRoutingP__determineRunDijstra(void );
 static void LinkStateRoutingP__makeLSAPack(linkStateAdPkt_t *Package, uint8_t seq, uint8_t num_entries, uint8_t tag, uint8_t *payload, uint8_t length);
 
 static inline void LinkStateRoutingP__initShare(void );
-#line 79
+#line 81
 static inline void LinkStateRoutingP__LinkStateRouting__onBoot(void );
 
 
@@ -7681,11 +7681,11 @@ static inline void LinkStateRoutingP__DijstraTimer__fired(void );
 
 
 static void LinkStateRoutingP__determineRunDijstra(void );
-#line 117
+#line 119
 static inline void LinkStateRoutingP__Flooding__gotLSA(uint8_t *incomingMsg, uint8_t from);
-#line 169
+#line 171
 static inline void LinkStateRoutingP__DijstraTask__runTask(void );
-#line 265
+#line 266
 static void LinkStateRoutingP__NeighborDiscovery__neighborChange(uint8_t id, uint8_t tag);
 
 
@@ -8185,9 +8185,9 @@ static inline void /*FloodingC.SimpleSendC.SimpleSendP*/SimpleSendP__2__PacketHa
 {
 }
 
-# 287 "lib/modules/LinkStateRoutingP.nc"
+# 288 "lib/modules/LinkStateRoutingP.nc"
 static inline void LinkStateRoutingP__PacketHandler__gotIpPkt(uint8_t *_)
-#line 287
+#line 288
 {
 }
 
@@ -8282,15 +8282,15 @@ inline static void LinkStateRoutingP__Graph__insert(uint16_t i, uint16_t j, uint
 #line 2
 }
 #line 2
-# 117 "lib/modules/LinkStateRoutingP.nc"
+# 119 "lib/modules/LinkStateRoutingP.nc"
 static inline void LinkStateRoutingP__Flooding__gotLSA(uint8_t *incomingMsg, uint8_t from)
-#line 117
+#line 119
 {
   uint8_t i = 0;
   linkStateAdPkt_t lsa_pkt;
   tuple_t entry[3];
 
-#line 121
+#line 123
   memcpy(&lsa_pkt, incomingMsg, sizeof(linkStateAdPkt_t ));
   memcpy(&entry, lsa_pkt.payload, 3 * sizeof(tuple_t ));
 
@@ -8357,9 +8357,9 @@ static inline void /*FloodingC.SimpleSendC.SimpleSendP*/SimpleSendP__2__PacketHa
 {
 }
 
-# 286 "lib/modules/LinkStateRoutingP.nc"
+# 287 "lib/modules/LinkStateRoutingP.nc"
 static inline void LinkStateRoutingP__PacketHandler__gotFloodPkt(uint8_t *incomingMsg, uint8_t from)
-#line 286
+#line 287
 {
 }
 
@@ -8578,9 +8578,9 @@ static inline void /*FloodingC.SimpleSendC.SimpleSendP*/SimpleSendP__2__PacketHa
 {
 }
 
-# 285 "lib/modules/LinkStateRoutingP.nc"
+# 286 "lib/modules/LinkStateRoutingP.nc"
 static inline void LinkStateRoutingP__PacketHandler__gotNDPkt(uint8_t *_)
-#line 285
+#line 286
 {
 }
 
@@ -8639,9 +8639,9 @@ static inline void /*FloodingC.SimpleSendC.SimpleSendP*/SimpleSendP__2__PacketHa
 {
 }
 
-# 284 "lib/modules/LinkStateRoutingP.nc"
+# 285 "lib/modules/LinkStateRoutingP.nc"
 static inline void LinkStateRoutingP__PacketHandler__getReliablePkt(pack *_)
-#line 284
+#line 285
 {
 }
 
@@ -8709,9 +8709,9 @@ static inline void /*FloodingC.SimpleSendC.SimpleSendP*/SimpleSendP__2__PacketHa
     }
 }
 
-# 283 "lib/modules/LinkStateRoutingP.nc"
+# 284 "lib/modules/LinkStateRoutingP.nc"
 static inline void LinkStateRoutingP__PacketHandler__getReliableAckPkt(uint8_t _)
-#line 283
+#line 284
 {
 }
 
@@ -9552,28 +9552,6 @@ inline static void LinkStateRoutingP__DijstraTimer__stop(void ){
 #line 78
 }
 #line 78
-# 89 "/opt/tinyos-main/tos/system/RandomMlcgC.nc"
-static inline uint16_t RandomMlcgC__Random__rand16(void )
-#line 89
-{
-  return (uint16_t )RandomMlcgC__Random__rand32();
-}
-
-# 52 "/opt/tinyos-main/tos/interfaces/Random.nc"
-inline static uint16_t LinkStateRoutingP__Random__rand16(void ){
-#line 52
-  unsigned short __nesc_result;
-#line 52
-
-#line 52
-  __nesc_result = RandomMlcgC__Random__rand16();
-#line 52
-
-#line 52
-  return __nesc_result;
-#line 52
-}
-#line 52
 # 216 "/opt/tinyos-main/tos/lib/tossim/TossimActiveMessageC.nc"
 static inline message_t *TossimActiveMessageC__Snoop__default__receive(am_id_t id, message_t *msg, void *payload, uint8_t len)
 #line 216
@@ -9740,9 +9718,9 @@ inline static void LinkStateRoutingP__ShareTimer__startOneShot(uint32_t dt){
 #line 73
 }
 #line 73
-# 79 "lib/modules/LinkStateRoutingP.nc"
+# 81 "lib/modules/LinkStateRoutingP.nc"
 static inline void LinkStateRoutingP__LinkStateRouting__onBoot(void )
-#line 79
+#line 81
 {
   LinkStateRoutingP__ShareTimer__startOneShot(
   LinkStateRoutingP__START_DELAY_LOWER + LinkStateRoutingP__Random__rand32() % (LinkStateRoutingP__START_DELAY_UPPER - LinkStateRoutingP__START_DELAY_LOWER));
@@ -9759,6 +9737,13 @@ inline static void Node__LinkStateRouting__onBoot(void ){
 #line 2
 }
 #line 2
+# 89 "/opt/tinyos-main/tos/system/RandomMlcgC.nc"
+static inline uint16_t RandomMlcgC__Random__rand16(void )
+#line 89
+{
+  return (uint16_t )RandomMlcgC__Random__rand32();
+}
+
 # 52 "/opt/tinyos-main/tos/interfaces/Random.nc"
 inline static uint16_t NeighborDiscoveryP__Random__rand16(void ){
 #line 52
@@ -11629,15 +11614,15 @@ inline static uint16_t LinkStateRoutingP__Graph__num_nodes(void ){
 #line 10
 }
 #line 10
-# 169 "lib/modules/LinkStateRoutingP.nc"
+# 171 "lib/modules/LinkStateRoutingP.nc"
 static inline void LinkStateRoutingP__DijstraTask__runTask(void )
-#line 169
+#line 171
 {
   routingInfo_t routeInfo;
   uint16_t i;
-#line 171
+#line 173
   uint16_t j;
-#line 171
+#line 173
   uint16_t n;
   tuple_t temp;
   uint16_t lowest_distance = 65535;
@@ -11678,7 +11663,7 @@ static inline void LinkStateRoutingP__DijstraTask__runTask(void )
                       updatedBy[temp.id - 1] = temp.id;
                     }
                   else 
-#line 209
+#line 211
                     {
                       updatedBy[temp.id - 1] = updatedBy[lowest];
                     }
@@ -11690,7 +11675,7 @@ static inline void LinkStateRoutingP__DijstraTask__runTask(void )
                               updatedBy[temp.id - 1] = temp.id;
                             }
                           else 
-#line 218
+#line 220
                             {
                               updatedBy[temp.id - 1] = updatedBy[lowest];
                             }
@@ -11708,7 +11693,7 @@ static inline void LinkStateRoutingP__DijstraTask__runTask(void )
                   lowest = j;
                 }
               else 
-#line 233
+#line 235
                 {
                   if (distance[j] == lowest_distance) {
                       if (j < lowest) {
@@ -11734,9 +11719,8 @@ static inline void LinkStateRoutingP__DijstraTask__runTask(void )
           LinkStateRoutingP__RoutingTable__insert(i + 1, routeInfo);
         }
     }
-
   LinkStateRoutingP__k[sim_node()]++;
-  printf("Node %d: run dj = %d\n", TOS_NODE_ID, LinkStateRoutingP__k[sim_node()]);
+  printf("Node %d run dj %d times\n", TOS_NODE_ID, LinkStateRoutingP__k[sim_node()]);
 
   LinkStateRoutingP__hasTabel[sim_node()] = TRUE;
 }
@@ -13342,9 +13326,9 @@ inline static uint16_t LinkStateRoutingP__NeighborDiscovery__numNeighbors(void )
 #line 4
 }
 #line 4
-# 48 "lib/modules/LinkStateRoutingP.nc"
+# 50 "lib/modules/LinkStateRoutingP.nc"
 static inline void LinkStateRoutingP__initShare(void )
-#line 48
+#line 50
 {
   uint16_t i = 0;
   uint8_t counter = 0;
@@ -13354,7 +13338,7 @@ static inline void LinkStateRoutingP__initShare(void )
   uint8_t max_entries = LSA_PKT_MAX_PAYLOAD_SIZE / sizeof(tuple_t );
   tuple_t info[max_entries];
 
-#line 56
+#line 58
   memcpy(neighbors, LinkStateRoutingP__NeighborDiscovery__neighbors(), num_neighbors * sizeof(uint32_t ));
 
   for (; i < num_neighbors; i++) {
@@ -13389,7 +13373,7 @@ static inline void LinkStateRoutingP__initShare(void )
 
 
 static inline void LinkStateRoutingP__ShareTimer__fired(void )
-#line 89
+#line 91
 {
   LinkStateRoutingP__initShare();
 }
@@ -13409,9 +13393,9 @@ inline static error_t LinkStateRoutingP__DijstraTask__postTask(void ){
 #line 67
 }
 #line 67
-# 93 "lib/modules/LinkStateRoutingP.nc"
+# 95 "lib/modules/LinkStateRoutingP.nc"
 static inline void LinkStateRoutingP__DijstraTimer__fired(void )
-#line 93
+#line 95
 {
   LinkStateRoutingP__DijstraTask__postTask();
 }
@@ -16117,15 +16101,15 @@ static void /*NeighborDiscoveryC.HashmapC*/HashmapC__0__Hashmap__insert(uint32_t
   i < /*NeighborDiscoveryC.HashmapC*/HashmapC__0__HASH_MAX_SIZE[sim_node()]);
 }
 
-# 265 "lib/modules/LinkStateRoutingP.nc"
+# 266 "lib/modules/LinkStateRoutingP.nc"
 static void LinkStateRoutingP__NeighborDiscovery__neighborChange(uint8_t id, uint8_t tag)
-#line 265
+#line 266
 {
   if (LinkStateRoutingP__init[sim_node()]) {
       linkStateAdPkt_t lsa_pkt;
       tuple_t info;
 
-#line 269
+#line 270
       info.id = id;
       info.cost = LinkStateRoutingP__NeighborDiscovery__getLinkCost(id);
       LinkStateRoutingP__makeLSAPack(&lsa_pkt, LinkStateRoutingP__local_seq[sim_node()], 1, tag, (uint8_t *)&info, sizeof(tuple_t ));
@@ -16151,9 +16135,9 @@ static uint16_t NeighborDiscoveryP__NeighborDiscovery__getNeighborQuality(uint8_
     }
 }
 
-# 276 "lib/modules/LinkStateRoutingP.nc"
+# 277 "lib/modules/LinkStateRoutingP.nc"
 static void LinkStateRoutingP__makeLSAPack(linkStateAdPkt_t *Package, uint8_t seq, uint8_t num_entries, uint8_t tag, uint8_t *payload, uint8_t length)
-#line 276
+#line 277
 {
   Package->seq = seq;
   Package->num_entries = num_entries;
@@ -16335,16 +16319,16 @@ static void /*LinkStateRoutingC.GraphC.GraphP*/GraphP__0__Graph__insert(uint16_t
     }
 }
 
-# 104 "lib/modules/LinkStateRoutingP.nc"
+# 106 "lib/modules/LinkStateRoutingP.nc"
 static void LinkStateRoutingP__determineRunDijstra(void )
-#line 104
+#line 106
 {
   if (LinkStateRoutingP__hasTabel[sim_node()]) {
       if (LinkStateRoutingP__DijstraTimer__isRunning()) {
           LinkStateRoutingP__DijstraTimer__stop();
         }
       LinkStateRoutingP__DijstraTimer__startOneShot(
-      4000 + LinkStateRoutingP__Random__rand16() % (5000 - 4000));
+      LinkStateRoutingP__DIJSTRA);
     }
 }
 
