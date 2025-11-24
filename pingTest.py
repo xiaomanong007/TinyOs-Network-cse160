@@ -8,8 +8,8 @@ def main():
     s.runTime(1);
 
     # Load the the layout of the network.
-    s.loadTopo("circle.topo");
-    # s.loadTopo("tuna-melt.topo");
+    # s.loadTopo("circle.topo");
+    s.loadTopo("tuna-melt.topo");
 
 
     # Add a noise model to all of the motes.

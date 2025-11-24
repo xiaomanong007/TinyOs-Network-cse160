@@ -50,9 +50,13 @@ implementation {
         floodingPkt_t fld_pkt;
         memcpy(&fld_pkt, (floodingPkt_t*)incomingMsg, sizeof(floodingPkt_t));
 
+        if (seq_table[fld_pkt.src - 1] >= fld_pkt.seq) {
+            return;
+        }
+
         switch(fld_pkt.protocol){
             case PROTOCOL_LINKSTATE:
-                signal Flooding.gotLSA(fld_pkt.payload);
+                signal Flooding.gotLSA(fld_pkt.payload, from);
                 break;
             case PROTOCOL_PING:
                 break;

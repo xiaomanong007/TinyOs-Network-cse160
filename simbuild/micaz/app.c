@@ -4210,7 +4210,9 @@ typedef struct floodingInfo {
 # 6 "lib/modules/../../includes/lsaPkt.h"
 enum __nesc_unnamed4340 {
   LSA_PKT_HEADER_LENGTH = 3, 
-  LSA_PKT_MAX_PAYLOAD_SIZE = FLOOD_PKT_MAX_PAYLOAD_SIZE - LSA_PKT_HEADER_LENGTH
+  LSA_PKT_MAX_PAYLOAD_SIZE = FLOOD_PKT_MAX_PAYLOAD_SIZE - LSA_PKT_HEADER_LENGTH, 
+
+  GLOBAL_SHARE = 0
 };
 
 
@@ -4218,18 +4220,18 @@ enum __nesc_unnamed4340 {
 
 
 
-#line 11
+#line 13
 typedef struct linkStateAdPkt {
   uint8_t seq;
   uint8_t num_entries;
   uint8_t tag;
-  uint8_t payload[0];
+  uint8_t payload[LSA_PKT_MAX_PAYLOAD_SIZE];
 } linkStateAdPkt_t;
 
 
 
 
-#line 18
+#line 20
 typedef struct tuple {
   uint8_t id;
   uint16_t cost;
@@ -4571,7 +4573,7 @@ uint8_t len);
 # 9 "lib/interfaces/NeighborDiscovery.nc"
 static void Node__NeighborDiscovery__neighborChange(uint8_t id, uint8_t tag);
 # 4 "lib/interfaces/Flooding.nc"
-static void Node__Flooding__gotLSA(uint8_t *incomingMsg);
+static void Node__Flooding__gotLSA(uint8_t *incomingMsg, uint8_t from);
 # 6 "lib/interfaces/CommandHandler.nc"
 static void Node__CommandHandler__printLinkState(void );
 #line 4
@@ -4684,15 +4686,15 @@ static void /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC__0__TimerFrom__f
 #line 83
 static void /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC__0__Timer__default__fired(
 # 48 "/opt/tinyos-main/tos/lib/timer/VirtualizeTimerC.nc"
-uint8_t arg_0x7ffffa5de950);
+uint8_t arg_0x7ffffa5dc950);
 # 92 "/opt/tinyos-main/tos/lib/timer/Timer.nc"
 static bool /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC__0__Timer__isRunning(
 # 48 "/opt/tinyos-main/tos/lib/timer/VirtualizeTimerC.nc"
-uint8_t arg_0x7ffffa5de950);
+uint8_t arg_0x7ffffa5dc950);
 # 73 "/opt/tinyos-main/tos/lib/timer/Timer.nc"
 static void /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC__0__Timer__startOneShot(
 # 48 "/opt/tinyos-main/tos/lib/timer/VirtualizeTimerC.nc"
-uint8_t arg_0x7ffffa5de950, 
+uint8_t arg_0x7ffffa5dc950, 
 # 73 "/opt/tinyos-main/tos/lib/timer/Timer.nc"
 uint32_t dt);
 # 82 "/opt/tinyos-main/tos/lib/timer/Counter.nc"
@@ -4727,7 +4729,7 @@ error_t error);
 # 110 "/opt/tinyos-main/tos/interfaces/AMSend.nc"
 static void /*AMQueueP.AMQueueImplP*/AMQueueImplP__0__AMSend__sendDone(
 # 48 "/opt/tinyos-main/tos/system/AMQueueImplP.nc"
-am_id_t arg_0x7ffffa52cb60, 
+am_id_t arg_0x7ffffa52ab60, 
 # 103 "/opt/tinyos-main/tos/interfaces/AMSend.nc"
 message_t * msg, 
 
@@ -4740,7 +4742,7 @@ error_t error);
 # 75 "/opt/tinyos-main/tos/interfaces/Send.nc"
 static error_t /*AMQueueP.AMQueueImplP*/AMQueueImplP__0__Send__send(
 # 46 "/opt/tinyos-main/tos/system/AMQueueImplP.nc"
-uint8_t arg_0x7ffffa52d940, 
+uint8_t arg_0x7ffffa52b940, 
 # 67 "/opt/tinyos-main/tos/interfaces/Send.nc"
 message_t * msg, 
 
@@ -4754,7 +4756,7 @@ uint8_t len);
 #line 100
 static void /*AMQueueP.AMQueueImplP*/AMQueueImplP__0__Send__default__sendDone(
 # 46 "/opt/tinyos-main/tos/system/AMQueueImplP.nc"
-uint8_t arg_0x7ffffa52d940, 
+uint8_t arg_0x7ffffa52b940, 
 # 96 "/opt/tinyos-main/tos/interfaces/Send.nc"
 message_t * msg, 
 
@@ -5127,7 +5129,7 @@ static void LinkStateRoutingP__PacketHandler__getReliablePkt(pack *pkt);
 # 2 "lib/interfaces/LinkStateRouting.nc"
 static void LinkStateRoutingP__LinkStateRouting__onBoot(void );
 # 4 "lib/interfaces/Flooding.nc"
-static void LinkStateRoutingP__Flooding__gotLSA(uint8_t *incomingMsg);
+static void LinkStateRoutingP__Flooding__gotLSA(uint8_t *incomingMsg, uint8_t from);
 # 9 "lib/interfaces/NeighborDiscovery.nc"
 static void LinkStateRoutingP__NeighborDiscovery__neighborChange(uint8_t id, uint8_t tag);
 # 83 "/opt/tinyos-main/tos/lib/timer/Timer.nc"
@@ -5821,7 +5823,7 @@ static inline void Node__PacketHandler__gotIpPkt(uint8_t *_);
 static inline void Node__NeighborDiscovery__neighborChange(uint8_t id, uint8_t tag);
 
 
-static inline void Node__Flooding__gotLSA(uint8_t *_);
+static inline void Node__Flooding__gotLSA(uint8_t *incomingMsg, uint8_t from);
 # 97 "/opt/tinyos-main/tos/interfaces/Pool.nc"
 static 
 #line 94
@@ -6292,7 +6294,7 @@ static void /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC__0__TimerFrom__s
 
 static void /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC__0__Timer__fired(
 # 48 "/opt/tinyos-main/tos/lib/timer/VirtualizeTimerC.nc"
-uint8_t arg_0x7ffffa5de950);
+uint8_t arg_0x7ffffa5dc950);
 #line 71
 enum /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC__0____nesc_unnamed4350 {
 #line 71
@@ -6420,7 +6422,7 @@ static inline void /*NodeC.SimpleSendC.AMSenderC.SenderC.AMQueueEntryP*/AMQueueE
 # 80 "/opt/tinyos-main/tos/interfaces/AMSend.nc"
 static error_t /*AMQueueP.AMQueueImplP*/AMQueueImplP__0__AMSend__send(
 # 48 "/opt/tinyos-main/tos/system/AMQueueImplP.nc"
-am_id_t arg_0x7ffffa52cb60, 
+am_id_t arg_0x7ffffa52ab60, 
 # 80 "/opt/tinyos-main/tos/interfaces/AMSend.nc"
 am_addr_t addr, 
 #line 71
@@ -6437,7 +6439,7 @@ uint8_t len);
 # 100 "/opt/tinyos-main/tos/interfaces/Send.nc"
 static void /*AMQueueP.AMQueueImplP*/AMQueueImplP__0__Send__sendDone(
 # 46 "/opt/tinyos-main/tos/system/AMQueueImplP.nc"
-uint8_t arg_0x7ffffa52d940, 
+uint8_t arg_0x7ffffa52b940, 
 # 96 "/opt/tinyos-main/tos/interfaces/Send.nc"
 message_t * msg, 
 
@@ -6785,7 +6787,7 @@ static inline void NeighborDiscoveryP__updateLink(uint8_t neighbor_id, uint16_t 
 
 static inline uint16_t NeighborDiscoveryP__ewma(uint8_t sample, uint16_t old);
 
-static void NeighborDiscoveryP__printNeighbors(void );
+static inline void NeighborDiscoveryP__printNeighbors(void );
 
 
 static inline void NeighborDiscoveryP__updateTable__runTask(void );
@@ -6862,7 +6864,7 @@ static inline uint16_t NeighborDiscoveryP__NeighborDiscovery__getLinkCost(uint8_
 
 
 
-static void NeighborDiscoveryP__printNeighbors(void );
+static inline void NeighborDiscoveryP__printNeighbors(void );
 #line 271
 static inline void NeighborDiscoveryP__PacketHandler__getReliableAckPkt(uint8_t _);
 static inline void NeighborDiscoveryP__PacketHandler__getReliablePkt(pack *_);
@@ -7190,7 +7192,7 @@ static inline uint16_t /*NeighborDiscoveryC.HashmapC*/HashmapC__0__Hashmap__size
 static error_t FloodingP__SimpleSend__send(pack msg, uint16_t dest);
 static void FloodingP__SimpleSend__makePack(pack *Package, uint8_t src, uint16_t dest, uint8_t protocol, uint8_t flag, uint8_t *payload, uint8_t length);
 # 4 "lib/interfaces/Flooding.nc"
-static void FloodingP__Flooding__gotLSA(uint8_t *incomingMsg);
+static void FloodingP__Flooding__gotLSA(uint8_t *incomingMsg, uint8_t from);
 # 4 "lib/interfaces/NeighborDiscovery.nc"
 static uint16_t FloodingP__NeighborDiscovery__numNeighbors(void );
 #line 3
@@ -7213,10 +7215,10 @@ static void FloodingP__initEntry(uint8_t flooding_src, uint16_t seq);
 
 static void FloodingP__send(floodingPkt_t *fld_pkt, uint8_t flooding_src, uint8_t from);
 
-static inline void FloodingP__Flooding__flood(uint8_t dest, uint8_t protocol, uint8_t TTL, uint8_t *payload, uint8_t length);
+static void FloodingP__Flooding__flood(uint8_t dest, uint8_t protocol, uint8_t TTL, uint8_t *payload, uint8_t length);
 #line 49
 static inline void FloodingP__PacketHandler__gotFloodPkt(uint8_t *incomingMsg, uint8_t from);
-#line 68
+#line 72
 static inline void FloodingP__makeFldPkt(floodingPkt_t *Package, uint8_t src, uint8_t dest, uint8_t protocol, uint8_t TTL, uint16_t seq, uint8_t *payload, uint8_t length);
 
 
@@ -7235,9 +7237,9 @@ static void FloodingP__initEntry(uint8_t flooding_src, uint16_t seq);
 
 
 static void FloodingP__send(floodingPkt_t *fld_pkt, uint8_t flooding_src, uint8_t from);
-#line 106
+#line 110
 static inline void FloodingP__forward(floodingPkt_t *incomingMsg, uint8_t from);
-#line 121
+#line 125
 static inline void FloodingP__PacketHandler__getReliableAckPkt(uint8_t _);
 static inline void FloodingP__PacketHandler__getReliablePkt(pack *_);
 static inline void FloodingP__PacketHandler__gotNDPkt(uint8_t *_);
@@ -7522,9 +7524,10 @@ static void /*FloodingC.SimpleSendC.ReSendQueue*/ListC__2__List__pushback(/*Floo
 static inline /*FloodingC.SimpleSendC.ReSendQueue*/ListC__2__t /*FloodingC.SimpleSendC.ReSendQueue*/ListC__2__List__popfront(void );
 # 46 "/opt/tinyos-main/tos/interfaces/Random.nc"
 static uint32_t LinkStateRoutingP__Random__rand32(void );
+# 2 "lib/interfaces/Flooding.nc"
+static void LinkStateRoutingP__Flooding__flood(uint8_t dest, uint8_t protocol, uint8_t TTL, uint8_t *payload, uint8_t length);
 # 4 "lib/interfaces/NeighborDiscovery.nc"
 static uint16_t LinkStateRoutingP__NeighborDiscovery__numNeighbors(void );
-static void LinkStateRoutingP__NeighborDiscovery__printNeighbors(void );
 #line 3
 static uint32_t *LinkStateRoutingP__NeighborDiscovery__neighbors(void );
 
@@ -7546,18 +7549,29 @@ enum LinkStateRoutingP____nesc_unnamed4363 {
   LinkStateRoutingP__CONSTRUCT_R_TABLE_UPPER = 90000
 };
 
+uint8_t LinkStateRoutingP__local_seq[1000];
+
+uint8_t LinkStateRoutingP__n[1000];
+
+static void LinkStateRoutingP__makeLSAPack(linkStateAdPkt_t *Package, uint8_t seq, uint8_t num_entries, uint8_t tag, uint8_t *payload, uint8_t length);
+
+
+
+
+
+
 static inline void LinkStateRoutingP__initShare(void );
-#line 47
+#line 71
 static inline void LinkStateRoutingP__LinkStateRouting__onBoot(void );
-#line 59
+#line 83
 static inline void LinkStateRoutingP__ShareTimer__fired(void );
 
 
 
 static inline void LinkStateRoutingP__DijstraTimer__fired(void );
 
-static inline void LinkStateRoutingP__Flooding__gotLSA(uint8_t *_);
-
+static inline void LinkStateRoutingP__Flooding__gotLSA(uint8_t *incomingMsg, uint8_t from);
+#line 101
 static inline void LinkStateRoutingP__NeighborDiscovery__neighborChange(uint8_t id, uint8_t tag);
 
 
@@ -7967,9 +7981,9 @@ static inline void /*NeighborDiscoveryC.SimpleSendC.SimpleSendP*/SimpleSendP__1_
 {
 }
 
-# 124 "lib/modules/FloodingP.nc"
+# 128 "lib/modules/FloodingP.nc"
 static inline void FloodingP__PacketHandler__gotIpPkt(uint8_t *_)
-#line 124
+#line 128
 {
 }
 
@@ -7979,9 +7993,9 @@ static inline void /*FloodingC.SimpleSendC.SimpleSendP*/SimpleSendP__2__PacketHa
 {
 }
 
-# 75 "lib/modules/LinkStateRoutingP.nc"
+# 109 "lib/modules/LinkStateRoutingP.nc"
 static inline void LinkStateRoutingP__PacketHandler__gotIpPkt(uint8_t *_)
-#line 75
+#line 109
 {
 }
 
@@ -8028,15 +8042,15 @@ static inline void /*NeighborDiscoveryC.SimpleSendC.SimpleSendP*/SimpleSendP__1_
 {
 }
 
-# 106 "lib/modules/FloodingP.nc"
+# 110 "lib/modules/FloodingP.nc"
 static inline void FloodingP__forward(floodingPkt_t *incomingMsg, uint8_t from)
-#line 106
+#line 110
 {
   if (FloodingP__seq_table[sim_node()][incomingMsg->src - 1] == 0 || FloodingP__seq_table[sim_node()][incomingMsg->src - 1] < incomingMsg->seq) {
       FloodingP__initEntry(incomingMsg->src, incomingMsg->seq);
     }
   else 
-#line 109
+#line 113
     {
       if (FloodingP__seq_table[sim_node()][incomingMsg->src - 1] >= incomingMsg->seq || incomingMsg->TTL == 1) {
           return;
@@ -8049,23 +8063,34 @@ static inline void FloodingP__forward(floodingPkt_t *incomingMsg, uint8_t from)
 }
 
 # 112 "Node.nc"
-static inline void Node__Flooding__gotLSA(uint8_t *_)
+static inline void Node__Flooding__gotLSA(uint8_t *incomingMsg, uint8_t from)
 #line 112
 {
 }
 
-# 65 "lib/modules/LinkStateRoutingP.nc"
-static inline void LinkStateRoutingP__Flooding__gotLSA(uint8_t *_)
-#line 65
+# 89 "lib/modules/LinkStateRoutingP.nc"
+static inline void LinkStateRoutingP__Flooding__gotLSA(uint8_t *incomingMsg, uint8_t from)
+#line 89
 {
+  uint8_t i = 0;
+  linkStateAdPkt_t lsa_pkt;
+  tuple_t entry[3];
+
+#line 93
+  memcpy(&lsa_pkt, incomingMsg, sizeof(linkStateAdPkt_t ));
+  memcpy(&entry, lsa_pkt.payload, 3 * sizeof(tuple_t ));
+  LinkStateRoutingP__n[sim_node()]++;
+  if (LinkStateRoutingP__n[sim_node()] == 22) {
+      printf("Node %d get %d lsa's\n", TOS_NODE_ID, LinkStateRoutingP__n[sim_node()]);
+    }
 }
 
 # 4 "lib/interfaces/Flooding.nc"
-inline static void FloodingP__Flooding__gotLSA(uint8_t *incomingMsg){
+inline static void FloodingP__Flooding__gotLSA(uint8_t *incomingMsg, uint8_t from){
 #line 4
-  LinkStateRoutingP__Flooding__gotLSA(incomingMsg);
+  LinkStateRoutingP__Flooding__gotLSA(incomingMsg, from);
 #line 4
-  Node__Flooding__gotLSA(incomingMsg);
+  Node__Flooding__gotLSA(incomingMsg, from);
 #line 4
 }
 #line 4
@@ -8078,9 +8103,13 @@ static inline void FloodingP__PacketHandler__gotFloodPkt(uint8_t *incomingMsg, u
 #line 51
   memcpy(&fld_pkt, (floodingPkt_t *)incomingMsg, sizeof(floodingPkt_t ));
 
+  if (FloodingP__seq_table[sim_node()][fld_pkt.src - 1] >= fld_pkt.seq) {
+      return;
+    }
+
   switch (fld_pkt.protocol) {
       case PROTOCOL_LINKSTATE: 
-        FloodingP__Flooding__gotLSA(fld_pkt.payload);
+        FloodingP__Flooding__gotLSA(fld_pkt.payload, from);
       break;
       case PROTOCOL_PING: 
         break;
@@ -8099,9 +8128,9 @@ static inline void /*FloodingC.SimpleSendC.SimpleSendP*/SimpleSendP__2__PacketHa
 {
 }
 
-# 74 "lib/modules/LinkStateRoutingP.nc"
+# 108 "lib/modules/LinkStateRoutingP.nc"
 static inline void LinkStateRoutingP__PacketHandler__gotFloodPkt(uint8_t *incomingMsg, uint8_t from)
-#line 74
+#line 108
 {
 }
 
@@ -8149,15 +8178,15 @@ static inline void Node__NeighborDiscovery__neighborChange(uint8_t id, uint8_t t
 {
 }
 
-# 126 "lib/modules/FloodingP.nc"
+# 130 "lib/modules/FloodingP.nc"
 static inline void FloodingP__NeighborDiscovery__neighborChange(uint8_t id, uint8_t tag)
-#line 126
+#line 130
 {
 }
 
-# 67 "lib/modules/LinkStateRoutingP.nc"
+# 101 "lib/modules/LinkStateRoutingP.nc"
 static inline void LinkStateRoutingP__NeighborDiscovery__neighborChange(uint8_t id, uint8_t tag)
-#line 67
+#line 101
 {
 }
 
@@ -8314,9 +8343,9 @@ static inline void /*NeighborDiscoveryC.SimpleSendC.SimpleSendP*/SimpleSendP__1_
 {
 }
 
-# 123 "lib/modules/FloodingP.nc"
+# 127 "lib/modules/FloodingP.nc"
 static inline void FloodingP__PacketHandler__gotNDPkt(uint8_t *_)
-#line 123
+#line 127
 {
 }
 
@@ -8326,9 +8355,9 @@ static inline void /*FloodingC.SimpleSendC.SimpleSendP*/SimpleSendP__2__PacketHa
 {
 }
 
-# 73 "lib/modules/LinkStateRoutingP.nc"
+# 107 "lib/modules/LinkStateRoutingP.nc"
 static inline void LinkStateRoutingP__PacketHandler__gotNDPkt(uint8_t *_)
-#line 73
+#line 107
 {
 }
 
@@ -8375,9 +8404,9 @@ static inline void /*NeighborDiscoveryC.SimpleSendC.SimpleSendP*/SimpleSendP__1_
 {
 }
 
-# 122 "lib/modules/FloodingP.nc"
+# 126 "lib/modules/FloodingP.nc"
 static inline void FloodingP__PacketHandler__getReliablePkt(pack *_)
-#line 122
+#line 126
 {
 }
 
@@ -8387,9 +8416,9 @@ static inline void /*FloodingC.SimpleSendC.SimpleSendP*/SimpleSendP__2__PacketHa
 {
 }
 
-# 72 "lib/modules/LinkStateRoutingP.nc"
+# 106 "lib/modules/LinkStateRoutingP.nc"
 static inline void LinkStateRoutingP__PacketHandler__getReliablePkt(pack *_)
-#line 72
+#line 106
 {
 }
 
@@ -8442,9 +8471,9 @@ static inline void /*NeighborDiscoveryC.SimpleSendC.SimpleSendP*/SimpleSendP__1_
     }
 }
 
-# 121 "lib/modules/FloodingP.nc"
+# 125 "lib/modules/FloodingP.nc"
 static inline void FloodingP__PacketHandler__getReliableAckPkt(uint8_t _)
-#line 121
+#line 125
 {
 }
 
@@ -8457,9 +8486,9 @@ static inline void /*FloodingC.SimpleSendC.SimpleSendP*/SimpleSendP__2__PacketHa
     }
 }
 
-# 71 "lib/modules/LinkStateRoutingP.nc"
+# 105 "lib/modules/LinkStateRoutingP.nc"
 static inline void LinkStateRoutingP__PacketHandler__getReliableAckPkt(uint8_t _)
-#line 71
+#line 105
 {
 }
 
@@ -9449,9 +9478,9 @@ inline static void LinkStateRoutingP__ShareTimer__startOneShot(uint32_t dt){
 #line 73
 }
 #line 73
-# 47 "lib/modules/LinkStateRoutingP.nc"
+# 71 "lib/modules/LinkStateRoutingP.nc"
 static inline void LinkStateRoutingP__LinkStateRouting__onBoot(void )
-#line 47
+#line 71
 {
   LinkStateRoutingP__ShareTimer__startOneShot(
   LinkStateRoutingP__START_DELAY_LOWER + LinkStateRoutingP__Random__rand32() % (LinkStateRoutingP__START_DELAY_UPPER - LinkStateRoutingP__START_DELAY_LOWER));
@@ -10167,9 +10196,9 @@ static inline void /*AMQueueP.AMQueueImplP*/AMQueueImplP__0__Send__default__send
 }
 
 # 100 "/opt/tinyos-main/tos/interfaces/Send.nc"
-inline static void /*AMQueueP.AMQueueImplP*/AMQueueImplP__0__Send__sendDone(uint8_t arg_0x7ffffa52d940, message_t * msg, error_t error){
+inline static void /*AMQueueP.AMQueueImplP*/AMQueueImplP__0__Send__sendDone(uint8_t arg_0x7ffffa52b940, message_t * msg, error_t error){
 #line 100
-  switch (arg_0x7ffffa52d940) {
+  switch (arg_0x7ffffa52b940) {
 #line 100
     case 0U:
 #line 100
@@ -10191,7 +10220,7 @@ inline static void /*AMQueueP.AMQueueImplP*/AMQueueImplP__0__Send__sendDone(uint
 #line 100
     default:
 #line 100
-      /*AMQueueP.AMQueueImplP*/AMQueueImplP__0__Send__default__sendDone(arg_0x7ffffa52d940, msg, error);
+      /*AMQueueP.AMQueueImplP*/AMQueueImplP__0__Send__default__sendDone(arg_0x7ffffa52b940, msg, error);
 #line 100
       break;
 #line 100
@@ -10333,7 +10362,37 @@ inline static void CommandHandlerP__CommandHandler__printLinkState(void ){
 #line 6
 }
 #line 6
-# 225 "lib/modules/NeighborDiscoveryP.nc"
+# 246 "lib/modules/NeighborDiscoveryP.nc"
+static inline void NeighborDiscoveryP__printNeighbors(void )
+#line 246
+{
+  uint32_t i;
+  char buf[200];
+  int pos = 0;
+  neighborInfo_t info;
+
+  uint16_t n = NeighborDiscoveryP__NeighborTable__size();
+  uint32_t arr[n];
+
+#line 254
+  memcpy(arr, NeighborDiscoveryP__NeighborTable__getKeys(), n * sizeof(uint32_t ));
+
+  pos += snprintf(buf + pos, sizeof buf - pos, "Neighbors of Node %d: [", TOS_NODE_ID);
+
+  for (i = 0; i < n; i++) {
+      info = NeighborDiscoveryP__NeighborTable__get(arr[i]);
+      pos += snprintf(buf + pos, sizeof buf - pos, "(%d, %d)", arr[i], info.link_quality);
+      if (i < n - 1) {
+          pos += snprintf(buf + pos, sizeof buf - pos, ", ");
+        }
+    }
+
+  snprintf(buf + pos, sizeof buf - pos, "], (seq = %d)", NeighborDiscoveryP__local_seq[sim_node()]);
+
+  sim_log_debug(184U, NEIGHBOR_CHANNEL, "%s\n", buf);
+}
+
+#line 225
 static inline void NeighborDiscoveryP__NeighborDiscovery__printNeighbors(void )
 #line 225
 {
@@ -10361,35 +10420,6 @@ inline static void CommandHandlerP__CommandHandler__printNeighbors(uint16_t src,
 #line 4
 }
 #line 4
-# 68 "lib/modules/FloodingP.nc"
-static inline void FloodingP__makeFldPkt(floodingPkt_t *Package, uint8_t src, uint8_t dest, uint8_t protocol, uint8_t TTL, uint16_t seq, uint8_t *payload, uint8_t length)
-#line 68
-{
-  Package->src = src;
-  Package->dest = dest;
-  Package->protocol = protocol;
-  Package->TTL = TTL;
-  Package->seq = seq;
-  memcpy(Package->payload, payload, length);
-}
-
-#line 37
-static inline void FloodingP__Flooding__flood(uint8_t dest, uint8_t protocol, uint8_t TTL, uint8_t *payload, uint8_t length)
-#line 37
-{
-  floodingPkt_t fld_pkt;
-
-#line 39
-  FloodingP__makeFldPkt(&fld_pkt, TOS_NODE_ID, dest, protocol, TTL, FloodingP__local_seq[sim_node()], payload, length);
-  FloodingP__initEntry(TOS_NODE_ID, FloodingP__local_seq[sim_node()]);
-
-  FloodingP__send(&fld_pkt, TOS_NODE_ID, TOS_NODE_ID);
-
-  FloodingP__local_seq[sim_node()]++;
-
-  return;
-}
-
 # 2 "lib/interfaces/Flooding.nc"
 inline static void Node__Flooding__flood(uint8_t dest, uint8_t protocol, uint8_t TTL, uint8_t *payload, uint8_t length){
 #line 2
@@ -11298,13 +11328,13 @@ inline static am_addr_t /*AMQueueP.AMQueueImplP*/AMQueueImplP__0__AMPacket__dest
 }
 #line 78
 # 80 "/opt/tinyos-main/tos/interfaces/AMSend.nc"
-inline static error_t /*AMQueueP.AMQueueImplP*/AMQueueImplP__0__AMSend__send(am_id_t arg_0x7ffffa52cb60, am_addr_t addr, message_t * msg, uint8_t len){
+inline static error_t /*AMQueueP.AMQueueImplP*/AMQueueImplP__0__AMSend__send(am_id_t arg_0x7ffffa52ab60, am_addr_t addr, message_t * msg, uint8_t len){
 #line 80
   unsigned char __nesc_result;
 #line 80
 
 #line 80
-  __nesc_result = TossimActiveMessageC__AMSend__send(arg_0x7ffffa52cb60, addr, msg, len);
+  __nesc_result = TossimActiveMessageC__AMSend__send(arg_0x7ffffa52ab60, addr, msg, len);
 #line 80
 
 #line 80
@@ -12125,6 +12155,18 @@ static inline void CpmModelC__sim_gain_ack_handle(sim_event_t *evt)
   CpmModelC__free_receive_message((CpmModelC__receive_message_t *)evt->data);
 }
 
+# 72 "lib/modules/FloodingP.nc"
+static inline void FloodingP__makeFldPkt(floodingPkt_t *Package, uint8_t src, uint8_t dest, uint8_t protocol, uint8_t TTL, uint16_t seq, uint8_t *payload, uint8_t length)
+#line 72
+{
+  Package->src = src;
+  Package->dest = dest;
+  Package->protocol = protocol;
+  Package->TTL = TTL;
+  Package->seq = seq;
+  memcpy(Package->payload, payload, length);
+}
+
 # 67 "/opt/tinyos-main/tos/interfaces/TaskBasic.nc"
 inline static error_t /*NodeC.SimpleSendC.SimpleSendP*/SimpleSendP__0__sendBufferTask__postTask(void ){
 #line 67
@@ -12652,6 +12694,13 @@ static inline void /*FloodingC.SimpleSendC.SimpleSendP*/SimpleSendP__2__ReSendTi
   /*FloodingC.SimpleSendC.SimpleSendP*/SimpleSendP__2__checkReSend();
 }
 
+# 2 "lib/interfaces/Flooding.nc"
+inline static void LinkStateRoutingP__Flooding__flood(uint8_t dest, uint8_t protocol, uint8_t TTL, uint8_t *payload, uint8_t length){
+#line 2
+  FloodingP__Flooding__flood(dest, protocol, TTL, payload, length);
+#line 2
+}
+#line 2
 # 229 "lib/modules/NeighborDiscoveryP.nc"
 static inline uint16_t NeighborDiscoveryP__NeighborDiscovery__getNeighborQuality(uint8_t id)
 #line 229
@@ -12695,13 +12744,6 @@ inline static uint16_t LinkStateRoutingP__NeighborDiscovery__getLinkCost(uint8_t
 #line 7
 }
 #line 7
-#line 5
-inline static void LinkStateRoutingP__NeighborDiscovery__printNeighbors(void ){
-#line 5
-  NeighborDiscoveryP__NeighborDiscovery__printNeighbors();
-#line 5
-}
-#line 5
 #line 3
 inline static uint32_t *LinkStateRoutingP__NeighborDiscovery__neighbors(void ){
 #line 3
@@ -12732,34 +12774,47 @@ inline static uint16_t LinkStateRoutingP__NeighborDiscovery__numNeighbors(void )
 #line 4
 }
 #line 4
-# 33 "lib/modules/LinkStateRoutingP.nc"
+# 44 "lib/modules/LinkStateRoutingP.nc"
 static inline void LinkStateRoutingP__initShare(void )
-#line 33
+#line 44
 {
   uint16_t i = 0;
+  uint8_t counter = 0;
+  linkStateAdPkt_t lsa_pkt;
   uint16_t num_neighbors = LinkStateRoutingP__NeighborDiscovery__numNeighbors();
   uint32_t neighbors[num_neighbors];
-  tuple_t info[num_neighbors];
+  uint8_t max_entries = LSA_PKT_MAX_PAYLOAD_SIZE / sizeof(tuple_t );
+  tuple_t info[max_entries];
 
-#line 38
+#line 52
   memcpy(neighbors, LinkStateRoutingP__NeighborDiscovery__neighbors(), num_neighbors * sizeof(uint32_t ));
 
-  LinkStateRoutingP__NeighborDiscovery__printNeighbors();
   for (; i < num_neighbors; i++) {
-      info[i].id = neighbors[i];
-      info[i].cost = LinkStateRoutingP__NeighborDiscovery__getLinkCost(neighbors[i]);
+      if (max_entries - counter == 0) {
+          LinkStateRoutingP__makeLSAPack(&lsa_pkt, LinkStateRoutingP__local_seq[sim_node()], counter, INIT, (uint8_t *)&info, max_entries * sizeof(tuple_t ));
+          LinkStateRoutingP__Flooding__flood(GLOBAL_SHARE, PROTOCOL_LINKSTATE, 30, (uint8_t *)&lsa_pkt, sizeof(linkStateAdPkt_t ));
+          counter = 0;
+        }
+      info[counter].id = neighbors[i];
+      info[counter].cost = LinkStateRoutingP__NeighborDiscovery__getLinkCost(neighbors[i]);
+      counter++;
+    }
+
+  if (counter != 0) {
+      LinkStateRoutingP__makeLSAPack(&lsa_pkt, LinkStateRoutingP__local_seq[sim_node()], counter, INIT, (uint8_t *)&info, counter * sizeof(tuple_t ));
+      LinkStateRoutingP__Flooding__flood(GLOBAL_SHARE, PROTOCOL_LINKSTATE, 30, (uint8_t *)&lsa_pkt, sizeof(linkStateAdPkt_t ));
     }
 }
 
-#line 59
+#line 83
 static inline void LinkStateRoutingP__ShareTimer__fired(void )
-#line 59
+#line 83
 {
   LinkStateRoutingP__initShare();
 }
 
 static inline void LinkStateRoutingP__DijstraTimer__fired(void )
-#line 63
+#line 87
 {
 }
 
@@ -12769,9 +12824,9 @@ static inline void /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC__0__Timer
 }
 
 # 83 "/opt/tinyos-main/tos/lib/timer/Timer.nc"
-inline static void /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC__0__Timer__fired(uint8_t arg_0x7ffffa5de950){
+inline static void /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC__0__Timer__fired(uint8_t arg_0x7ffffa5dc950){
 #line 83
-  switch (arg_0x7ffffa5de950) {
+  switch (arg_0x7ffffa5dc950) {
 #line 83
     case 0U:
 #line 83
@@ -12853,7 +12908,7 @@ inline static void /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC__0__Timer
 #line 83
     default:
 #line 83
-      /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC__0__Timer__default__fired(arg_0x7ffffa5de950);
+      /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC__0__Timer__default__fired(arg_0x7ffffa5dc950);
 #line 83
       break;
 #line 83
@@ -15464,13 +15519,13 @@ static void /*NeighborDiscoveryC.HashmapC*/HashmapC__0__Hashmap__insert(uint32_t
   i < /*NeighborDiscoveryC.HashmapC*/HashmapC__0__HASH_MAX_SIZE[sim_node()]);
 }
 
-# 77 "lib/modules/FloodingP.nc"
+# 81 "lib/modules/FloodingP.nc"
 static void FloodingP__initEntry(uint8_t flooding_src, uint16_t seq)
-#line 77
+#line 81
 {
   floodingInfo_t info;
 
-#line 79
+#line 83
   FloodingP__seq_table[sim_node()][flooding_src - 1] = seq;
   info.num_neighbors = FloodingP__NeighborDiscovery__numNeighbors();
   memcpy(info.neighbors, FloodingP__NeighborDiscovery__neighbors(), sizeof(uint32_t ) * info.num_neighbors);
@@ -15478,7 +15533,7 @@ static void FloodingP__initEntry(uint8_t flooding_src, uint16_t seq)
 }
 
 static void FloodingP__send(floodingPkt_t *fld_pkt, uint8_t flooding_src, uint8_t from)
-#line 85
+#line 89
 {
   pack pkt;
   uint8_t i = 0;
@@ -15495,7 +15550,7 @@ static void FloodingP__send(floodingPkt_t *fld_pkt, uint8_t flooding_src, uint8_
             }
         }
       else 
-#line 99
+#line 103
         {
           return;
         }
@@ -16052,34 +16107,21 @@ static error_t /*CommandHandlerC.PoolC.PoolP*/PoolP__1__Pool__put(/*CommandHandl
     }
 }
 
-# 246 "lib/modules/NeighborDiscoveryP.nc"
-static void NeighborDiscoveryP__printNeighbors(void )
-#line 246
+# 37 "lib/modules/FloodingP.nc"
+static void FloodingP__Flooding__flood(uint8_t dest, uint8_t protocol, uint8_t TTL, uint8_t *payload, uint8_t length)
+#line 37
 {
-  uint32_t i;
-  char buf[200];
-  int pos = 0;
-  neighborInfo_t info;
+  floodingPkt_t fld_pkt;
 
-  uint16_t n = NeighborDiscoveryP__NeighborTable__size();
-  uint32_t arr[n];
+#line 39
+  FloodingP__makeFldPkt(&fld_pkt, TOS_NODE_ID, dest, protocol, TTL, FloodingP__local_seq[sim_node()], payload, length);
+  FloodingP__initEntry(TOS_NODE_ID, FloodingP__local_seq[sim_node()]);
 
-#line 254
-  memcpy(arr, NeighborDiscoveryP__NeighborTable__getKeys(), n * sizeof(uint32_t ));
+  FloodingP__send(&fld_pkt, TOS_NODE_ID, TOS_NODE_ID);
 
-  pos += snprintf(buf + pos, sizeof buf - pos, "Neighbors of Node %d: [", TOS_NODE_ID);
+  FloodingP__local_seq[sim_node()]++;
 
-  for (i = 0; i < n; i++) {
-      info = NeighborDiscoveryP__NeighborTable__get(arr[i]);
-      pos += snprintf(buf + pos, sizeof buf - pos, "(%d, %d)", arr[i], info.link_quality);
-      if (i < n - 1) {
-          pos += snprintf(buf + pos, sizeof buf - pos, ", ");
-        }
-    }
-
-  snprintf(buf + pos, sizeof buf - pos, "], (seq = %d)", NeighborDiscoveryP__local_seq[sim_node()]);
-
-  sim_log_debug(184U, NEIGHBOR_CHANNEL, "%s\n", buf);
+  return;
 }
 
 # 73 "/opt/tinyos-main/tos/lib/timer/VirtualizeTimerC.nc"
@@ -16110,6 +16152,16 @@ static void /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC__0__fireTimers(u
         }
     }
   /*HilTimerMilliC.VirtualizeTimerC*/VirtualizeTimerC__0__updateFromTimer__postTask();
+}
+
+# 37 "lib/modules/LinkStateRoutingP.nc"
+static void LinkStateRoutingP__makeLSAPack(linkStateAdPkt_t *Package, uint8_t seq, uint8_t num_entries, uint8_t tag, uint8_t *payload, uint8_t length)
+#line 37
+{
+  Package->seq = seq;
+  Package->num_entries = num_entries;
+  Package->tag = tag;
+  memcpy(Package->payload, payload, length);
 }
 
 # 21 "dataStructures/modules/ListC.nc"
@@ -17337,6 +17389,18 @@ static int __nesc_nido_resolve(int __nesc_mote,
   }
 
   /* Module LinkStateRoutingP */
+  if (!strcmp(varname, "LinkStateRoutingP__local_seq"))
+  {
+    *addr = (uintptr_t)&LinkStateRoutingP__local_seq[__nesc_mote];
+    *size = sizeof(LinkStateRoutingP__local_seq[__nesc_mote]);
+    return 0;
+  }
+  if (!strcmp(varname, "LinkStateRoutingP__n"))
+  {
+    *addr = (uintptr_t)&LinkStateRoutingP__n[__nesc_mote];
+    *size = sizeof(LinkStateRoutingP__n[__nesc_mote]);
+    return 0;
+  }
 
   return -1;
 }
@@ -17536,5 +17600,7 @@ static void __nesc_nido_initialise(int __nesc_mote)
   /*FloodingC.SimpleSendC.ReSendQueue*/ListC__2__size[__nesc_mote] = 0;
 
   /* Module LinkStateRoutingP */
+  LinkStateRoutingP__local_seq[__nesc_mote] = 1;
+  LinkStateRoutingP__n[__nesc_mote] = 0;
 
 }

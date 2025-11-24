@@ -30,17 +30,41 @@ implementation {
         CONSTRUCT_R_TABLE_UPPER = 90000,
     };
 
+    uint8_t local_seq = 1;
+
+    uint8_t n = 0;
+
+    void makeLSAPack(linkStateAdPkt_t *Package, uint8_t seq, uint8_t num_entries, uint8_t tag, uint8_t* payload, uint8_t length) {
+        Package->seq = seq;
+        Package->num_entries = num_entries;
+        Package->tag = tag;
+        memcpy(Package->payload, payload, length);
+    }
+
     void initShare() {
         uint16_t i = 0;
+        uint8_t counter = 0;
+        linkStateAdPkt_t lsa_pkt;
         uint16_t num_neighbors = call NeighborDiscovery.numNeighbors();
         uint32_t neighbors[num_neighbors];
-        tuple_t info[num_neighbors];
+        uint8_t max_entries = LSA_PKT_MAX_PAYLOAD_SIZE / sizeof(tuple_t);
+        tuple_t info[max_entries];
         memcpy(neighbors, call NeighborDiscovery.neighbors(), num_neighbors * sizeof(uint32_t));
 
-        call NeighborDiscovery.printNeighbors();
         for (; i < num_neighbors; i++) {
-            info[i].id = neighbors[i];
-            info[i].cost = call NeighborDiscovery.getLinkCost(neighbors[i]);
+            if (max_entries - counter == 0) {
+                makeLSAPack(&lsa_pkt, local_seq, counter, INIT, (uint8_t*)&info, max_entries * sizeof(tuple_t));
+                call Flooding.flood(GLOBAL_SHARE, PROTOCOL_LINKSTATE, 30, (uint8_t *)&lsa_pkt, sizeof(linkStateAdPkt_t));
+                counter = 0;
+            }
+            info[counter].id = neighbors[i];
+            info[counter].cost = call NeighborDiscovery.getLinkCost(neighbors[i]);
+            counter++;
+        }
+
+        if (counter != 0) {
+            makeLSAPack(&lsa_pkt, local_seq, counter, INIT, (uint8_t*)&info, counter * sizeof(tuple_t));
+            call Flooding.flood(GLOBAL_SHARE, PROTOCOL_LINKSTATE, 30, (uint8_t *)&lsa_pkt, sizeof(linkStateAdPkt_t));
         }
     }
 
@@ -62,7 +86,17 @@ implementation {
     
     event void DijstraTimer.fired() {}
 
-    event void Flooding.gotLSA(uint8_t* _) {}
+    event void Flooding.gotLSA(uint8_t* incomingMsg, uint8_t from) {
+        uint8_t i = 0;
+        linkStateAdPkt_t lsa_pkt;
+        tuple_t entry[3];
+        memcpy(&lsa_pkt, incomingMsg, sizeof(linkStateAdPkt_t));
+        memcpy(&entry, lsa_pkt.payload, 3 * sizeof(tuple_t));
+        n++;
+        if (n == 22){
+            printf("Node %d get %d lsa's\n", TOS_NODE_ID, n);
+        }
+    }
 
     event void NeighborDiscovery.neighborChange(uint8_t id, uint8_t tag) {
 
