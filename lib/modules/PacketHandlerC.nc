@@ -8,7 +8,4 @@ configuration PacketHandlerC{
 implementation{
     components PacketHandlerP;
     PacketHandler = PacketHandlerP.PacketHandler;
-
-    // components new SimpleSendC(AM_PACK);
-    // PacketHandlerP.SimpleSend -> SimpleSendC;
 }

@@ -104,8 +104,6 @@ implementation{
    event void CommandHandler.setAppClient(){}
 
    // PacketHandler events
-   event void PacketHandler.getReliableAckPkt(uint8_t _) {}
-   event void PacketHandler.getReliablePkt(pack* _) {}
    event void PacketHandler.gotNDPkt(uint8_t* _){}
    event void PacketHandler.gotFloodPkt(uint8_t* incomingMsg, uint8_t from){}
    event void PacketHandler.gotIpPkt(uint8_t* _){}

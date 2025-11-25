@@ -31,6 +31,8 @@ implementation {
         CONSTRUCT_R_TABLE_UPPER = 300000 * 3,
 
         DIJSTRA = 30000,
+
+        MAX_ENTRIES = 4,
     };
 
     uint8_t local_seq = 1;
@@ -111,9 +113,9 @@ implementation {
     event void Flooding.gotLSA(uint8_t* incomingMsg, uint8_t from) {
         uint8_t i = 0;
         linkStateAdPkt_t lsa_pkt;
-        tuple_t entry[3];
+        tuple_t entry[MAX_ENTRIES];
         memcpy(&lsa_pkt, incomingMsg, sizeof(linkStateAdPkt_t));
-        memcpy(&entry, lsa_pkt.payload, 3 * sizeof(tuple_t));
+        memcpy(&entry, lsa_pkt.payload, MAX_ENTRIES * sizeof(tuple_t));
 
         switch(lsa_pkt.tag) {
             case INIT:
@@ -284,8 +286,6 @@ implementation {
         memcpy(Package->payload, payload, length);
     }
 
-    event void PacketHandler.getReliableAckPkt(uint8_t _) {}
-    event void PacketHandler.getReliablePkt(pack* _) {}
     event void PacketHandler.gotNDPkt(uint8_t* _){}
     event void PacketHandler.gotFloodPkt(uint8_t* incomingMsg, uint8_t from){}
     event void PacketHandler.gotIpPkt(uint8_t* _){}

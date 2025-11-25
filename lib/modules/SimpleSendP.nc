@@ -19,10 +19,6 @@ generic module SimpleSendP(){
 
    uses interface Timer<TMilli> as sendTimer;
 
-   uses interface Timer<TMilli> as Clock;
-   uses interface Timer<TMilli> as ReSendTimer;
-   uses interface List<reSendInfo> as ReSendQueue;
-
    uses interface Packet;
    uses interface AMPacket;
    uses interface AMSend;
@@ -65,29 +61,6 @@ implementation{
        // back into the queue once you are done.
       if(!call Pool.empty()){
          sendInfo *input;
-
-         // uint32_t currentTime = call Clock.getNow();
-         // printf("current time = %d\n", currentTime);
-
-         if (msg.flag == RELIABLE_REQUEST) {
-            reSendInfo rInfo;
-
-            if (local_seq > MAX_BUFFERED_PKT - 1) {
-               local_seq = 1;
-            }
-
-            msg.flag = local_seq;
-            memcpy(&rInfo.packet, &msg, sizeof(pack));
-            rInfo.seq = rInfo.packet.flag;
-            call ReSendQueue.pushback(rInfo);
-
-            acked[rInfo.seq -1] = FALSE;
-
-            local_seq++;
-
-            call ReSendTimer.startOneShot(2 * RTT + (call Random.rand16() %150));
-         }
-
 
          input = call Pool.get();
          input->packet = msg;
@@ -189,44 +162,12 @@ implementation{
       }
    }
 
-   event void Clock.fired() {}
-
-   event void ReSendTimer.fired() {
-      checkReSend();
-   }
-
-   void checkReSend() {
-      reSendInfo rInfo = call ReSendQueue.popfront();
-      if (acked[rInfo.seq - 1] == FALSE) {
-         // printf("RESEND, seq = %d\n", rInfo.seq);
-         call ReSendQueue.pushback(rInfo);
-         call SimpleSend.send(rInfo.packet, rInfo.packet.dest);
-         call ReSendTimer.startOneShot(2 * RTT + (call Random.rand16() %150));
-      }
-   }
-
-   event void PacketHandler.getReliablePkt(pack* incomingMsg) {
-      // pack rPkt;
-      // char ack[] = "ACK";
-      // memcpy(&rPkt, incomingMsg, 4);
-      // call SimpleSend.makePack(&rPkt, rPkt.dest, rPkt.src, rPkt.protocol, rPkt.flag + 128, ack, 3);
-      // call SimpleSend.send(rPkt, rPkt.dest);
-   }
-
-   command void SimpleSend.makePack(pack *Package, uint8_t src, uint16_t dest, uint8_t protocol, uint8_t flag, uint8_t *payload, uint8_t length){
+   command void SimpleSend.makePack(pack *Package, uint8_t src, uint16_t dest, uint8_t protocol, uint8_t *payload, uint8_t length){
       Package->src = src;
       Package->dest = dest;
       Package->protocol = protocol;
-      Package->flag = flag;
       memcpy(Package->payload, payload, length);
    }
-
-   event void PacketHandler.getReliableAckPkt(uint8_t seq) {
-      if (acked[seq - 1] == FALSE) {
-         acked[seq - 1] = TRUE;
-      }
-   }
-
 
    event void PacketHandler.gotNDPkt(uint8_t* _){}
    event void PacketHandler.gotFloodPkt(uint8_t* incomingMsg, uint8_t from){}

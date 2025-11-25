@@ -133,7 +133,7 @@ implementation {
         char content[] = "Hello";
         
         makeNDPkt(&nd_pkt, TOS_NODE_ID, PROTOCOL_PING, local_seq, (uint8_t *)content, ND_PKT_MAX_PAYLOAD_SIZE);
-        call SimpleSend.makePack(&send_pkt, TOS_NODE_ID, TOS_BCAST_ADDR, PROTOCOL_NEIGHBOR_DISCOVERY, BEST_EFFORT, (uint8_t*)&nd_pkt, PACKET_MAX_PAYLOAD_SIZE);
+        call SimpleSend.makePack(&send_pkt, TOS_NODE_ID, TOS_BCAST_ADDR, PROTOCOL_NEIGHBOR_DISCOVERY, (uint8_t*)&nd_pkt, PACKET_MAX_PAYLOAD_SIZE);
         call SimpleSend.send(send_pkt, TOS_BCAST_ADDR);
 
         local_seq++;
@@ -160,7 +160,7 @@ implementation {
         memcpy(&nd_pkt, incomingMsg, sizeof(neigbhorDiscoveryPkt_t));
 
         makeNDPkt(&nd_pkt, TOS_NODE_ID, PROTOCOL_PINGREPLY, nd_pkt.seq, nd_pkt.payload, ND_PKT_MAX_PAYLOAD_SIZE);
-        call SimpleSend.makePack(&send_pkt, TOS_NODE_ID, from, PROTOCOL_NEIGHBOR_DISCOVERY, BEST_EFFORT, (uint8_t*)&nd_pkt, PACKET_MAX_PAYLOAD_SIZE);
+        call SimpleSend.makePack(&send_pkt, TOS_NODE_ID, from, PROTOCOL_NEIGHBOR_DISCOVERY, (uint8_t*)&nd_pkt, PACKET_MAX_PAYLOAD_SIZE);
         call SimpleSend.send(send_pkt, from);
     }
 
@@ -276,8 +276,6 @@ implementation {
         dbg(NEIGHBOR_CHANNEL, "%s\n", buf);
     }
     
-    event void PacketHandler.getReliableAckPkt(uint8_t _) {}
-    event void PacketHandler.getReliablePkt(pack* _) {}
     event void PacketHandler.gotFloodPkt(uint8_t* incomingMsg, uint8_t from){}
     event void PacketHandler.gotIpPkt(uint8_t* _){}
 }

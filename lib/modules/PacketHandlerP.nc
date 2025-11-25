@@ -11,20 +11,8 @@ module PacketHandlerP{
 implementation{
     pack pkt;
 
-    // void sendAck(pack* incomingMsg);
-
     command void PacketHandler.handle(pack* incomingMsg){
         uint8_t* payload = (uint8_t*) incomingMsg->payload;
-
-        if (incomingMsg->flag != BEST_EFFORT) {
-            if (incomingMsg->flag >= 128) {
-                signal PacketHandler.getReliableAckPkt(incomingMsg->flag - 128);
-            } else {
-                signal PacketHandler.getReliablePkt(incomingMsg);
-
-                // sendAck(incomingMsg);
-            }
-        }
 
         switch(incomingMsg->protocol){
             case PROTOCOL_NEIGHBOR_DISCOVERY:
@@ -42,11 +30,4 @@ implementation{
                 break;
         }  
     }
-
-    // void sendAck(pack* incomingMsg) {
-    //     uint8_t* ack = "ACK";
-    //     memcpy(&pkt, incomingMsg, 4);
-    //     call SimpleSend.makePack(&pkt, pkt.dest, pkt.src, pkt.protocol, pkt.flag + 128, ack, 3);
-    //     call SimpleSend.send(pkt, pkt.dest);
-    // }
 }

@@ -10,7 +10,7 @@
 #include "channels.h"
 
 enum{
-	PACKET_HEADER_LENGTH = 4,
+	PACKET_HEADER_LENGTH = 3,
 	PACKET_MAX_PAYLOAD_SIZE = 28 - PACKET_HEADER_LENGTH,
 
 	// Flag section
@@ -25,7 +25,6 @@ typedef nx_struct pack{
 	nx_uint8_t dest;
 	nx_uint8_t src;
 	nx_uint8_t protocol;
-	nx_uint8_t flag;
 	nx_uint8_t payload[PACKET_MAX_PAYLOAD_SIZE];
 }pack;
 
@@ -36,8 +35,8 @@ typedef nx_struct pack{
  * 		pack *input = pack to be printed.
  */
 void logPack(pack *input){
-	dbg(GENERAL_CHANNEL, "Src: %hhu Dest: %hhu Protocol:%hhu Flag:%hhu Payload: %s\n",
-	input->src, input->dest, input->protocol, input->flag, input->payload);
+	dbg(GENERAL_CHANNEL, "Src: %hhu Dest: %hhu Protocol:%hhu Payload: %s\n",
+	input->src, input->dest, input->protocol, input->payload);
 }
 
 enum{

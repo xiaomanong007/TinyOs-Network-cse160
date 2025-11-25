@@ -95,7 +95,7 @@ implementation {
                 if (flooding_table[flooding_src - 1].neighbors[i] != 0) {
                     if (flooding_table[flooding_src - 1].neighbors[i] != from) {
                         dbg(FLOODING_CHANNEL, "node %d -> node %d: seq = %d, fld_src = %d\n",TOS_NODE_ID, flooding_table[flooding_src - 1].neighbors[i], fld_pkt->seq, fld_pkt->src);
-                        call SimpleSend.makePack(&pkt, TOS_NODE_ID, flooding_table[flooding_src - 1].neighbors[i], PROTOCOL_FLOODING, BEST_EFFORT, (uint8_t *)fld_pkt, PACKET_MAX_PAYLOAD_SIZE);
+                        call SimpleSend.makePack(&pkt, TOS_NODE_ID, flooding_table[flooding_src - 1].neighbors[i], PROTOCOL_FLOODING, (uint8_t *)fld_pkt, PACKET_MAX_PAYLOAD_SIZE);
                         call SimpleSend.send(pkt, flooding_table[flooding_src - 1].neighbors[i]);
                     }
                     flooding_table[flooding_src - 1].neighbors[i] = 0;
@@ -121,9 +121,6 @@ implementation {
         send(incomingMsg, incomingMsg->src, from);
     }
     
-
-    event void PacketHandler.getReliableAckPkt(uint8_t _) {}
-    event void PacketHandler.getReliablePkt(pack* _) {}
     event void PacketHandler.gotNDPkt(uint8_t* _){}
     event void PacketHandler.gotIpPkt(uint8_t* _){}
 
