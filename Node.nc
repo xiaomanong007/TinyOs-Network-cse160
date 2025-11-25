@@ -52,6 +52,7 @@ implementation{
 
          call NeighborDiscovery.onBoot();
          call LinkStateRouting.onBoot();
+         call IP.onBoot();
       }else{
          //Retry until successful
          call AMControl.start();

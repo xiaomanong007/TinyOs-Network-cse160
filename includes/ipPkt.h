@@ -7,7 +7,7 @@ enum{
 	IP_HEADER_LENDTH = 6,
     MAX_IP_PAYLOAD_SIZE = PACKET_MAX_PAYLOAD_SIZE - IP_HEADER_LENDTH,
 
-    MAX_PENDING_SIZE = 500,
+    MAX_PENDING_SIZE = 160,
 };
 
 typedef struct ipPkt{
@@ -23,7 +23,8 @@ typedef struct ipPkt{
 
 typedef struct pendingPayload{
     uint8_t protocol;
-    uint16_t length;
+    uint16_t current_length;
+    uint16_t expected_length;
     uint8_t payload[MAX_PENDING_SIZE];
 }pendingPayload_t;
 

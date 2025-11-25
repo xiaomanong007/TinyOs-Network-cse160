@@ -14,4 +14,8 @@ implementation {
 
     components LinkStateRoutingC;
     IPP.LinkStateRouting -> LinkStateRoutingC;
+
+    components new ListC(uint8_t, 11);
+    IPP.PendingQueue -> ListC;
+    
 }
