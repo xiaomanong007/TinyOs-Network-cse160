@@ -36,7 +36,6 @@ implementation {
     uint8_t local_seq = 1;
     bool init = FALSE;
     bool hasTabel = FALSE;
-    uint16_t k = 0;
 
     task void DijstraTask();
 
@@ -95,13 +94,6 @@ implementation {
     event void DijstraTimer.fired() {
         post DijstraTask();
     }
-
-
-    command uint8_t LinkStateRouting.nextHop(uint8_t dest) {}
-
-    command uint16_t LinkStateRouting.pathCost(uint8_t dest) {}
-
-    command void LinkStateRouting.printRoutingTable() {}
 
     void determineRunDijstra() {
         if (hasTabel) {
@@ -257,10 +249,21 @@ implementation {
                 call RoutingTable.insert(i+1, routeInfo);
             }
         }
-        k++;
-        printf("Node %d run dj %d times\n", TOS_NODE_ID, k);
         // printRoutingTable();
         hasTabel = TRUE;
+    }
+
+    command uint8_t LinkStateRouting.nextHop(uint8_t dest) {
+        return (call RoutingTable.get(dest)).next_hop;
+    }
+
+    command uint16_t LinkStateRouting.pathCost(uint8_t dest) {
+        return (call RoutingTable.get(dest)).next_hop;
+    }
+
+    command void LinkStateRouting.printRoutingTable() {
+        printRoutingTable();
+        return;
     }
 
     event void NeighborDiscovery.neighborChange(uint8_t id, uint8_t tag) {

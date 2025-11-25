@@ -33,8 +33,8 @@ def main():
 
     # After sending a ping, simulate a little to prevent collision.
     s.runTime(300);
-    # s.neighborDMP(1);
-    # s.runTime(1);
+    s.routeDMP(1);
+    s.runTime(1);
     # s.ping(1, 7, "Hello, World 1");
     # s.runTime(1);
 
