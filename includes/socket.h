@@ -6,6 +6,9 @@ enum{
     ROOT_SOCKET_ADDR = 255,
     ROOT_SOCKET_PORT = 255,
     SOCKET_BUFFER_SIZE = 128,
+
+    TYPICAL = TRUE,
+    WRAP = FALSE,
 };
 
 enum socket_state{
@@ -43,6 +46,9 @@ typedef struct socket_store_t{
     enum socket_state state;
     socket_addr_t src;
     socket_addr_t dest;
+
+    // type can be either: TYPICAL or WRAP (the default is TYPICAL)
+    bool type;
 
     // This is the sender portion.
     uint8_t sendBuff[SOCKET_BUFFER_SIZE];

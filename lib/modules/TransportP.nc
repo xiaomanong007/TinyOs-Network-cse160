@@ -43,6 +43,10 @@ implementation {
 
     void receiveFIN(tcpPkt_t* payload, uint8_t from);
 
+    void printClientBuffer(socket_t fd);
+
+    void sendData(socket_t fd, uint8_t n, uint8_t r);
+
     command void Transport.onBoot() {
         uint8_t i = 10;
         for (; i > 0; i--) {
@@ -66,7 +70,6 @@ implementation {
         
         if (call Transport.bind(fd, &src_addr) == SUCCESS && call Transport.listen(fd) == SUCCESS) {
             global_fd = fd;
-            printf("BINDING SUCCESS\n");
             return SUCCESS;
         }
 
@@ -77,6 +80,8 @@ implementation {
         socket_t fd = call Transport.socket();
         socket_addr_t src_addr;
         socket_addr_t dest_addr;
+        uint8_t buff[transfer];
+        uint8_t i;
 
         if (fd == NULL_SOCKET) {
             dbg(TRANSPORT_CHANNEL, "No available socket\n");
@@ -85,14 +90,17 @@ implementation {
 
         src_addr.addr = TOS_NODE_ID;
         src_addr.port = srcPort;
+
+        for (i = 1; i <= transfer; i++) {
+            buff[i - 1] = i;
+        }
         
         if (call Transport.bind(fd, &src_addr) == SUCCESS) {
             dest_addr.addr = dest;
             dest_addr.port = destPort;
             if (call Transport.connect(fd, &dest_addr) == SUCCESS) {
                 call SocketTable.insert(dest, fd);
-
-                printf("BINDING SUCCESS\n");
+                call Transport.write(fd, (uint8_t *)&buff, transfer);
                 return SUCCESS;
             } else {
                 return FAIL;
@@ -125,7 +133,35 @@ implementation {
 
     command socket_t Transport.accept(socket_t fd) {}
 
-    command uint16_t Transport.write(socket_t fd, uint8_t *buff, uint16_t bufflen) {}
+    command uint16_t Transport.write(socket_t fd, uint8_t *buff, uint16_t bufflen) {
+        uint16_t writtenBytes = (bufflen <= socketArray[fd].effectiveWindow) ? bufflen : socketArray[fd].effectiveWindow;
+        uint8_t left = socketArray[fd].effectiveWindow - socketArray[fd].lastWritten;
+        uint8_t num_pkts = writtenBytes / MAX_TCP_PAYLOAD_SIZE;
+        uint8_t r = writtenBytes - (num_pkts * MAX_TCP_PAYLOAD_SIZE);
+        // uint8_t i;
+        memcpy(socketArray[fd].sendBuff + socketArray[fd].lastWritten, buff, left);
+        if (left > writtenBytes) {
+            socketArray[fd].lastWritten = socketArray[fd].lastWritten + writtenBytes;
+        } else if (left == writtenBytes) {
+            socketArray[fd].lastWritten = 0;
+        } else {
+            memcpy(socketArray[fd].sendBuff, buff + left, writtenBytes - left);
+            socketArray[fd].lastWritten = writtenBytes - left;
+        }
+
+        // sendData(fd, num_pkts, r);
+        // printf("sender buffer: [");
+        // for (i = 0; i < writtenBytes; i++) {
+        //     if (i <= left) {
+        //         printf("%d, ", socketArray[fd].sendBuff[i + socketArray[fd].lastSent]);
+        //     } else {
+        //         printf("%d, ", socketArray[fd].sendBuff[i - left]);
+        //     }
+        // }
+        // printf("]\n");
+
+        return writtenBytes;
+    }
 
     command error_t Transport.receive(pack* package) {}
 
@@ -140,8 +176,10 @@ implementation {
             memcpy(&socketArray[fd].dest, addr, sizeof(socket_addr_t));
             socketArray[fd].state = SYN_SENT;
             socketArray[fd].RTT = call IP.estimateRTT(addr->addr);
-            socketArray[fd].effectiveWindow = SOCKET_BUFFER_SIZE;
+            socketArray[fd].effectiveWindow = SOCKET_BUFFER_SIZE; // should be removed
             socketArray[fd].lastSent = random_seq;
+            socketArray[fd].lastWritten = socketArray[fd].lastSent;
+            socketArray[fd].type = TYPICAL;
             makeTCPPkt(&tcp_pkt, socketArray[fd].src, socketArray[fd].dest, socketArray[fd].lastSent, ATTEMPT_CONNECT, SYN, socketArray[fd].effectiveWindow, (uint8_t*)&empty_payload, 1);
             makeReSend(&tcp_pkt, fd, addr->addr, TCP_HEADER_LENDTH, OTHER);
             call ReSendTimer.startOneShot(socketArray[fd].RTT + 200);
@@ -169,6 +207,7 @@ implementation {
         socket_addr_t temp;
         socket_t fd;
         char empty_payload[1] = " ";
+        uint8_t random_seq = call Random.rand16() % 126;
         if (socketArray[global_fd].state == LISTEN) {
             temp.addr = from;
             temp.port = payload->srcPort;
@@ -181,10 +220,10 @@ implementation {
             socketArray[fd].state = SYN_RCVD;
             memcpy(&socketArray[fd].src, &socketArray[global_fd].src, sizeof(socket_addr_t));
             socketArray[fd].dest = temp;
-            socketArray[fd].nextExpected = payload->seq + 1;
+            socketArray[fd].nextExpected = random_seq + 1;
             socketArray[fd].RTT = call IP.estimateRTT(from);
             socketArray[fd].effectiveWindow = SOCKET_BUFFER_SIZE;
-            makeTCPPkt(&tcp_pkt, socketArray[fd].src, socketArray[fd].dest, 5, socketArray[fd].nextExpected, SYN, socketArray[fd].effectiveWindow, (uint8_t*)&empty_payload, 1);
+            makeTCPPkt(&tcp_pkt, socketArray[fd].src, socketArray[fd].dest, random_seq, payload->seq + 1, SYN, socketArray[fd].effectiveWindow, (uint8_t*)&empty_payload, 1);
             makeReSend(&tcp_pkt, fd, from, TCP_HEADER_LENDTH, OTHER);
             call ReSendTimer.startOneShot(2 * socketArray[fd].RTT);
             call IP.send(from, PROTOCOL_TCP, 50, (uint8_t*)&tcp_pkt, TCP_HEADER_LENDTH);
@@ -212,11 +251,15 @@ implementation {
         }
 
         socketArray[fd].state = ESTABLISHED;
-        socketArray[fd].lastAck = payload->ack_num;
+        socketArray[fd].lastAck = payload->ack_num - 1;
+        socketArray[fd].effectiveWindow = payload->ad_window - (socketArray[fd].lastSent - socketArray[fd].lastAck);
         reSend[fd] = FALSE;
+
+        printClientBuffer(fd);
 
         makeTCPPkt(&tcp_pkt, socketArray[fd].src, socketArray[fd].dest, payload->ack_num, payload->seq + 1, ACK, socketArray[fd].effectiveWindow, (uint8_t*)&empty_payload, 1);
         call IP.send(from, PROTOCOL_TCP, 50, (uint8_t*)&tcp_pkt, TCP_HEADER_LENDTH);
+        signal Transport.connectDone(fd);
     }
 
     void receiveACK(tcpPkt_t* payload, uint8_t from) {
@@ -224,9 +267,14 @@ implementation {
 
         switch(socketArray[fd].state) {
             case SYN_RCVD:
+                if (payload->ack_num != socketArray[fd].nextExpected) {
+                    return;
+                }
                 socketArray[fd].state = ESTABLISHED;
-                socketArray[fd].nextExpected = payload->seq + 1;
+                socketArray[fd].nextExpected++;
                 reSend[fd] = FALSE;
+                socketArray[fd].type = TYPICAL;
+                call AcceptSockets.pushback(from);
                 dbg(TRANSPORT_CHANNEL, "Node %d establish connection with Node %d\n", TOS_NODE_ID, from);
                 return;
             case FIN_WAIT_1:
@@ -267,12 +315,31 @@ implementation {
         call ReSendQueue.pushback(resend_info);
     }
 
+    void printClientBuffer(socket_t fd) {
+        printf("CLIENT (fd = %d): lastSent = %d, lastACK = %d, lastWritten = %d\n", fd, socketArray[fd].lastSent, socketArray[fd].lastAck, socketArray[fd].lastWritten);
+    }
+
+    void sendData(socket_t fd, uint8_t n, uint8_t r) {
+        tcpPkt_t tcp_pkt;
+        uint8_t temp[MAX_TCP_PAYLOAD_SIZE];
+        uint8_t i;
+
+                // printf("sender buffer: [");
+        // for (i = 0; i < writtenBytes; i++) {
+        //     if (i <= left) {
+        //         printf("%d, ", socketArray[fd].sendBuff[i + socketArray[fd].lastSent]);
+        //     } else {
+        //         printf("%d, ", socketArray[fd].sendBuff[i - left]);
+        //     }
+        // }
+        // printf("]\n");
+    }
+
 
     event void ReSendTimer.fired() {
         reSendTCP_t resend_info = call ReSendQueue.popfront();
         if (resend_info.type == OTHER) {
             if (reSend[resend_info.fd] == TRUE) {
-                printf("RESEND\n");
                 call ReSendQueue.pushback(resend_info);
                 call IP.send(resend_info.dest, PROTOCOL_TCP, 50, (uint8_t*)&resend_info.pkt, resend_info.length);
                 call ReSendTimer.startOneShot(2 * socketArray[resend_info.fd].RTT);

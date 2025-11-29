@@ -20,7 +20,6 @@ interface Transport{
    command void onBoot();
    command error_t initServer(uint8_t port);
    command error_t initClientAndConnect(uint8_t dest, uint8_t srcPort, uint8_t destPort, uint16_t transfer);
-
    /**
     * Get a socket if there is one available.
     * @Side Client/Server
@@ -149,4 +148,6 @@ interface Transport{
     *   to listen else FAIL.
     */
    command error_t listen(socket_t fd);
+
+   event void connectDone(socket_t fd);
 }
