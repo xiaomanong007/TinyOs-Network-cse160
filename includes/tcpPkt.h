@@ -2,6 +2,7 @@
 #define TCP_PKT_H
 
 #include "ipPkt.h"
+#include "socket.h"
 
 enum{
 	TCP_HEADER_LENDTH = 8,
@@ -11,6 +12,8 @@ enum{
     SYN = 1,
     ACK = 2,
     FIN = 3,
+
+    OTHER = 255,
 };
 
 typedef struct tcpPkt{
@@ -22,6 +25,15 @@ typedef struct tcpPkt{
     uint8_t ad_window;
     uint8_t payload[MAX_TCP_PAYLOAD_SIZE];
 }tcpPkt_t;
+
+typedef struct reSendTCP{
+    socket_t fd;
+    uint8_t dest;
+    uint8_t length;
+    uint8_t type;
+    tcpPkt_t pkt;
+}reSendTCP_t;
+
 
 
 void logTCPPkt(tcpPkt_t *input){

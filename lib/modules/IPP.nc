@@ -24,6 +24,8 @@ implementation {
         MAX_NUM_PENDING = 10,
 
         PENDING_DROP_TIME = 30000,
+
+        ESTIMATE_RTT = 320,
     };
 
     uint8_t local_seq = 1;
@@ -46,6 +48,11 @@ implementation {
         for (; i < MAX_NUM_PENDING; i++) {
             call PendingSeqQueue.pushback(i);
         }
+    }
+
+    command uint16_t IP.estimateRTT(uint8_t dest) {
+        uint16_t distance = call LinkStateRouting.pathCost(dest);
+        return distance * ESTIMATE_RTT / 10;
     }
 
     command void IP.send(uint8_t dest, uint8_t protocol, uint8_t TTL, uint8_t* payload, uint16_t length) {

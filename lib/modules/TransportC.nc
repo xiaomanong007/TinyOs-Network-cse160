@@ -9,14 +9,24 @@ implementation {
     components IPC;
     TransportP.IP -> IPC;
 
+    components RandomC as Random;
+    TransportP.Random -> Random;
+
     components new HashmapC(socket_t, 256) as SocketTable;
     TransportP.SocketTable -> SocketTable;
 
     components new ListC(uint8_t, 12) as FDQueue;
-    components new ListC(uint8_t, 12) as AcceptSockets;
-    components new ListC(uint8_t, 12) as CloseQueue;
-
     TransportP.FDQueue -> FDQueue;
+
+    components new ListC(uint8_t, 12) as AcceptSockets;
     TransportP.AcceptSockets -> AcceptSockets;
+
+    components new ListC(uint8_t, 12) as CloseQueue;
     TransportP.CloseQueue -> CloseQueue;
+
+    components new ListC(reSendTCP_t, 10) as ReSendQueue;
+    TransportP.ReSendQueue -> ReSendQueue;
+
+    components new TimerMilliC() as ReSendTimer;
+    TransportP.ReSendTimer -> ReSendTimer;
 }

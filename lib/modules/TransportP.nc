@@ -11,11 +11,14 @@ module TransportP {
         interface Transport;
     }
     uses {
+        interface Random;
         interface IP;
         interface Hashmap<socket_t> as SocketTable; // (dest, fd)
         interface List<uint8_t> as FDQueue;
         interface List<uint8_t> as CloseQueue;
         interface List<uint8_t> as AcceptSockets;
+        interface List<reSendTCP_t> as ReSendQueue;
+        interface Timer<TMilli> as ReSendTimer;
     }
 }
 
@@ -23,6 +26,7 @@ implementation {
     socket_t global_fd;
     socket_store_t socketArray[MAX_NUM_OF_SOCKETS]; // index 0 is used as a global socket (only on server side)
     bool socketInUse[MAX_NUM_OF_SOCKETS];
+    bool reSend[MAX_NUM_OF_SOCKETS];
     uint8_t socket_num = 0;
 
     void makeTCPPkt(tcpPkt_t* Package, socket_addr_t src, socket_addr_t dest, uint8_t seq, uint8_t ack_num, uint8_t flag, uint8_t ad_window, uint8_t* payload, uint16_t length);
@@ -85,6 +89,7 @@ implementation {
             dest_addr.port = destPort;
             if (call Transport.connect(fd, &dest_addr) == SUCCESS) {
                 call SocketTable.insert(dest, fd);
+
                 printf("BINDING SUCCESS\n");
                 return SUCCESS;
             } else {
@@ -116,11 +121,11 @@ implementation {
         }
     }
 
-    command socket_t Transport.accept(socket_t fd) {
+    command socket_t Transport.accept(socket_t fd) {}
 
+    command uint16_t Transport.write(socket_t fd, uint8_t *buff, uint16_t bufflen) {
+        
     }
-
-    command uint16_t Transport.write(socket_t fd, uint8_t *buff, uint16_t bufflen) {}
 
     command error_t Transport.receive(pack* package) {}
 
@@ -128,14 +133,20 @@ implementation {
 
     command error_t Transport.connect(socket_t fd, socket_addr_t* addr) {
         tcpPkt_t tcp_pkt;
-        char payload[1] = " ";
+        char empty_payload[1] = " ";
+        uint8_t random_seq = 1 + call Random.rand16() % 126;
+
         if (socketArray[fd].state == CLOSED) {
             memcpy(&socketArray[fd].dest, addr, sizeof(socket_addr_t));
             socketArray[fd].state = SYN_SENT;
-            makeTCPPkt(&tcp_pkt, socketArray[fd].src, socketArray[fd].dest, 0, ATTEMPT_CONNECT, SYN, SOCKET_BUFFER_SIZE, (uint8_t*)&payload, 1);
+            socketArray[fd].RTT = call IP.estimateRTT(addr->addr);
+            socketArray[fd].effectiveWindow = SOCKET_BUFFER_SIZE;
+            socketArray[fd].lastSent = random_seq;
+            makeTCPPkt(&tcp_pkt, socketArray[fd].src, socketArray[fd].dest, socketArray[fd].lastSent, ATTEMPT_CONNECT, SYN, socketArray[fd].effectiveWindow, (uint8_t*)&empty_payload, 1);
             call IP.send(addr->addr, PROTOCOL_TCP, 50, (uint8_t*)&tcp_pkt, TCP_HEADER_LENDTH);
             return SUCCESS;
         }
+
         return FAIL;
     }
     
@@ -151,9 +162,55 @@ implementation {
         return FAIL;
     }
 
-    void receiveSYN(tcpPkt_t* payload, uint8_t from) {}
+    void receiveSYN(tcpPkt_t* payload, uint8_t from) {
+        tcpPkt_t tcp_pkt;
+        socket_addr_t temp;
+        socket_t fd;
+        char empty_payload[1] = " ";
+        if (socketArray[global_fd].state == LISTEN) {
+            temp.addr = from;
+            temp.port = payload->srcPort;
+            if (call SocketTable.contains(from)) {
+                fd = call SocketTable.get(from);
+            } else {
+                fd = call FDQueue.popback();
+                call SocketTable.insert(from, fd);
+            }
+            socketArray[fd].state = SYN_RCVD;
+            memcpy(&socketArray[fd].src, &socketArray[global_fd].src, sizeof(socket_addr_t));
+            socketArray[fd].dest = temp;
+            socketArray[fd].nextExpected = payload->seq + 1;
+            makeTCPPkt(&tcp_pkt, socketArray[fd].src, socketArray[fd].dest, 5, payload->seq + 1, SYN, SOCKET_BUFFER_SIZE, (uint8_t*)&empty_payload, 1);
+            call IP.send(from, PROTOCOL_TCP, 50, (uint8_t*)&tcp_pkt, TCP_HEADER_LENDTH);
+        } else {
+            temp = socketArray[global_fd].src;
+            dbg(TRANSPORT_CHANNEL, "Server (node %d, port %d) is not in LISTEN state\n", TOS_NODE_ID, temp.port);
+        }
+    }
 
-    void receiveSYNACK(tcpPkt_t* payload, uint8_t from) {}
+    void receiveSYNACK(tcpPkt_t* payload, uint8_t from) {
+        tcpPkt_t tcp_pkt;
+        socket_t fd;
+        char empty_payload[1] = " ";
+
+        if (!call SocketTable.contains(from)) {
+            dbg(TRANSPORT_CHANNEL, "Error: unkown {SYN + ACK} from node %d port %d\n", from, payload->srcPort);
+            return;
+        }
+
+        fd = call SocketTable.get(from);
+
+        if (payload->ack_num != socketArray[fd].lastSent + 1) {
+            dbg(TRANSPORT_CHANNEL, "Error: wrong ACK number (expect ACK number = %d, receive ACK number = %d)\n", socketArray[fd].lastSent + 1, payload->ack_num);
+            return;
+        }
+
+        socketArray[fd].state = ESTABLISHED;
+        socketArray[fd].lastAck = payload->ack_num;
+
+        makeTCPPkt(&tcp_pkt, socketArray[fd].src, socketArray[fd].dest, payload->ack_num, payload->seq + 1, ACK, socketArray[fd].effectiveWindow, (uint8_t*)&empty_payload, 1);
+        call IP.send(from, PROTOCOL_TCP, 50, (uint8_t*)&tcp_pkt, TCP_HEADER_LENDTH);
+    }
 
     void receiveACK(tcpPkt_t* payload, uint8_t from) {}
 
@@ -171,10 +228,12 @@ implementation {
         memcpy(Package->payload, payload, length);
     }
 
+    event void ReSendTimer.fired() {}
+
     event void IP.gotTCP(uint8_t* incomingMsg, uint8_t from) {
         tcpPkt_t tcp_pkt;
         memcpy(&tcp_pkt, incomingMsg, sizeof(tcpPkt_t));
-        // logTCPPkt(&tcp_pkt);
+        logTCPPkt(&tcp_pkt);
         switch(tcp_pkt.flag) {
             case SYN:
                 if (tcp_pkt.ack_num == ATTEMPT_CONNECT) {
