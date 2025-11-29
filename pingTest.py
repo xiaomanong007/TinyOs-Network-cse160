@@ -15,8 +15,8 @@ def main():
 
 
     # Add a noise model to all of the motes.
-    s.loadNoise("no_noise.txt");
-    # s.loadNoise("some_noise.txt");
+    # s.loadNoise("no_noise.txt");
+    s.loadNoise("some_noise.txt");
     # s.loadNoise("meyer-heavy.txt");
 
 
@@ -33,10 +33,10 @@ def main():
 
     # After sending a ping, simulate a little to prevent collision.
     s.runTime(300);
-    s.routeDMP(1);
-    s.runTime(1);
-    s.ping(1, 10, "abcdefghijklmnopqrst");
-    s.runTime(50);
+    # s.routeDMP(1);
+    # s.runTime(1);
+    # s.ping(1, 10, "abcdefghijklmnopqrst");
+    # s.runTime(50);
 
     # s.testServer(1);
     # s.routeDMP(10);
@@ -46,12 +46,12 @@ def main():
     # s.routeDMP(5);
     # s.runTime(1);
 
-    # s.cmdTestServer(1, 80);
-    # s.runTime(60);
+    s.cmdTestServer(1, 80);
+    s.runTime(60);
 
-    # s.cmdTestClient(5, 1, 60, 80, 80);
-    # s.runTime(20);
-    # s.runTime(100);
+    s.cmdTestClient(5, 1, 60, 80, 80);
+    s.runTime(20);
+    s.runTime(100);
 
 if __name__ == '__main__':
     main()

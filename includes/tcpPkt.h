@@ -16,11 +16,17 @@ enum{
 typedef struct tcpPkt{
     uint8_t srcPort;
     uint8_t destPort;
-    uint16_t seq;
-    uint16_t ack_num;
+    uint8_t seq;
+    uint8_t ack_num;
     uint8_t flag;
     uint8_t ad_window;
     uint8_t payload[MAX_TCP_PAYLOAD_SIZE];
 }tcpPkt_t;
+
+
+void logTCPPkt(tcpPkt_t *input){
+	dbg(TRANSPORT_CHANNEL, "srcPort: %hhu destPort: %hhu seq:%hhu ack_num:%hhu flag:%hhu ad_window:%hhu Payload: %s\n",
+	input->srcPort, input->destPort, input->seq, input->ack_num, input->flag, input->ad_window, input->payload);
+}
 
 #endif

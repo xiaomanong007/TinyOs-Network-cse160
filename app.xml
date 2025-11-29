@@ -1055,7 +1055,7 @@
     <component qname="TransportC" loc="1:lib/modules/TransportC.nc">
       <configuration/>
     </component>
-    <component qname="TransportP" loc="8:lib/modules/TransportP.nc">
+    <component qname="TransportP" loc="9:lib/modules/TransportP.nc">
       <module/>
     </component>
     <component qname="TransportC.SocketTable" loc="10(TransportC.SocketTable):dataStructures/modules/HashmapC.nc">
@@ -8066,38 +8066,38 @@
     <enum loc="42:includes/packet.h" ref="0x7ffffad76850" defined="" size="I:4" alignment="I:4">
       <type-int cname="int" size="I:4" alignment="I:4"></type-int>
     </enum>
-    <struct name="tcpPkt" loc="16:lib/modules/../../includes/tcpPkt.h" ref="0x7ffffa15c020" defined="" size="I:20" alignment="I:2">
-      <field name="srcPort" ref="0x7ffffa15b1c0" bit-offset="I:0" size="I:1">
+    <struct name="tcpPkt" loc="16:lib/modules/../../includes/tcpPkt.h" ref="0x7ffffa15c020" defined="" size="I:17" alignment="I:1">
+      <field name="srcPort" ref="0x7ffffa15b180" bit-offset="I:0" size="I:1">
         <type-int cname="unsigned char" unsigned="" size="I:1" alignment="I:1">
           <typename><typedef-ref name="uint8_t" ref="0x7ffffb67f920"/></typename>
         </type-int>
       </field>
-      <field name="destPort" ref="0x7ffffa15b270" bit-offset="I:8" size="I:1">
+      <field name="destPort" ref="0x7ffffa15b230" bit-offset="I:8" size="I:1">
         <type-int cname="unsigned char" unsigned="" size="I:1" alignment="I:1">
           <typename><typedef-ref name="uint8_t" ref="0x7ffffb67f920"/></typename>
         </type-int>
       </field>
-      <field name="seq" ref="0x7ffffa15b320" bit-offset="I:16" size="I:2">
-        <type-int cname="unsigned short" unsigned="" size="I:2" alignment="I:2">
-          <typename><typedef-ref name="uint16_t" ref="0x7ffffb67fd20"/></typename>
-        </type-int>
-      </field>
-      <field name="ack_num" ref="0x7ffffa15b3d0" bit-offset="I:32" size="I:2">
-        <type-int cname="unsigned short" unsigned="" size="I:2" alignment="I:2">
-          <typename><typedef-ref name="uint16_t" ref="0x7ffffb67fd20"/></typename>
-        </type-int>
-      </field>
-      <field name="flag" ref="0x7ffffa15b480" bit-offset="I:48" size="I:1">
+      <field name="seq" ref="0x7ffffa15b2e0" bit-offset="I:16" size="I:1">
         <type-int cname="unsigned char" unsigned="" size="I:1" alignment="I:1">
           <typename><typedef-ref name="uint8_t" ref="0x7ffffb67f920"/></typename>
         </type-int>
       </field>
-      <field name="ad_window" ref="0x7ffffa15b530" bit-offset="I:56" size="I:1">
+      <field name="ack_num" ref="0x7ffffa15b390" bit-offset="I:24" size="I:1">
         <type-int cname="unsigned char" unsigned="" size="I:1" alignment="I:1">
           <typename><typedef-ref name="uint8_t" ref="0x7ffffb67f920"/></typename>
         </type-int>
       </field>
-      <field name="payload" ref="0x7ffffa15b5e0" bit-offset="I:64" size="I:11">
+      <field name="flag" ref="0x7ffffa15b440" bit-offset="I:32" size="I:1">
+        <type-int cname="unsigned char" unsigned="" size="I:1" alignment="I:1">
+          <typename><typedef-ref name="uint8_t" ref="0x7ffffb67f920"/></typename>
+        </type-int>
+      </field>
+      <field name="ad_window" ref="0x7ffffa15b4f0" bit-offset="I:40" size="I:1">
+        <type-int cname="unsigned char" unsigned="" size="I:1" alignment="I:1">
+          <typename><typedef-ref name="uint8_t" ref="0x7ffffb67f920"/></typename>
+        </type-int>
+      </field>
+      <field name="payload" ref="0x7ffffa15b5a0" bit-offset="I:48" size="I:11">
         <type-array elements="I:11" size="I:11" alignment="I:1">
           <type-int cname="unsigned char" unsigned="" size="I:1" alignment="I:1">
             <typename><typedef-ref name="uint8_t" ref="0x7ffffb67f920"/></typename>
@@ -8909,7 +8909,7 @@
       </type-array>
     </variable>
     <variable name="outputs" ref="0x7ffffb0eb9a0" loc="67:/opt/tinyos-main/tos/lib/tossim/sim_log.c">
-      <type-array elements="I:254" size="I:4064" alignment="I:8">
+      <type-array elements="I:260" size="I:4160" alignment="I:8">
         <type-tag size="I:16" alignment="I:8"><struct-ref name="sim_log_output" ref="0x7ffffb0efd90"/>
           <typename><typedef-ref name="sim_log_output_t" ref="0x7ffffb0ed650"/></typename>
         </type-tag>
@@ -9971,7 +9971,7 @@
         <typename><typedef-ref name="uint16_t" ref="0x7ffffb67fd20"/></typename>
       </type-int>
     </variable>
-    <variable name="socketInUse" ref="0x7ffffa145840" loc="23:lib/modules/TransportP.nc">
+    <variable name="socketInUse" ref="0x7ffffa13f090" loc="25:lib/modules/TransportP.nc">
       <component-ref qname="TransportP"/>
       <type-array elements="I:10" size="I:10" alignment="I:1">
         <type-int cname="unsigned char" unsigned="" size="I:1" alignment="I:1">
@@ -9979,7 +9979,7 @@
         </type-int>
       </type-array>
     </variable>
-    <variable name="socketArray" ref="0x7ffffa145320" loc="22:lib/modules/TransportP.nc">
+    <variable name="socketArray" ref="0x7ffffa141b30" loc="24:lib/modules/TransportP.nc">
       <component-ref qname="TransportP"/>
       <type-array elements="I:10" size="I:2800" alignment="I:4">
         <type-tag size="I:280" alignment="I:4"><struct-ref name="socket_store_t" ref="0x7ffffa8e95a0"/>
@@ -9987,7 +9987,13 @@
         </type-tag>
       </type-array>
     </variable>
-    <variable name="socket_num" ref="0x7ffffa145be0" loc="24:lib/modules/TransportP.nc">
+    <variable name="global_fd" ref="0x7ffffa1415b0" loc="23:lib/modules/TransportP.nc">
+      <component-ref qname="TransportP"/>
+      <type-int cname="unsigned char" unsigned="" size="I:1" alignment="I:1">
+        <typename><typedef-ref name="socket_t" ref="0x7ffffa8e9220"/></typename>
+      </type-int>
+    </variable>
+    <variable name="socket_num" ref="0x7ffffa13f430" loc="26:lib/modules/TransportP.nc">
       <component-ref qname="TransportP"/>
       <type-int cname="unsigned char" unsigned="" size="I:1" alignment="I:1">
         <typename><typedef-ref name="uint8_t" ref="0x7ffffb67f920"/></typename>
@@ -12365,7 +12371,7 @@
     <constant cst="I:2147483648" name="CC2420_INVALID_TIMESTAMP" ref="0x7ffffac68bc0" loc="403:/opt/tinyos-main/tos/chips/cc2420/sim/CC2420.h">
       <type-int cname="int" size="I:4" alignment="I:4"></type-int>
     </constant>
-    <constant cst="I:254" name="SIM_LOG_OUTPUT_COUNT" ref="0x7ffffb0eb3d0" loc="64:/opt/tinyos-main/tos/lib/tossim/sim_log.c">
+    <constant cst="I:260" name="SIM_LOG_OUTPUT_COUNT" ref="0x7ffffb0eb3d0" loc="64:/opt/tinyos-main/tos/lib/tossim/sim_log.c">
       <type-int cname="int" size="I:4" alignment="I:4"></type-int>
     </constant>
     <constant cst="I:0" name="SPI2X" ref="0x7ffffad1b020" loc="970:/opt/tinyos-main/tos/chips/atm128/sim/atm128_sim.h">
@@ -14576,9 +14582,9 @@
         <typename><typedef-ref name="int_least16_t" ref="0x7ffffb67ed40"/></typename>
       </type-int>
     </typedef>
-    <typedef name="tcpPkt_t" ref="0x7ffffa15b740" loc="24:lib/modules/../../includes/tcpPkt.h">
-      <type-tag size="I:20" alignment="I:2"><struct-ref name="tcpPkt" ref="0x7ffffa15c020"/>
-        <typename><typedef-ref name="tcpPkt_t" ref="0x7ffffa15b740"/></typename>
+    <typedef name="tcpPkt_t" ref="0x7ffffa15b700" loc="24:lib/modules/../../includes/tcpPkt.h">
+      <type-tag size="I:17" alignment="I:1"><struct-ref name="tcpPkt" ref="0x7ffffa15c020"/>
+        <typename><typedef-ref name="tcpPkt_t" ref="0x7ffffa15b700"/></typename>
       </type-tag>
     </typedef>
     <typedef name="ldiv_t" ref="0x7ffffb46e020" loc="109:/usr/include/stdlib.h">
