@@ -5,7 +5,7 @@
 #include "socket.h"
 
 enum{
-	TCP_HEADER_LENDTH = 8,
+	TCP_HEADER_LENDTH = 6,
     MAX_TCP_PAYLOAD_SIZE = MAX_IP_PAYLOAD_SIZE - TCP_HEADER_LENDTH,
 
     DATA = 0,
@@ -23,7 +23,7 @@ typedef struct tcpPkt{
     uint8_t ack_num;
     uint8_t flag;
     uint8_t ad_window;
-    uint8_t payload[MAX_TCP_PAYLOAD_SIZE];
+    uint8_t payload[26];
 }tcpPkt_t;
 
 typedef struct reSendTCP{
@@ -34,7 +34,10 @@ typedef struct reSendTCP{
     tcpPkt_t pkt;
 }reSendTCP_t;
 
-
+typedef struct receiveTCP{
+    uint8_t from;
+    tcpPkt_t pkt;
+}receiveTCP_t;
 
 void logTCPPkt(tcpPkt_t *input){
 	dbg(TRANSPORT_CHANNEL, "srcPort: %hhu destPort: %hhu seq:%hhu ack_num:%hhu flag:%hhu ad_window:%hhu Payload: %s\n",

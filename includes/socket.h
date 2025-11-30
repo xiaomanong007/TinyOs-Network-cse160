@@ -49,6 +49,8 @@ typedef struct socket_store_t{
 
     // type can be either: TYPICAL or WRAP (the default is TYPICAL)
     bool type;
+    uint8_t pending_seq;
+    uint8_t ISN;
 
     // This is the sender portion.
     uint8_t sendBuff[SOCKET_BUFFER_SIZE];

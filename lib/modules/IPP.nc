@@ -144,28 +144,25 @@ implementation {
         if (dropped[seq - 1]) {
             return;
         }
-
         if (!has_pending[seq - 1]) {
-            temp = call PendingSeqQueue.popfront();
-            has_pending[temp] = TRUE;
-            dropped[temp] = FALSE;
-            pending_arr[temp].src = ip_pkt.src;
-            pending_arr[temp].protocol = ip_pkt.protocol;
-            pending_arr[temp].current_length = fragment_size;
-            if (ip_pkt.flag < 192) {
-                pending_arr[temp].expected_length = ip_pkt.offset * 4;
-            }
-            memcpy(pending_arr[temp].payload + ip_pkt.offset * 4, ip_pkt.payload, fragment_size);
-            call TimeoutQueue.pushback(temp);
-            call PendingTimer.startOneShot(PENDING_DROP_TIME);
-            printf("post = %d, current lenght = %d, payload = %s\n", ip_pkt.offset * 4, pending_arr[temp].current_length, pending_arr[temp].payload);
-        } else {
-            pending_arr[seq - 1].current_length += fragment_size;
+            // temp = call PendingSeqQueue.popfront();
+            has_pending[seq - 1] = TRUE;
+            dropped[seq - 1] = FALSE;
+            pending_arr[seq - 1].src = ip_pkt.src;
+            pending_arr[seq - 1].protocol = ip_pkt.protocol;
+            pending_arr[seq - 1].current_length = fragment_size;
             if (ip_pkt.flag < 192) {
                 pending_arr[seq - 1].expected_length = ip_pkt.offset * 4;
             }
             memcpy(pending_arr[seq - 1].payload + ip_pkt.offset * 4, ip_pkt.payload, fragment_size);
-            printf("post = %d, current lenght = %d, payload = %s\n", ip_pkt.offset * 4, pending_arr[seq - 1].current_length, pending_arr[seq - 1].payload);
+            call TimeoutQueue.pushback(seq - 1);
+            call PendingTimer.startOneShot(PENDING_DROP_TIME);
+        } else {
+            pending_arr[seq - 1].current_length = pending_arr[seq - 1].current_length + fragment_size;
+            if (ip_pkt.flag < 192) {
+                pending_arr[seq - 1].expected_length = ip_pkt.offset * 4;
+            }
+            memcpy(pending_arr[seq - 1].payload + ip_pkt.offset * 4, ip_pkt.payload, fragment_size);
             if (pending_arr[seq - 1].current_length >=  pending_arr[seq - 1].expected_length) {
                 has_pending[seq - 1] = FALSE;
                 signal IP.gotTCP(pending_arr[seq - 1].payload, pending_arr[seq - 1].src);

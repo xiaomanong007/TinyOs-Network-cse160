@@ -29,4 +29,7 @@ implementation {
 
     components new TimerMilliC() as ReSendTimer;
     TransportP.ReSendTimer -> ReSendTimer;
+
+    components new ListC(receiveTCP_t, 15) as ReceiveQueue;
+    TransportP.ReceiveQueue -> ReceiveQueue;
 }
