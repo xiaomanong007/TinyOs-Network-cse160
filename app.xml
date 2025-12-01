@@ -9115,11 +9115,11 @@
       <component-ref qname="IPP"/>
       <type-int cname="int" size="I:4" alignment="I:4"></type-int>
     </enum>
-    <enum loc="53:lib/modules/TransportP.nc" ref="0x7ffff9f93e20" defined="" scoped="" size="I:4" alignment="I:4">
+    <enum loc="52:lib/modules/TransportP.nc" ref="0x7ffff9f71e20" defined="" scoped="" size="I:4" alignment="I:4">
       <component-ref qname="TransportP"/>
       <type-int cname="int" size="I:4" alignment="I:4"></type-int>
     </enum>
-    <enum loc="32:lib/modules/TransportP.nc" ref="0x7ffffa0e18f0" defined="" scoped="" size="I:4" alignment="I:4">
+    <enum loc="31:lib/modules/TransportP.nc" ref="0x7ffffa0e18f0" defined="" scoped="" size="I:4" alignment="I:4">
       <component-ref qname="TransportP"/>
       <type-int cname="int" size="I:4" alignment="I:4"></type-int>
     </enum>
@@ -9207,7 +9207,7 @@
       </type-array>
     </variable>
     <variable name="outputs" ref="0x7ffffb0eb9a0" loc="67:/opt/tinyos-main/tos/lib/tossim/sim_log.c">
-      <type-array elements="I:263" size="I:4208" alignment="I:8">
+      <type-array elements="I:268" size="I:4288" alignment="I:8">
         <type-tag size="I:16" alignment="I:8"><struct-ref name="sim_log_output" ref="0x7ffffb0efd90"/>
           <typename><typedef-ref name="sim_log_output_t" ref="0x7ffffb0ed650"/></typename>
         </type-tag>
@@ -10273,7 +10273,7 @@
         <typename><typedef-ref name="uint16_t" ref="0x7ffffb67fd20"/></typename>
       </type-int>
     </variable>
-    <variable name="inSend" ref="0x7ffffa0df510" loc="40:lib/modules/TransportP.nc">
+    <variable name="inSend" ref="0x7ffffa0df510" loc="39:lib/modules/TransportP.nc">
       <component-ref qname="TransportP"/>
       <type-array elements="I:10" size="I:10" alignment="I:1">
         <type-int cname="unsigned char" unsigned="" size="I:1" alignment="I:1">
@@ -10281,7 +10281,7 @@
         </type-int>
       </type-array>
     </variable>
-    <variable name="reSend" ref="0x7ffffa0df020" loc="39:lib/modules/TransportP.nc">
+    <variable name="reSend" ref="0x7ffffa0df020" loc="38:lib/modules/TransportP.nc">
       <component-ref qname="TransportP"/>
       <type-array elements="I:10" size="I:10" alignment="I:1">
         <type-int cname="unsigned char" unsigned="" size="I:1" alignment="I:1">
@@ -10289,7 +10289,7 @@
         </type-int>
       </type-array>
     </variable>
-    <variable name="socketInUse" ref="0x7ffffa0e0ac0" loc="38:lib/modules/TransportP.nc">
+    <variable name="socketInUse" ref="0x7ffffa0e0ac0" loc="37:lib/modules/TransportP.nc">
       <component-ref qname="TransportP"/>
       <type-array elements="I:10" size="I:10" alignment="I:1">
         <type-int cname="unsigned char" unsigned="" size="I:1" alignment="I:1">
@@ -10297,7 +10297,7 @@
         </type-int>
       </type-array>
     </variable>
-    <variable name="socketArray" ref="0x7ffffa0e05a0" loc="37:lib/modules/TransportP.nc">
+    <variable name="socketArray" ref="0x7ffffa0e05a0" loc="36:lib/modules/TransportP.nc">
       <component-ref qname="TransportP"/>
       <type-array elements="I:10" size="I:2840" alignment="I:4">
         <type-tag size="I:284" alignment="I:4"><struct-ref name="socket_store_t" ref="0x7ffffa8e7a20"/>
@@ -10305,13 +10305,13 @@
         </type-tag>
       </type-array>
     </variable>
-    <variable name="global_fd" ref="0x7ffffa0e0020" loc="36:lib/modules/TransportP.nc">
+    <variable name="global_fd" ref="0x7ffffa0e0020" loc="35:lib/modules/TransportP.nc">
       <component-ref qname="TransportP"/>
       <type-int cname="unsigned char" unsigned="" size="I:1" alignment="I:1">
         <typename><typedef-ref name="socket_t" ref="0x7ffffa8e76a0"/></typename>
       </type-int>
     </variable>
-    <variable name="socket_num" ref="0x7ffffa0df8b0" loc="41:lib/modules/TransportP.nc">
+    <variable name="socket_num" ref="0x7ffffa0df8b0" loc="40:lib/modules/TransportP.nc">
       <component-ref qname="TransportP"/>
       <type-int cname="unsigned char" unsigned="" size="I:1" alignment="I:1">
         <typename><typedef-ref name="uint8_t" ref="0x7ffffb67f920"/></typename>
@@ -12707,7 +12707,7 @@
     <constant cst="I:2147483648" name="CC2420_INVALID_TIMESTAMP" ref="0x7ffffac68bc0" loc="403:/opt/tinyos-main/tos/chips/cc2420/sim/CC2420.h">
       <type-int cname="int" size="I:4" alignment="I:4"></type-int>
     </constant>
-    <constant cst="I:263" name="SIM_LOG_OUTPUT_COUNT" ref="0x7ffffb0eb3d0" loc="64:/opt/tinyos-main/tos/lib/tossim/sim_log.c">
+    <constant cst="I:268" name="SIM_LOG_OUTPUT_COUNT" ref="0x7ffffb0eb3d0" loc="64:/opt/tinyos-main/tos/lib/tossim/sim_log.c">
       <type-int cname="int" size="I:4" alignment="I:4"></type-int>
     </constant>
     <constant cst="I:0" name="SPI2X" ref="0x7ffffad1b020" loc="970:/opt/tinyos-main/tos/chips/atm128/sim/atm128_sim.h">
@@ -13592,11 +13592,11 @@
       <component-ref qname="IPP"/>
       <type-int cname="int" size="I:4" alignment="I:4"></type-int>
     </constant>
-    <constant cst="I:18" name="receiveDATA" ref="0x7ffff9f93c30" loc="53:lib/modules/TransportP.nc">
+    <constant cst="I:18" name="receiveDATA" ref="0x7ffff9f71c30" loc="52:lib/modules/TransportP.nc">
       <component-ref qname="TransportP"/>
       <type-int cname="int" size="I:4" alignment="I:4"></type-int>
     </constant>
-    <constant cst="I:32" name="MAX_PAYLOAD" ref="0x7ffffa0e1be0" loc="33:lib/modules/TransportP.nc">
+    <constant cst="I:16" name="MAX_PAYLOAD" ref="0x7ffffa0e1be0" loc="32:lib/modules/TransportP.nc">
       <component-ref qname="TransportP"/>
       <type-int cname="int" size="I:4" alignment="I:4"></type-int>
     </constant>
@@ -15378,7 +15378,7 @@
         <type-int cname="int" size="I:4" alignment="I:4"></type-int>
       </type-array>
     </typedef>
-    <typedef name="__nesc_sillytask_receiveDATA" ref="0x7ffff9f92250" loc="53:lib/modules/TransportP.nc">
+    <typedef name="__nesc_sillytask_receiveDATA" ref="0x7ffff9f70250" loc="52:lib/modules/TransportP.nc">
       <component-ref qname="TransportP"/>
       <type-array elements="I:18" size="I:72" alignment="I:4">
         <type-int cname="int" size="I:4" alignment="I:4"></type-int>

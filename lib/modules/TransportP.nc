@@ -24,13 +24,12 @@ module TransportP {
         interface List<receiveTCP_t> as ReceiveQueue;
         interface Timer<TMilli> as InitSendTimer;
         interface List<socket_t> as InitSendQueue;
-
     }
 }
 
 implementation {
     enum {
-        MAX_PAYLOAD = 32,
+        MAX_PAYLOAD = 16,
     };
 
     socket_t global_fd;
@@ -149,6 +148,7 @@ implementation {
         }
     }
 
+    // not finish
     command socket_t Transport.accept(socket_t fd) {}
 
     command uint16_t Transport.write(socket_t fd, uint8_t *buff, uint16_t bufflen) {
@@ -170,8 +170,10 @@ implementation {
         return writtenBytes;
     }
 
+    // not finish
     command error_t Transport.receive(pack* package) {}
 
+    // not finish
     command uint16_t Transport.read(socket_t fd, uint8_t *buff, uint16_t bufflen) {}
 
     command error_t Transport.connect(socket_t fd, socket_addr_t* addr) {
@@ -191,20 +193,37 @@ implementation {
             socketArray[fd].type = TYPICAL;
             makeTCPPkt(&tcp_pkt, socketArray[fd].src, socketArray[fd].dest, socketArray[fd].lastSent, ATTEMPT_CONNECT, SYN, socketArray[fd].effectiveWindow, (uint8_t*)&empty_payload, 1);
             makeReSend(&tcp_pkt, fd, addr->addr, TCP_HEADER_LENDTH, OTHER);
-            call ReSendTimer.startOneShot(2 * socketArray[fd].RTT);
             call IP.send(addr->addr, PROTOCOL_TCP, 50, (uint8_t*)&tcp_pkt, TCP_HEADER_LENDTH);
+            call ReSendTimer.startOneShot(2 * socketArray[fd].RTT);
             return SUCCESS;
         }
 
         return FAIL;
     }
-    
+
+    // not finish
     command error_t Transport.close(socket_t fd) {
-        printf("Node %d CLOSE \t ", TOS_NODE_ID);
-        printClientBuffer(fd);
-        return SUCCESS;
+        tcpPkt_t tcp_pkt;
+        char empty_payload[1] = " ";
+        socket_addr_t* self_addr = &socketArray[fd].src;
+        socket_addr_t* temp = &socketArray[fd].dest;
+
+        if (socketArray[fd].state == ESTABLISHED || socketArray[fd].state == FIN_WAIT_1) {
+            dbg(TRANSPORT_CHANNEL, "Node %d (port %d) : all data are transmitted and received, start to close the connection with node %d (port %d)\n", self_addr->addr, self_addr->port, temp->addr, temp->port);
+            socketArray[fd].state = FIN_WAIT_1;
+            socketArray[fd].lastSent = socketArray[fd].lastSent + 1;
+            makeTCPPkt(&tcp_pkt, socketArray[fd].src, socketArray[fd].dest, socketArray[fd].lastSent, socketArray[fd].pending_seq + 1, FIN, socketArray[fd].effectiveWindow, (uint8_t*)&empty_payload, 1);
+            makeReSend(&tcp_pkt, fd, temp->addr, TCP_HEADER_LENDTH, OTHER);
+            call IP.send(temp->addr, PROTOCOL_TCP, 50, (uint8_t*)&tcp_pkt, TCP_HEADER_LENDTH);
+            call ReSendTimer.startOneShot(2 * socketArray[fd].RTT);
+            return SUCCESS;
+        }
+
+        dbg(TRANSPORT_CHANNEL ,"Error: unable to close (socket state is neither ESTABLISHED nor FIN_WAIT_1)\n");
+        return FAIL;
     }
 
+    // not finish
     command error_t Transport.release(socket_t fd) {}
 
     command error_t Transport.listen(socket_t fd) {
@@ -295,8 +314,14 @@ implementation {
                 dbg(TRANSPORT_CHANNEL, "Node %d establish connection with Node %d\n", TOS_NODE_ID, from);
                 return;
             case FIN_WAIT_1:
-                socketArray[fd].state = FIN_WAIT_2;
-                printf("NODE %d FIN_WAIT_2\n", TOS_NODE_ID);
+                if (payload->ack_num == socketArray[fd].lastSent + 1) {
+                    socketArray[fd].state = FIN_WAIT_2;
+                    reSend[fd] = FALSE;
+                    dbg(TRANSPORT_CHANNEL, "NODE %d FIN_WAIT_2\n", TOS_NODE_ID);
+                }
+                return;
+            case FIN_WAIT_2:
+
                 return;
             case LAST_ACK:
                 socketArray[fd].state = CLOSED;
@@ -311,7 +336,6 @@ implementation {
     }
 
 
-    // need modification
     task void receiveDATA() {
         receiveTCP_t r_pkt = call ReceiveQueue.popfront();
         uint8_t i;
@@ -342,17 +366,49 @@ implementation {
                 printf("%d, ", data[i]);
             }
             printf("\n");
-
             socketArray[fd].lastRead = tcp_pkt->seq;
 
             socketArray[fd].effectiveWindow = socketArray[fd].effectiveWindow - (socketArray[fd].nextExpected - 1 - socketArray[fd].lastRead);
         }
-
         makeTCPPkt(&reply_pkt, socketArray[fd].src, socketArray[fd].dest, socketArray[fd].ISN, socketArray[fd].nextExpected, ACK, socketArray[fd].effectiveWindow, (uint8_t*) &empty_payload, 1);
         call IP.send(r_pkt.from, PROTOCOL_TCP, 50, (uint8_t*)&reply_pkt, TCP_HEADER_LENDTH);
     }
 
-    void receiveFIN(tcpPkt_t* payload, uint8_t from) {}
+    
+    // not finish
+    void receiveFIN(tcpPkt_t* payload, uint8_t from) {
+        tcpPkt_t tcp_pkt;
+        socket_t fd = call SocketTable.get(from);
+        socket_addr_t* temp = &socketArray[fd].dest;
+        char empty_payload[1] = " ";
+
+        switch(socketArray[fd].state) {
+            case ESTABLISHED:
+                if (payload->ack_num != socketArray[fd].ISN + 1) {
+                    dbg(TRANSPORT_CHANNEL, "Error: recive FIN with wrong ack_num (expect ack = %d, ack received = %d)\n", socketArray[fd].ISN + 1, payload->ack_num);
+                    return;
+                }
+                socketArray[fd].state = CLOSE_WAIT;
+                makeTCPPkt(&tcp_pkt, socketArray[fd].src, socketArray[fd].dest, socketArray[fd].ISN, payload->seq + 1, ACK, socketArray[fd].effectiveWindow, (uint8_t*)&empty_payload, 1);
+                call IP.send(temp->addr, PROTOCOL_TCP, 50, (uint8_t*)&tcp_pkt, TCP_HEADER_LENDTH);
+                return;
+            case CLOSE_WAIT:
+                if (payload->ack_num != socketArray[fd].ISN + 1) {
+                    dbg(TRANSPORT_CHANNEL, "Error: recive FIN with wrong ack_num (expect ack = %d, ack received = %d)\n", socketArray[fd].ISN + 1, payload->ack_num);
+                    return;
+                }
+                socketArray[fd].state = CLOSE_WAIT;
+                makeTCPPkt(&tcp_pkt, socketArray[fd].src, socketArray[fd].dest, socketArray[fd].ISN, payload->seq + 1, ACK, socketArray[fd].effectiveWindow, (uint8_t*)&empty_payload, 1);
+                call IP.send(temp->addr, PROTOCOL_TCP, 50, (uint8_t*)&tcp_pkt, TCP_HEADER_LENDTH);
+                return;
+            case FIN_WAIT_2:
+
+                return;
+            default:
+
+                return;
+        }
+    }
 
     void makeTCPPkt(tcpPkt_t* Package, socket_addr_t src, socket_addr_t dest, uint8_t seq, uint8_t ack_num, uint8_t flag, uint8_t ad_window, uint8_t* payload, uint16_t length) {
         Package->srcPort = src.port;
