@@ -2,7 +2,7 @@
 #include "../../includes/packet.h"
 #include "../../includes/channels.h"
 
-generic module IPP() {
+module IPP {
     provides {
         interface IP;
     }

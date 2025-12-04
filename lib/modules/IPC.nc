@@ -1,15 +1,12 @@
 #include "../../includes/am_types.h"
 
-generic configuration IPC(int channel) {
+configuration IPC {
    provides interface IP;
 }
 
 implementation {
-    // components IPP;
-    // IP = IPP;
-
-    components new IPP();
-    IP = IPP.IP;
+    components IPP;
+    IP = IPP;
 
     components new SimpleSendC(AM_PACK);
     IPP.SimpleSend -> SimpleSendC;

@@ -33,6 +33,8 @@ module Node{
 
    uses interface LinkStateRouting;
 
+   uses interface IP;
+
    uses interface Transport;
 }
 
@@ -52,6 +54,7 @@ implementation{
 
          call NeighborDiscovery.onBoot();
          call LinkStateRouting.onBoot();
+         call IP.onBoot();
          call Transport.onBoot();
       }else{
          //Retry until successful
@@ -80,6 +83,7 @@ implementation{
    event void CommandHandler.ping(uint16_t destination, uint8_t *payload){
       dbg(GENERAL_CHANNEL, "PING EVENT \n");
       // call Sender.makePack(&sendPackage, TOS_NODE_ID, destination, PROTOCOL_NEIGHBOR_DISCOVERY, RELIABLE_REQUEST, payload, PACKET_MAX_PAYLOAD_SIZE);
+      call IP.send(destination, PROTOCOL_TCP, 50, payload, 20);
    }
 
    event void CommandHandler.printNeighbors(uint16_t src, uint8_t *payload){
@@ -119,6 +123,9 @@ implementation{
 
    // Flooding events
    event void Flooding.gotLSA(uint8_t* incomingMsg, uint8_t from) {}
+
+   // IP events
+   event void IP.gotTCP(uint8_t* incomingMsg, uint8_t from, uint8_t len) {}
 
    // Transport events
    event void Transport.connectDone(socket_t fd) { }

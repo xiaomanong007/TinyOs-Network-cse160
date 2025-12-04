@@ -327,7 +327,7 @@ implementation {
                 if (payload->ack_num == socketArray[fd].lastSent + 1) {
                     reSend[fd] = FALSE;
                     socketArray[fd].state = FIN_WAIT_2;
-                    dbg(TRANSPORT_CHANNEL, "Node %d FIN_WAIT_2, reSend = %s\n", TOS_NODE_ID, (reSend[fd]) ? "TRUE" : "FALSE");
+                    dbg(TRANSPORT_CHANNEL, "Node %d FIN_WAIT_2\n", TOS_NODE_ID);
                 }
                 return;
             case LAST_ACK:

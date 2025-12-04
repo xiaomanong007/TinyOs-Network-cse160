@@ -50,10 +50,10 @@ def main():
     s.runTime(10);
 
     s.cmdTestClient(5, 1, 60, 80, 200);
-    s.runTime(20);
+    s.runTime(30);
 
     s.cmdTestClient(7, 1, 40, 80, 50);
-    s.runTime(20);
+    s.runTime(30);
     s.runTime(300);
 
 if __name__ == '__main__':
