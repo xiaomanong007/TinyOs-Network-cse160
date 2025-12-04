@@ -2,7 +2,7 @@
 #include "../../includes/packet.h"
 #include "../../includes/channels.h"
 
-module IPP {
+generic module IPP() {
     provides {
         interface IP;
     }
@@ -15,8 +15,6 @@ module IPP {
         interface List<ipPkt_t> as PendingQueue;
         interface List<pair_t> as TimeoutQueue;
         interface Timer<TMilli> as PendingTimer;
-        interface List<pending_t> as SendingQueue;
-        interface Timer<TMilli> as SendingTimer;
     }
 }
 
@@ -41,15 +39,11 @@ implementation {
 
     void makeIPPkt(ipPkt_t* Package, uint8_t dest, uint8_t protocol, uint8_t TTL, uint8_t flag, uint8_t offset, uint8_t* payload, uint16_t length);
 
-    void makePending(pending_t* pend ,uint8_t dest, uint8_t protocol, uint8_t TTL, uint8_t* payload, uint16_t length);
-
     void forward(ipPkt_t* incomingMsg);
 
     void check_payload(ipPkt_t* incomingMsg);
 
     task void pendingTask();
-
-    task void sendTask();
 
     command void IP.onBoot() {
         uint8_t i = 0;
@@ -64,11 +58,45 @@ implementation {
     }
 
     command void IP.send(uint8_t dest, uint8_t protocol, uint8_t TTL, uint8_t* payload, uint16_t length) {
-        pending_t pend;
+        pack pkt;
+        ipPkt_t ip_pkt;
+        uint8_t temp_seq = local_seq++;
+        uint8_t offset, flag;
+        uint8_t pending_payload[length];
+        uint8_t i = 0;
+        uint8_t next_hop = call LinkStateRouting.nextHop(dest);
+        uint8_t num_words = MAX_IP_PAYLOAD_SIZE / 4;
+        uint16_t fragment_size = num_words * 4;
+        uint8_t k = length / fragment_size;
+        uint8_t r = length % fragment_size;
 
-        makePending(&pend, dest, protocol, TTL, payload, length);
-        call SendingQueue.pushback(pend);
-        call SendingTimer.startOneShot(50);
+        memcpy(&pending_payload, payload, length);
+
+        if (local_seq > MAX_NUM_PENDING - 1) {
+            local_seq = 1;
+        }
+
+        for (; i < k; i++) {
+            if (i == k - 1 && r == 0) {
+                offset = num_words * i;
+                flag = (k == 1) ? 0 : (128 + temp_seq);
+                makeIPPkt(&ip_pkt, dest, protocol, TTL, flag, offset, pending_payload + i * fragment_size, fragment_size);
+                call SimpleSend.makePack(&pkt, TOS_NODE_ID, next_hop, PROTOCOL_IP, (uint8_t*)&ip_pkt, sizeof(ipPkt_t));
+                call SimpleSend.send(pkt, next_hop);
+                return;
+            }
+            offset = num_words * i;
+            flag = 192 + temp_seq;
+            makeIPPkt(&ip_pkt, dest, protocol, TTL, flag, offset, pending_payload + i * fragment_size, fragment_size);
+            call SimpleSend.makePack(&pkt, TOS_NODE_ID, next_hop, PROTOCOL_IP, (uint8_t*)&ip_pkt, sizeof(ipPkt_t));
+            call SimpleSend.send(pkt, next_hop);
+        }
+        
+        offset = num_words * k;
+        flag = (k == 0) ? 0 : (128 + temp_seq);
+        makeIPPkt(&ip_pkt, dest, protocol, TTL, flag, offset, pending_payload + k * fragment_size, r);
+        call SimpleSend.makePack(&pkt, TOS_NODE_ID, next_hop, PROTOCOL_IP, (uint8_t*)&ip_pkt, sizeof(ipPkt_t));
+        call SimpleSend.send(pkt, next_hop);
         return;
     }
 
@@ -137,49 +165,8 @@ implementation {
             if (pending_arr[seq - 1].current_length >=  pending_arr[seq - 1].expected_length) {
                 has_pending[ip_pkt.src][seq - 1] = FALSE;
                 signal IP.gotTCP(pending_arr[seq - 1].payload, pending_arr[seq - 1].src, pending_arr[seq - 1].expected_length);
-
             }
         }
-    }
-
-    task void sendTask() {
-        pack pkt;
-        pending_t pend = call SendingQueue.popfront();
-        ipPkt_t ip_pkt;
-        uint8_t offset, flag;
-        uint8_t i = 0;
-        uint8_t next_hop = call LinkStateRouting.nextHop(pend.dest);
-        uint8_t num_words = MAX_IP_PAYLOAD_SIZE / 4;
-        uint16_t fragment_size = num_words * 4;
-        uint8_t k = pend.length / fragment_size;
-        uint8_t r = pend.length % fragment_size;
-
-        local_seq = (pend.length <= fragment_size) ? local_seq : local_seq + 1;
-        if (local_seq > MAX_NUM_PENDING) {
-            local_seq = 1;
-        }
-
-        for (; i < k; i++) {
-            if (i == k - 1 && r == 0) {
-                offset = num_words * i;
-                flag = (k == 1) ? 0 : (128 + local_seq);
-                makeIPPkt(&ip_pkt, pend.dest, pend.protocol, pend.TTL, flag, offset, pend.payload + i * fragment_size, fragment_size);
-                call SimpleSend.makePack(&pkt, TOS_NODE_ID, next_hop, PROTOCOL_IP, (uint8_t*)&ip_pkt, sizeof(ipPkt_t));
-                call SimpleSend.send(pkt, next_hop);
-                return;
-            }
-            offset = num_words * i;
-            flag = 192 + local_seq;
-            makeIPPkt(&ip_pkt, pend.dest, pend.protocol, pend.TTL, flag, offset, pend.payload + i * fragment_size, fragment_size);
-            call SimpleSend.makePack(&pkt, TOS_NODE_ID, next_hop, PROTOCOL_IP, (uint8_t*)&ip_pkt, sizeof(ipPkt_t));
-            call SimpleSend.send(pkt, next_hop);
-        }
-        
-        offset = num_words * k;
-        flag = (k == 0) ? 0 : (128 + local_seq);
-        makeIPPkt(&ip_pkt, pend.dest, pend.protocol, pend.TTL, flag, offset, pend.payload + k * fragment_size, r);
-        call SimpleSend.makePack(&pkt, TOS_NODE_ID, next_hop, PROTOCOL_IP, (uint8_t*)&ip_pkt, sizeof(ipPkt_t));
-        call SimpleSend.send(pkt, next_hop);
     }
 
     event void PendingTimer.fired() {
@@ -188,10 +175,6 @@ implementation {
             has_pending[temp.src][temp.seq] = FALSE;
             dropped[temp.src][temp.seq] = TRUE;
         }
-    }
-
-    event void SendingTimer.fired() {
-        post sendTask();
     }
 
     void makeIPPkt(ipPkt_t* Package, uint8_t dest, uint8_t protocol, uint8_t TTL, uint8_t flag, uint8_t offset, uint8_t* payload, uint16_t length) {
@@ -207,14 +190,6 @@ implementation {
             Package->payload[i] = 0;
         }
         memcpy(Package->payload, payload, length);
-    }
-
-    void makePending(pending_t* pend ,uint8_t dest, uint8_t protocol, uint8_t TTL, uint8_t* payload, uint16_t length) {
-        pend->dest = dest;
-        pend->protocol = protocol;
-        pend->TTL = TTL;
-        pend->length = length;
-        memcpy(pend->payload, payload, length);
     }
 
     event void PacketHandler.gotFloodPkt(uint8_t* incomingMsg, uint8_t from) {}

@@ -30,14 +30,6 @@ typedef struct pendingPayload{
     uint8_t payload[MAX_PENDING_SIZE];
 }pendingPayload_t;
 
-typedef struct pending{
-    uint8_t dest;
-    uint8_t protocol;
-    uint8_t TTL;
-    uint16_t length;
-    uint8_t payload[MAX_PENDING_SIZE];
-}pending_t;
-
 typedef struct pair{
     uint8_t src;
     uint8_t seq;

@@ -1,10 +1,15 @@
-configuration IPC {
+#include "../../includes/am_types.h"
+
+generic configuration IPC(int channel) {
    provides interface IP;
 }
 
 implementation {
-    components IPP;
-    IP = IPP;
+    // components IPP;
+    // IP = IPP;
+
+    components new IPP();
+    IP = IPP.IP;
 
     components new SimpleSendC(AM_PACK);
     IPP.SimpleSend -> SimpleSendC;
@@ -26,10 +31,4 @@ implementation {
 
     components new TimerMilliC() as PendingTimer;
     IPP.PendingTimer -> PendingTimer;
-
-    components new ListC(pending_t, 20) as SendingQueue;
-    IPP.SendingQueue -> SendingQueue;
-
-    components new TimerMilliC() as SendingTimer;
-    IPP.SendingTimer -> SendingTimer;
 }

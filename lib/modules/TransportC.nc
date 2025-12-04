@@ -1,3 +1,5 @@
+#include "../../includes/am_types.h"
+
 configuration TransportC {
    provides interface Transport;
 }
@@ -6,7 +8,10 @@ implementation {
     components TransportP;
     Transport = TransportP;
 
-    components IPC;
+    // components IPC;
+    // TransportP.IP -> IPC;
+
+    components new IPC(AM_PACK);
     TransportP.IP -> IPC;
 
     components RandomC as Random;

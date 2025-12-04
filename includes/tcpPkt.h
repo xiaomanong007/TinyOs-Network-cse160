@@ -26,6 +26,14 @@ typedef struct tcpPkt{
     uint8_t payload[26];
 }tcpPkt_t;
 
+typedef struct storedPkt{
+    uint8_t dest;
+    uint8_t TTL;
+    uint8_t length;
+    tcpPkt_t pkt;
+}storedPkt_t;
+
+
 typedef struct reSendTCP{
     socket_t fd;
     uint8_t dest;

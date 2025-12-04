@@ -30,7 +30,7 @@ module TransportP {
 
 implementation {
     enum {
-        MAX_PAYLOAD = 20,
+        MAX_PAYLOAD = 16,
     };
 
     socket_t global_fd;
@@ -74,6 +74,8 @@ implementation {
             socketInUse[i - 1] = FALSE;
             inSend[i - 1] = FALSE;
         }
+        call IP.onBoot();
+
     }
 
     command error_t Transport.initServer(uint8_t port) {
@@ -562,6 +564,7 @@ implementation {
             makeTCPPkt(&tcp_pkt, socketArray[fd].src, socketArray[fd].dest, socketArray[fd].lastSent, socketArray[fd].pending_seq + (k + 1), DATA, socketArray[fd].effectiveWindow, (uint8_t*)&temp, r);
             call IP.send(dest.addr, PROTOCOL_TCP, 50, (uint8_t*)&tcp_pkt, TCP_HEADER_LENDTH + r);
         }
+        k++;
         call ReSendDataTimer.startOneShot(2 * socketArray[fd].RTT);
     }
 
@@ -613,6 +616,7 @@ implementation {
             call Transport.close(fd);
             return;
         }
+
         resend.fd = fd;
         resend.type = 1;
         call ReSendDataQueue.pushback(resend);
@@ -668,7 +672,7 @@ implementation {
                 }
 
                 if (i == k - 1 && r == 0) {
-                    call ReSendDataTimer.startOneShot(2* socketArray[fd].RTT);
+                    call ReSendDataTimer.startOneShot(2 * socketArray[fd].RTT);
                     return;
                 }
             }
@@ -676,7 +680,7 @@ implementation {
             makeTCPPkt(&tcp_pkt, socketArray[fd].src, socketArray[fd].dest, socketArray[fd].lastSent, pending_seq + (k + 1), DATA, socketArray[fd].effectiveWindow, (uint8_t*)&temp, r);
             call IP.send(dest.addr, PROTOCOL_TCP, 50, (uint8_t*)&tcp_pkt, TCP_HEADER_LENDTH + r);
         }
-
+        k++;
         call ReSendDataTimer.startOneShot(2 * socketArray[fd].RTT);
     }
 
@@ -720,7 +724,6 @@ implementation {
     event void IP.gotTCP(uint8_t* incomingMsg, uint8_t from, uint8_t len) {
         tcpPkt_t tcp_pkt;
         receiveTCP_t temp;
-        socket_t fd;
         memcpy(&tcp_pkt, incomingMsg, sizeof(tcpPkt_t));
         memcpy(&temp.pkt, &tcp_pkt, sizeof(tcpPkt_t));
 
