@@ -337,6 +337,9 @@ implementation {
                 }
                 reSend[fd] = FALSE;
                 socketArray[fd].state = CLOSED;
+                socketInUse[fd] = FALSE;
+                call SocketTable.remove(from);
+                call FDQueue.pushback(fd);
                 dbg(TRANSPORT_CHANNEL, "Server (node %d port %d) close connection with Client (node %d port %d)\n", self_addr->addr, self_addr->port, dest_addr->addr, dest_addr->port);
                 return;
             case ESTABLISHED:
@@ -691,6 +694,8 @@ implementation {
         socketArray[fd].state = CLOSED;
         socketInUse[fd] = FALSE;
         call FDQueue.pushback(fd);
+        call SocketTable.remove(dest_addr->addr);
+        printf("queue size = %d, table size = %d\n", call FDQueue.size(), call SocketTable.size());
         dbg(TRANSPORT_CHANNEL, "Client (node %d : port %d) close connection with Server (node %d : port %d)\n", self_addr->addr, self_addr->port, dest_addr->addr, dest_addr->port);
     }
 
