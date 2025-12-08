@@ -20,7 +20,7 @@ module IPP {
 
 implementation {
     enum {
-        MAX_NUM_PENDING = 10,
+        MAX_NUM_PENDING = 30,
 
         PENDING_DROP_TIME = 30000,
 
@@ -139,7 +139,6 @@ implementation {
     task void pendingTask() {
         ipPkt_t ip_pkt = call PendingQueue.popfront();
         uint8_t seq = (ip_pkt.flag > 192) ? (ip_pkt.flag - 192) : (ip_pkt.flag - 128);
-        uint16_t timeout = call IP.estimateRTT(ip_pkt.src);
         pair_t temp;
 
         if (!has_pending[ip_pkt.src][seq - 1]) {
@@ -155,7 +154,7 @@ implementation {
             temp.src = ip_pkt.src;
             temp.seq = seq - 1;
             call TimeoutQueue.pushback(temp);
-            call PendingTimer.startOneShot((timeout / 2));
+            call PendingTimer.startOneShot((5000));
         } else {
             pending_arr[seq - 1].current_length = pending_arr[seq - 1].current_length + ip_pkt.len;
             if (ip_pkt.flag < 192) {

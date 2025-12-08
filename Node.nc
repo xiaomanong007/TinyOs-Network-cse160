@@ -129,4 +129,17 @@ implementation{
 
    // Transport events
    event void Transport.connectDone(socket_t fd) { }
+
+   event void Transport.hasData(socket_t fd) {
+      uint16_t i;
+      uint8_t size = 128;
+      uint8_t data[size];
+      uint16_t len = call Transport.read(fd, &data, size);
+
+      printf("DATA: ");
+      for (i = 0; i < len; i++) {
+            printf("%d, ", data[i]);
+      }
+      printf("\n");
+   }
 }

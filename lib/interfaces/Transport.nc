@@ -150,4 +150,6 @@ interface Transport{
    command error_t listen(socket_t fd);
 
    event void connectDone(socket_t fd);
+
+   event void hasData(socket_t fd);
 }

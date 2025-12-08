@@ -179,7 +179,21 @@ implementation {
     command error_t Transport.receive(pack* package) {}
 
     // not finish
-    command uint16_t Transport.read(socket_t fd, uint8_t *buff, uint16_t bufflen) {}
+    command uint16_t Transport.read(socket_t fd, uint8_t *buff, uint16_t bufflen) {
+        uint16_t i;
+        uint16_t readBytes;
+        uint8_t distance = (socketArray[fd].lastRcvd - socketArray[fd].lastRead);
+
+        distance = distance % 128;
+        readBytes = (distance <= bufflen) ? distance : bufflen;
+
+        for (i = 0; i < readBytes; i++) {
+            *(buff + i) = socketArray[fd].rcvdBuff[socketArray[fd].lastRead];
+            socketArray[fd].lastRead = (socketArray[fd].lastRead + 1) % 128;
+        }
+
+        return readBytes;
+    }
 
     command error_t Transport.connect(socket_t fd, socket_addr_t* addr) {
         tcpPkt_t tcp_pkt;
@@ -206,7 +220,6 @@ implementation {
         return FAIL;
     }
 
-    // not finish
     command error_t Transport.close(socket_t fd) {
         tcpPkt_t tcp_pkt;
         char empty_payload[1] = " ";
@@ -261,6 +274,8 @@ implementation {
             socketArray[fd].dest = temp;
             socketArray[fd].nextExpected = payload->seq + 1;
             socketArray[fd].ISN = (call SocketTable.contains(from)) ? socketArray[fd].ISN : random_seq;
+            socketArray[fd].lastRcvd = call Random.rand16() % 127;
+            socketArray[fd].lastRead = socketArray[fd].lastRcvd;
             socketArray[fd].RTT = call IP.estimateRTT(from);
             socketArray[fd].effectiveWindow = SOCKET_BUFFER_SIZE;
             makeTCPPkt(&tcp_pkt, socketArray[fd].src, socketArray[fd].dest, socketArray[fd].ISN, socketArray[fd].nextExpected, SYN, socketArray[fd].effectiveWindow, (uint8_t*)&empty_payload, 1);
@@ -354,11 +369,11 @@ implementation {
     task void receiveDATA() {
         receiveTCP_t r_pkt = call ReceiveQueue.popfront();
         uint8_t i;
+        uint8_t ad_window;
         socket_t fd = call SocketTable.get(r_pkt.from);
         tcpPkt_t* tcp_pkt = &r_pkt.pkt;
         tcpPkt_t reply_pkt;
         uint8_t size = r_pkt.len - TCP_HEADER_LENDTH;
-        uint8_t data[size];
         char empty_payload[1] = " ";
 
         if (socketArray[fd].state != ESTABLISHED)
@@ -375,17 +390,16 @@ implementation {
             socketArray[fd].pending_seq = tcp_pkt->seq;
             socketArray[fd].nextExpected = (tcp_pkt->seq + 1) % SOCKET_BUFFER_SIZE;
 
-            memcpy(data, tcp_pkt->payload, size);
-            printf("DATA from (%d): ", r_pkt.from);
             for (i = 0; i < size; i++) {
-                printf("%d, ", data[i]);
+                socketArray[fd].rcvdBuff[socketArray[fd].lastRcvd] = *(tcp_pkt->payload + i);
+                socketArray[fd].lastRcvd = (socketArray[fd].lastRcvd + 1) % 128;
             }
-            printf("\n");
-            socketArray[fd].lastRead = tcp_pkt->seq;
-
-            socketArray[fd].effectiveWindow = socketArray[fd].effectiveWindow - (socketArray[fd].nextExpected - 1 - socketArray[fd].lastRead);
+            signal Transport.hasData(fd);
         }
-        makeTCPPkt(&reply_pkt, socketArray[fd].src, socketArray[fd].dest, socketArray[fd].ISN, socketArray[fd].nextExpected, ACK, socketArray[fd].effectiveWindow, (uint8_t*) &empty_payload, 1);
+        ad_window = (socketArray[fd].lastRcvd - socketArray[fd].lastRead);
+        ad_window = ad_window % 128;
+        ad_window = SOCKET_BUFFER_SIZE - ad_window;
+        makeTCPPkt(&reply_pkt, socketArray[fd].src, socketArray[fd].dest, socketArray[fd].ISN, socketArray[fd].nextExpected, ACK, ad_window, (uint8_t*) &empty_payload, 1);
         call IP.send(r_pkt.from, PROTOCOL_TCP, 50, (uint8_t*)&reply_pkt, TCP_HEADER_LENDTH);
     }
 
@@ -695,7 +709,6 @@ implementation {
         socketInUse[fd] = FALSE;
         call FDQueue.pushback(fd);
         call SocketTable.remove(dest_addr->addr);
-        printf("queue size = %d, table size = %d\n", call FDQueue.size(), call SocketTable.size());
         dbg(TRANSPORT_CHANNEL, "Client (node %d : port %d) close connection with Server (node %d : port %d)\n", self_addr->addr, self_addr->port, dest_addr->addr, dest_addr->port);
     }
 
