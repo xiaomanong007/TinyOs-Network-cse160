@@ -152,4 +152,6 @@ interface Transport{
    event void connectDone(socket_t fd);
 
    event void hasData(socket_t fd);
+
+   event void getGreet(tcpPkt_t* incomingMsg, uint8_t from, uint8_t len);
 }

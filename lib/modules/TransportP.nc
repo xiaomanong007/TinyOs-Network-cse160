@@ -392,10 +392,13 @@ implementation {
             socketArray[fd].pending_seq = tcp_pkt->seq;
             socketArray[fd].nextExpected = (tcp_pkt->seq + 1) % SOCKET_BUFFER_SIZE;
 
+            printf("Data: ");
             for (i = 0; i < size; i++) {
                 socketArray[fd].rcvdBuff[socketArray[fd].lastRcvd] = *(tcp_pkt->payload + i);
+                printf("%d, ", socketArray[fd].rcvdBuff[socketArray[fd].lastRcvd]);
                 socketArray[fd].lastRcvd = (socketArray[fd].lastRcvd + 1) % 128;
             }
+            printf("\n");
             signal Transport.hasData(fd);
         }
         ad_window = (socketArray[fd].lastRcvd - socketArray[fd].lastRead);
@@ -772,6 +775,8 @@ implementation {
                 call ReceiveQueue.pushback(temp);
                 post receiveDATA();
                 break;
+            case GREET:
+                signal Transport.getGreet(&tcp_pkt, from, len);
             default:
                 break;
         }

@@ -8,4 +8,7 @@ implementation {
 
     components TransportC;
     AppP.Transport -> TransportC;
+
+    components IPC;
+    AppP.IP -> IPC;
 }

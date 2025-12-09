@@ -12,6 +12,7 @@ enum{
     SYN = 1,
     ACK = 2,
     FIN = 3,
+    GREET = 4,
 
     OTHER = 255,
 };

@@ -13,6 +13,7 @@
 #include "includes/floodingPkt.h"
 #include "includes/CommandMsg.h"
 #include "includes/sendInfo.h"
+#include "includes/tcpPkt.h"
 #include "includes/channels.h"
 
 module Node{
@@ -116,17 +117,17 @@ implementation{
    event void CommandHandler.setAppClient(){}
 
    event void CommandHandler.greet(uint8_t dest, uint8_t port, uint8_t length, uint8_t* username) {
-      printf("server = %d, dest = %d, port = %d, len = %d, name = %s\n", TOS_NODE_ID, dest, port, length, username);
+      call App.helloClient(dest, port, username, length);
    }
 
    event void CommandHandler.broadcastMessage(uint8_t legnth, uint8_t* payload) {
-      printf("client = %d, len = %d, msg = %s\n", TOS_NODE_ID, legnth, payload);
+      call App.broadcastMsg(payload, legnth);
    }
 
    event void CommandHandler.unicastMessage(uint8_t len_username ,uint8_t* username, uint8_t legnth, uint8_t* payload) {
-      uint8_t name[len_username];
-      memcpy(&name, username, len_username + 1);
-      printf("client = %d, len_user = %d, username = %s, len = %d, msg = %s\n", TOS_NODE_ID, len_username, name, legnth, payload);
+      char name[len_username];
+      memcpy(name, username, len_username);
+      call App.unicastMsg((uint8_t*)&name, len_username, payload, legnth);
    }
 
    event void CommandHandler.printAllUsers() {
@@ -151,4 +152,6 @@ implementation{
    event void Transport.connectDone(socket_t fd) { }
 
    event void Transport.hasData(socket_t fd) { }
+
+   event void Transport.getGreet(tcpPkt_t* incomingMsg, uint8_t from, uint8_t len) {}
 }

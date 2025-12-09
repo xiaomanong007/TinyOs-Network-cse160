@@ -29,7 +29,7 @@ implementation {
         MAX_NODES = 25,
     };
 
-    uint8_t local_seq = 0;
+    uint8_t local_seq = 1;
 
     pendingPayload_t pending_arr[MAX_NUM_PENDING];
     
