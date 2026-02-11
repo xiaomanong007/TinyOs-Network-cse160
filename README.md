@@ -1,89 +1,99 @@
-# Introduction
-This skeleton code is the basis for the CSE160 network project. Additional documentation
-on what is expected will be provided as the school year continues.
+# Network Stack Simulation
 
-# General Information
-## Data Structures
-There are two data structures included into the project design to help with the
-assignment. See dataStructures/interfaces/ for the header information of these
-structures.
+## Overview
 
-* **Hashmap** - This is for anything that needs to retrieve a value based on a key.
+This project implements a layered network stack in a simulated sensor-network environment using TinyOS. The objective is to design and evaluate core networking abstractions under constrained conditions, with emphasis on correctness, modularity, and protocol interaction.
 
-* **List** - The list is design to have pushfront, pushback capabilities. For the most part,
-you can stick with an array or even a QueueC (FIFO) which are more robust.
+The system models communication across multiple nodes and implements functionality across the link, network, and transport layers. Particular attention is given to routing convergence, reliability mechanisms, congestion behavior, and distributed state management.
 
-## General Libraries
-/lib/interfaces
+---
 
+## Architecture
 
-* **CommandHandler** - CommandHandler is what interfaces with TOSSIM. Commands are
-sent to this function, and based on the parameters passed, an event is fired.
-* **SimpleSend** - This is a wrapper of the lower level sender in TinyOS. The features
-included is a basic queuing mechanism and some small delays to prevent collisions. Do
-not change the delays. You can duplicate SimpleSendC to use a different AM type or
-possibly rewire it.
-* **Transport** - There is only the interface of Transport included. The actual
-implementation of the Transport layer is left to the student as an exercise. For
-CSE160 this will be Project 3 so don't worry about it now.
+The stack follows a layered structure:
 
-## Noise
-/noise/
+Application  
+↓  
+Transport Layer  
+↓  
+Network Layer  
+↓  
+Link Layer  
 
-This is the "noise" of the network. A heavy noised network will cause issues with
-packet loss.
+Each layer is implemented as a modular component with clearly defined interfaces. Communication between layers is event-driven, reflecting TinyOS’s split-phase programming model.
 
-* **no_noise.txt** - There should be no packet loss using this model.
+---
 
-## Topography
-/topo/
+## Implemented Components
 
-This folder contains a few example topographies of the network and how they are
-connected to each other. Be sure to try additional networks when testing your code
-since additional ones will be added when grading.
+### 1. Neighbor Discovery
 
-* **long_line.topo** - this topography is a line of 19 motes that have bidirectional
-links.
-* **example.topo** - A slightly more complex connection
+- Periodic HELLO broadcasts  
+- EWMA-based link-quality estimation  
+- Timeout-based neighbor expiration  
+- Dynamic neighbor table maintenance  
 
-Each line has three values, the source node, the destination node, and the gain.
-For now you can keep the gain constant for all of your topographies. A line written
-as ```1 2 -53``` denotes a one-way connection from 1 to 2. To make it bidirectional
-include also ```2 1 -53```.
+### 2. Flooding
 
-# Running Simulations
-The following is an example of a simulation script.
-```
-from TestSim import TestSim
+- Controlled broadcast propagation  
+- Duplicate suppression via sequence tracking  
+- TTL handling  
 
-def main():
-    # Get simulation ready to run.
-    s = TestSim();
+### 3. Link-State Routing
 
-    # Before we do anything, lets simulate the network off.
-    s.runTime(1);
+- Periodic dissemination of link-state advertisements (LSAs)  
+- Global topology reconstruction  
+- Dijkstra-based shortest-path computation  
+- Routing table generation  
 
-    # Load the the layout of the network.
-    s.loadTopo("long_line.topo");
+### 4. Network Layer (IP)
 
-    # Add a noise model to all of the motes.
-    s.loadNoise("no_noise.txt");
+- Packet encapsulation and decapsulation  
+- Fragmentation and reassembly  
+- Forwarding logic based on routing table  
 
-    # Turn on all of the sensors.
-    s.bootAll();
+### 5. Transport Protocol
 
-    # Add the main channels. These channels are declared in includes/channels.h
-    s.addChannel(s.COMMAND_CHANNEL);
-    s.addChannel(s.GENERAL_CHANNEL);
+- Connection establishment and teardown  
+- Sliding window mechanism  
+- Congestion window management  
+- Retransmission timers  
+- ACK handling and loss recovery  
 
-    # After sending a ping, simulate a little to prevent collision.
-    s.runTime(1);
-    s.ping(1, 2, "Hello, World");
-    s.runTime(1);
+---
 
-    s.ping(1, 10, "Hi!");
-    s.runTime(1);
+## Design Principles
 
-if __name__ == '__main__':
-    main()
-```
+- Deterministic state transitions  
+- Explicit timer management  
+- Separation of control and data logic  
+- Defensive handling of packet duplication and reordering  
+- Minimal shared mutable state  
+
+The implementation emphasizes reasoning about distributed state evolution rather than relying on implicit behavior.
+
+---
+
+## Simulation Environment
+
+- TinyOS-based multi-node simulation  
+- Event-driven execution model  
+- Structured debug logging  
+- Timer-driven protocol scheduling  
+
+The system has been evaluated under varying node counts and message loads to observe:
+
+- Routing convergence behavior  
+- Congestion window dynamics  
+- Retransmission stability  
+- Failure recovery characteristics  
+
+---
+
+## Future Work
+
+- Adaptive congestion control refinement  
+- Dynamic timer tuning strategies  
+- Link-quality-driven routing cost optimization  
+- Formal reasoning about safety and liveness properties  
+- Performance benchmarking under adversarial network conditions  
