@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project implements a layered network stack in a simulated sensor-network environment using TinyOS. The objective is to design and evaluate core networking abstractions under constrained conditions, with emphasis on correctness, modularity, and protocol interaction.
+This project (adapted from CSE160: Computer Network) implements a layered network stack in a simulated sensor-network environment using TinyOS. The objective is to design and evaluate core networking abstractions under constrained conditions, with emphasis on correctness, modularity, and protocol interaction.
 
 The system models communication across multiple nodes and implements functionality across the link, network, and transport layers. Particular attention is given to routing convergence, reliability mechanisms, congestion behavior, and distributed state management.
 
